@@ -1,6 +1,15 @@
 function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
     KalmanStep( m, xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoVar, diagLambda, nuno, PersistentState )
 
+    dynareOBC = PersistentState.dynareOBC;
+
+    SelectAugStateVariables = PersistentState.SelectAugStateVariables;
+    LagIndices = PersistentState.LagIndices;
+    CurrentIndices = PersistentState.CurrentIndices;
+    FutureValues = PersistentState.FutureValues;
+
+    % dynareOBC, LagIndices, CurrentIndices, FutureValues, SelectAugStateVariables
+
 %     LogObservationLikelihood = NaN;
 %     xnn = [];
 %     Ssnn = [];
