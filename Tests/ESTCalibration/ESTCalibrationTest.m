@@ -1,5 +1,5 @@
 clear all; %#ok<CLALL>
-addpath ../../Core
+addpath ../../private
 
 Order = 4;
 N = 10;
