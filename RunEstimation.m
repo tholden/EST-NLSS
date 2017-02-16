@@ -16,13 +16,26 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
     disp( LogLikelihood );
 
     OptiFunction = @( p, s ) EstimationObjective( p, Options, s, false );
-    OptiLB = [ LBTemp; -Inf( NumObservables + EstimatedNu, 1 ) ];
-    OptiUB = [ UBTemp; Inf( NumObservables + EstimatedNu, 1 ) ];
+    
+    LB = Options.LB;
+    UB = Options.UB;
+    if isempty( LB )
+        LB = -Inf( size( Parameters ) );
+    end
+    if isempty( UB )
+        UB = Inf( size( Parameters ) );
+    end
+    
+    OptiLB = [ LB; -Inf( NumObservables + EstimatedNu, 1 ) ];
+    OptiUB = [ UB; Inf( NumObservables + EstimatedNu, 1 ) ];
+    
     MaximisationFunctions = strsplit( Options.MaximisationFunctions, { ',', ';', '#' } );
+    
     for i = 1 : length( MaximisationFunctions )
         FMaxEstimateFunctor = str2func( MaximisationFunctions{ i } );
         [ InputParameters, LogLikelihood, PersistentState ] = FMaxEstimateFunctor( OptiFunction, InputParameters, OptiLB, OptiUB, PersistentState );
     end
+    
     disp( 'Final log-likelihood:' );
     disp( LogLikelihood );
 

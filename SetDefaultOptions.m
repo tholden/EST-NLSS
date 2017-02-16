@@ -5,6 +5,7 @@ function Options = SetDefaultOptions( Options )
     Options = SetDefaultOption( Options, 'FilterCubatureDegree', 0 );
     Options = SetDefaultOption( Options, 'InitialMEStd', 0.0001 );
     Options = SetDefaultOption( Options, 'InitialNu', 20 );
+    Options = SetDefaultOption( Options, 'LB', [] );
     Options = SetDefaultOption( Options, 'MaximisationFunctions', 'CMAESWrapper,FMinConWrapper' );   
     Options = SetDefaultOption( Options, 'NoSkewLikelihood', false );
     Options = SetDefaultOption( Options, 'NoTLikelihood', false );
@@ -16,6 +17,7 @@ function Options = SetDefaultOptions( Options )
     Options = SetDefaultOption( Options, 'StationaryDistPeriods', 1000 );
     Options = SetDefaultOption( Options, 'StationaryDistDrop', 100 );
     Options = SetDefaultOption( Options, 'StdDevThreshold', eps ^ 0.375 );    
+    Options = SetDefaultOption( Options, 'UB', [] );
     Options = SetDefaultOption( Options, 'VariableNames', {} );
     Options = orderfields( Options );
 end
