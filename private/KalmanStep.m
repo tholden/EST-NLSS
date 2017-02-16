@@ -1,14 +1,5 @@
-function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
-    KalmanStep( m, xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoVar, diagLambda, nuno, PersistentState )
-
-    dynareOBC = PersistentState.dynareOBC;
-
-    SelectAugStateVariables = PersistentState.SelectAugStateVariables;
-    LagIndices = PersistentState.LagIndices;
-    CurrentIndices = PersistentState.CurrentIndices;
-    FutureValues = PersistentState.FutureValues;
-
-    % dynareOBC, LagIndices, CurrentIndices, FutureValues, SelectAugStateVariables
+function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
+    KalmanStep( m, xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoVar, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t )
 
 %     LogObservationLikelihood = NaN;
 %     xnn = [];
@@ -23,7 +14,9 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
 %     Psno = [];
 %     deltasno = [];
 %     tauno = [];
-    
+
+    Simulate = Options.Simulate;
+
     NAugState1 = size( Ssoo, 1 );
     NAugState2 = size( Ssoo, 2 );
     NExo1 = size( RootExoVar, 1 );
@@ -46,7 +39,7 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
     end
     
     if isfinite( nuoo )
-        [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, dynareOBC.FilterCubatureDegree );
+        [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, Options.FilterCubatureDegree );
         PhiN10 = normcdf( CubaturePoints( end, : ) );
         if tcdf_tauoo_nuoo > 0
             N11Scaler = sqrt( 0.5 * ( nuoo + 1 ) ./ gammaincinv( PhiN10, 0.5 * ( nuoo + 1 ), 'upper' ) );
@@ -57,7 +50,7 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
     
     if ~isfinite( nuoo ) || all( abs( N11Scaler - 1 ) <= sqrt( eps ) )
         IntDim = IntDim - 1;
-        [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, dynareOBC.FilterCubatureDegree );
+        [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, Options.FilterCubatureDegree );
         N11Scaler = ones( 1, NCubaturePoints );
     else
         CubaturePoints( end, : ) = [];
@@ -74,63 +67,37 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
 
     StateExoPoints = bsxfun( @plus, [ Ssoo * bsxfun( @times, CubaturePoints( 1:NAugState2,: ), N11Scaler ) + bsxfun( @times, deltasoo, FInvEST ); RootExoVar * CubaturePoints( (NAugState2+1):end,: ) ], [ xoo; zeros( NExo1, 1 ) ] );
     
-    Constant = dynareOBC.Constant;
-    NEndo = length( Constant );
-    NEndoMult = 2 .^ ( dynareOBC.Order - 1 );
-    
-    NAugEndo = NEndo * NEndoMult;
-
     StatePoints = StateExoPoints( 1:NAugState1, : );
     ExoPoints = StateExoPoints( (NAugState1+1):(NAugState1+NExo1), : );
 
-    OldAugEndoPoints = zeros( NAugEndo, NCubaturePoints );
-    OldAugEndoPoints( SelectAugStateVariables, : ) = StatePoints;
-    
     Observed = find( isfinite( m ) );
     m = m( Observed )';
     nm = length( Observed );
-       
-    NewAugEndoPoints = zeros( NAugEndo, NCubaturePoints );
-    
-    for i = 1 : NCubaturePoints
-        InitialFullState = GetFullStateStruct( OldAugEndoPoints( :, i ), dynareOBC.Order, Constant );
-        try
-            Simulation = SimulateModel( ExoPoints( :, i ), false, InitialFullState, true, true );
-        catch Error
-            rethrow( Error );
-        end
-        
-        if dynareOBC.Order == 1
-            NewAugEndoPoints( :, i ) = Simulation.first + Simulation.bound_offset;
-        elseif dynareOBC.Order == 2
-            NewAugEndoPoints( :, i ) = [ Simulation.first; Simulation.second + Simulation.bound_offset ];
-        else
-            NewAugEndoPoints( :, i ) = [ Simulation.first; Simulation.second; Simulation.first_sigma_2; Simulation.third + Simulation.bound_offset ];
-        end
-        if any( ~isfinite( NewAugEndoPoints( :, i ) ) )
-            error( 'dynareOBC:EstimationNonFiniteSimultation', 'Non-finite values were encountered during simulation.' );
-        end
-    end
-    
+
     if nm > 0
-        LagValuesWithBoundsBig = bsxfun( @plus, reshape( sum( reshape( OldAugEndoPoints, NEndo, NEndoMult, NCubaturePoints ), 2 ), NEndo, NCubaturePoints ), Constant );
-        LagValuesWithBoundsLagIndices = LagValuesWithBoundsBig( LagIndices, : );
+        [ PersistentState, EndoSimulation, MeasurementSimulation ] = Simulate( Parameters, PersistentState, StatePoints, ExoPoints, t );
         
-        CurrentValuesWithBoundsBig = bsxfun( @plus, reshape( sum( reshape( NewAugEndoPoints, NEndo, NEndoMult, NCubaturePoints ), 2 ), NEndo, NCubaturePoints ), Constant );
-        CurrentValuesWithBoundsCurrentIndices = CurrentValuesWithBoundsBig( CurrentIndices, : );
-        
-        MLVValues = dynareOBCTempGetMLVs( [ LagValuesWithBoundsLagIndices; CurrentValuesWithBoundsCurrentIndices; repmat( FutureValues, 1, NCubaturePoints ) ], ExoPoints, M_.params, oo_.dr.ys( 1:dynareOBC_.OriginalNumVar ) );
-        NewMeasurementPoints = MLVValues( Observed, : );
-        if any( any( ~isfinite( NewMeasurementPoints ) ) )
-            error( 'dynareOBC:EstimationNonFiniteMeasurements', 'Non-finite values were encountered during calculation of observation equations.' );
+        if any( ~isfinite( EndoSimulation( : ) ) )
+            error( 'ESTNLSS:NonFiniteSimultationKalmanStep', 'Non-finite values were encountered during simulation in Kalman step.' );
+        end
+
+        NewMeasurementPoints = MeasurementSimulation( Observed, : );
+        if any( ~isfinite( NewMeasurementPoints(:) ) )
+            error( 'ESTNLSS:NonFiniteMeasurements', 'Non-finite values were encountered during calculation of observation equations.' );
         end
     else
+        [ PersistentState, EndoSimulation ] = Simulate( Parameters, PersistentState, StatePoints, ExoPoints, t );
+        
+        if any( ~isfinite( EndoSimulation( : ) ) )
+            error( 'ESTNLSS:NonFiniteSimultationKalmanStep', 'Non-finite values were encountered during simulation in Kalman step.' );
+        end
+
         NewMeasurementPoints = zeros( 0, NCubaturePoints );
     end
+    
+    StdDevThreshold = Options.StdDevThreshold;
 
-    StdDevThreshold = dynareOBC.StdDevThreshold;
-
-    wm = [ NewAugEndoPoints; ExoPoints; zeros( nm, NCubaturePoints ); NewMeasurementPoints ];
+    wm = [ EndoSimulation; ExoPoints; zeros( nm, NCubaturePoints ); NewMeasurementPoints ];
     
     nwm = size( wm, 1 );
     
@@ -153,7 +120,7 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
     cholVariance_wm_Mean_wmMMedian_wm = cholVariance_wm * Mean_wmMMedian_wm;
     cholVariance_wm_Mean_wmMMedian_wm2 = cholVariance_wm_Mean_wmMMedian_wm' * cholVariance_wm_Mean_wmMMedian_wm;
     
-    if cholVariance_wm_Mean_wmMMedian_wm2 > eps && ~dynareOBC.NoSkewLikelihood
+    if cholVariance_wm_Mean_wmMMedian_wm2 > eps && ~Options.NoSkewLikelihood
         Zcheck_wm = ( Mean_wmMMedian_wm' * ano ) / sqrt( cholVariance_wm_Mean_wmMMedian_wm2 );
 
         meanZcheck_wm = Zcheck_wm * CubatureWeights';
@@ -220,9 +187,9 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
     tmpQno = cholPRRQno( mBlock, mBlock );
     Qno = tmpRno' * tmpRno + tmpQno' * tmpQno;
     
-    xno = wno( 1:NAugState1 );
-    deltasno = deltano( 1:NAugState1 );
-    Psno = Pno( 1:NAugState1, 1:NAugState1 );
+    xno = wno( StateVariableIndices );
+    deltasno = deltano( StateVariableIndices );
+    Psno = Pno( StateVariableIndices, StateVariableIndices );
     
     if nm > 0
         cholPnoCheck = cholupdate( cholPno, deltano );
@@ -264,9 +231,9 @@ function [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn,
         LogObservationLikelihood = 0;
     end
     
-    xnn = wnn( 1:NAugState1 );
-    deltasnn = deltann( 1:NAugState1 );
-    Psnn = Pnn( 1:NAugState1, 1:NAugState1 );
+    xnn = wnn( StateVariableIndices );
+    deltasnn = deltann( StateVariableIndices );
+    Psnn = Pnn( StateVariableIndices, StateVariableIndices );
     
     Ssnn = ObtainEstimateRootCovariance( Psnn, StdDevThreshold );
        
@@ -282,23 +249,4 @@ function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoint
         CubaturePoints = [ zeros( IntDim, 1 ), wTemp * eye( IntDim ), -wTemp * eye( IntDim ) ];
         CubatureWeights = 1 / NCubaturePoints;
     end
-end
-
-function FullStateStruct = GetFullStateStruct( CurrentState, Order, Constant )
-    NEndo = length( Constant );
-    FullStateStruct = struct;
-    FullStateStruct.first = CurrentState( 1:NEndo );
-    total = FullStateStruct.first + Constant;
-    if Order >= 2
-        FullStateStruct.second = CurrentState( (NEndo+1):(2*NEndo) );
-        total = total + FullStateStruct.second;
-        if Order >= 3
-            FullStateStruct.first_sigma_2 = CurrentState( (2*NEndo+1):(3*NEndo) );
-            FullStateStruct.third = CurrentState( (3*NEndo+1):(4*NEndo) );
-            total = total + FullStateStruct.first_sigma_2 + FullStateStruct.third;
-        end
-    end
-    FullStateStruct.bound_offset = zeros( NEndo, 1 );
-    FullStateStruct.total = total;
-    FullStateStruct.total_with_bounds = FullStateStruct.total;
 end

@@ -15,25 +15,26 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     ExoCovariance = EstimationOptions.ExoCovariance;
     
     [ T, N ] = size( Data );
+    
     if nargout > 2
         LogObservationLikelihoods = NaN( T, 1 );
     end
 
     if NoTLikelihood
         Parameters = InputParameters( 1 : ( end - N ) );
-        diagLambda = exp( InputParameters( ( end - N + 1 ) : end ) );
+        diagLambda = exp( 2 * InputParameters( ( end - N + 1 ) : end ) );
         nuoo = Inf;
     elseif DynamicNu
         Parameters = InputParameters( 1 : ( end - N ) );
-        diagLambda = exp( InputParameters( ( end - N + 1 ) : end ) );
+        diagLambda = exp( 2 * InputParameters( ( end - N + 1 ) : end ) );
         nuoo = [];
     else
         Parameters = InputParameters( 1 : ( end - N - 1 ) );
-        diagLambda = exp( InputParameters( ( end - N ) : ( end - 1 ) ) );
+        diagLambda = exp( 2 * InputParameters( ( end - N ) : ( end - 1 ) ) );
         nuoo = exp( InputParameters( end ) );
     end
     
-    [ PersistentState, StateSteadyState ] = Solve( Parameters, PersistentState );
+    [ PersistentState, StateSteadyState, StateVariableIndices ] = Solve( Parameters, PersistentState );
     
     RootExoCovariance = ObtainEstimateRootCovariance( ExoCovariance, StdDevThreshold );
 
@@ -41,9 +42,15 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     ShockSequence = RootExoCovariance * randn( size( RootExoCovariance, 2 ), StationaryDistPeriods + StationaryDistDrop );
     rng( OldRNGState );
     
-	[ PersistentState, StatDistPoints ] = Simulate( Parameters, PersistentState, ShockSequence, 0 );
+	[ PersistentState, EndoSimulation ] = Simulate( Parameters, PersistentState, ShockSequence, 0 );
     
+    StatDistPoints = EndoSimulation( StateVariableIndices, : );
+
     StatDistPoints = StatDistPoints( :, ( StationaryDistDrop + 1 ):end );
+
+    if any( ~isfinite( StatDistPoints(:) ) )
+        error( 'ESTNLSS:NonFiniteStationaryDistSimultation', 'Non-finite values were encountered during the simulation of the stationary distribution.' );
+    end
 
     MeanStatDist = mean( StatDistPoints, 2 );
     DeMeanedStatDistPoints = bsxfun( @minus, StatDistPoints, MeanStatDist );
@@ -92,8 +99,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     Psoo = cholPsoo * cholPsoo';
     Ssoo = ObtainEstimateRootCovariance( Psoo, StdDevThreshold );
 
-    PriorFunc = str2func( Prior );
-    PriorValue = PriorFunc( InputParameters );
+    PriorValue = Prior( InputParameters );
     ScaledPriorValue = PriorValue / T;
     
     if Smoothing
@@ -116,8 +122,8 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
             if DynamicNu
                 nuno = [];
             end
-            [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
-                KalmanStep( Data( t, : ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, PersistentState );
+            [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
+                KalmanStep( Data( t, : ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
             wnn_{ t } = wnn;
             Pnn_{ t } = Pnn;
             deltann_{ t } = deltann;
@@ -129,10 +135,10 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
             tauno_{ t } = tauno;
             nuno_{ t } = nuno;
         else
-            [ LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn ] = ...
-                KalmanStep( Data( t, : ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, PersistentState );
+            [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn ] = ...
+                KalmanStep( Data( t, : ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
             if isempty( xnn )
-                error( 'dynareOBC:EstimationEmptyKalmanReturn', 'KalmanStep returned an empty xnn.' );
+                error( 'ESTNLSS:EmptyKalmanReturn', 'KalmanStep returned an empty xnn.' );
             end
         end
         
