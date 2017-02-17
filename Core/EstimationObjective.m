@@ -14,7 +14,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     
     ExoCovariance = Options.ExoCovariance;
     
-    [ T, N ] = size( Data );
+    [ N, T ] = size( Data );
     
     if nargout > 2
         LogObservationLikelihoods = NaN( T, 1 );
@@ -123,7 +123,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
                 nuno = [];
             end
             [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
-                KalmanStep( Data( t, : ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
+                KalmanStep( Data( :, t ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
             wnn_{ t } = wnn;
             Pnn_{ t } = Pnn;
             deltann_{ t } = deltann;
@@ -136,7 +136,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
             nuno_{ t } = nuno;
         else
             [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn ] = ...
-                KalmanStep( Data( t, : ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
+                KalmanStep( Data( :, t ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
             if isempty( xnn )
                 error( 'ESTNLSS:EmptyKalmanReturn', 'KalmanStep returned an empty xnn.' );
             end

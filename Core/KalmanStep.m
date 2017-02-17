@@ -71,7 +71,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     ExoPoints = StateExoPoints( (NAugState1+1):(NAugState1+NExo1), : );
 
     Observed = find( isfinite( m ) );
-    m = m( Observed )';
+    m = m( Observed );
     nm = length( Observed );
 
     if nm > 0
