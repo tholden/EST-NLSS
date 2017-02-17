@@ -15,7 +15,39 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
         InputParameters( end + 1 ) = log( Options.InitialNu );
     end
 
-    ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
+    if Options.CompileLikelihood
+        cfg = coder.config( 'mex' );
+        cfg.EnableMemcpy = false;
+        cfg.InitFltsAndDblsToZero = false;
+        cfg.ConstantInputs = 'Remove';
+        cfg.MATLABSourceComments = true;
+        cfg.GenerateReport = true;
+        cfg.ConstantFoldingTimeout = 2147483647;
+        cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';
+        cfg.SaturateOnIntegerOverflow = false;
+        cfg.EnableAutoExtrinsicCalls = false;
+        cfg.InlineThreshold = 2147483647;
+        cfg.InlineThresholdMax = 2147483647;
+        cfg.InlineStackLimit = 2147483647;
+        cfg.StackUsageMax = 16777216;
+        cfg.IntegrityChecks = false;
+        cfg.ResponsivenessChecks = false;
+        cfg.ExtrinsicCalls = false;
+        cfg.EchoExpressions = false;
+        cfg.GlobalDataSyncMethod = 'NoSync';
+
+        ARGS = cell( 4, 1 );
+        ARGS{1} = coder.typeof( Parameters );
+        ARGS{2} = coder.Constant( Options );
+        ARGS{3} = coder.typeof( PersistentState );
+        ARGS{4} = coder.Constant( false ); %#ok<NASGU>
+
+        codegen -config cfg EstimationObjective -args ARGS -o ESTNLSSTempEstimationObjective;
+        rehash;
+        ObjectiveFunction = @ESTNLSSTempEstimationObjective;
+    else
+        ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
+    end
     
     [ LogLikelihood, PersistentState ] = ObjectiveFunction( InputParameters, PersistentState );
     PersistentState.InitialRun = false;
