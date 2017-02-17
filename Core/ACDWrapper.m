@@ -1,7 +1,5 @@
 function [ x, f, PersistentState ] = ACDWrapper( OptiFunction, x, lb, ub, OldPersistentState, varargin )
 
-    OpenPool;
-
     try
         pool = gcp;
         nw = pool.NumWorkers;

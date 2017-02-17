@@ -1,7 +1,5 @@
 function [ x, f, PersistentState ] = PACDResumeWrapper( OptiFunction, x, lb, ub, OldPersistentState, varargin )
 
-    OpenPool;
-
     InitialTimeOutLikelihoodEvaluation = Inf;
     
     [ x, f, PersistentState ] = PACDMinimisation( ...

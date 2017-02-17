@@ -1,7 +1,5 @@
 function [ x, f, PersistentState ] = CMAESResumeWrapper( OptiFunction, x, lb, ub, OldPersistentState, varargin )
 
-    OpenPool;
-
     try
         pool = gcp;
         nw = pool.NumWorkers;
