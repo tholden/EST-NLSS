@@ -1,7 +1,7 @@
 Parameters = zeros( 4, 1 );
 
 Parameters( 1 ) = -4; % log( mu )
-Parameters( 2 ) =  4; % log( ( 1 + phi ) / ( 1 - phi ) )
+Parameters( 2 ) =  3; % log( ( 1 + phi ) / ( 1 - phi ) )
 Parameters( 3 ) = -2; % log( omega )
 Parameters( 4 ) =  1; % log( ( 1 + rho ) / ( 1 - rho ) )
 
