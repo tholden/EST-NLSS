@@ -42,7 +42,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     ShockSequence = RootExoCovariance * randn( size( RootExoCovariance, 2 ), StationaryDistPeriods + StationaryDistDrop );
     rng( OldRNGState );
     
-	[ PersistentState, EndoSimulation ] = Simulate( Parameters, PersistentState, ShockSequence, 0 );
+	[ PersistentState, EndoSimulation ] = Simulate( Parameters, PersistentState, [], ShockSequence, 0 );
     
     StatDistPoints = EndoSimulation( StateVariableIndices, : );
 
