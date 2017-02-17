@@ -1,2 +1,2 @@
-function [ PersistentState, StateSteadyState, StateVariableIndices ] = StochasticVolatilityEstimation( Parameters, PersistentState )
+function [ PersistentState, StateSteadyState, StateVariableIndices ] = StochasticVolatilitySolution( Parameters, PersistentState )
 end
