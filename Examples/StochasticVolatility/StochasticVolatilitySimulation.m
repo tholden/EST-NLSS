@@ -17,7 +17,7 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
             EndoSimulation( :, t ) = CEndo;
         end
     else
-        T = size( ShockSeqnence, 2 );
+        T = size( ShockSequence, 2 );
         EndoSimulation = zeros( 2, T );
         
         for t = 1 : T
