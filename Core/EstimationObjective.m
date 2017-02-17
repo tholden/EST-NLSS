@@ -12,7 +12,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     Solve = Options.Solve;
     Simulate = Options.Simulate;
     
-    ExoCovariance = EstimationOptions.ExoCovariance;
+    ExoCovariance = Options.ExoCovariance;
     
     [ T, N ] = size( Data );
     
