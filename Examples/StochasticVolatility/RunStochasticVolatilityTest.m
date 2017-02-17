@@ -1,3 +1,5 @@
+Parameters = zeros( 4, 1 );
+
 Parameters( 1 ) = -4; % log( mu )
 Parameters( 2 ) =  4; % log( ( 1 + phi ) / ( 1 - phi ) )
 Parameters( 3 ) = -6; % log( omega )
