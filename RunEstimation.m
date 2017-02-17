@@ -1,5 +1,8 @@
 function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, PersistentState )
 
+    CorePath = [ fileparts( which( 'RunEstimation' ) ) '/Core/' ];
+    addpath( CorePath );
+
     NumParameters = size( Parameters, 1 );
     NumObservables = size( Options.Data, 2 );
     
@@ -118,5 +121,7 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
     end
     
     Parameters = InputParameters( 1:NumParameters );
+    
+    rmpath( CorePath );
 
 end
