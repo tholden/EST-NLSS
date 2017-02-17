@@ -4,7 +4,7 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
     addpath( CorePath );
 
     NumParameters = size( Parameters, 1 );
-    NumObservables = size( Options.Data, 2 );
+    NumObservables = size( Options.Data, 1 );
     
     Options = SetDefaultOptions( Options );
     
