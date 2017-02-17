@@ -31,7 +31,7 @@ EstimationOptions.VariableNames = { 'log( sigma )', 'e' };
 
 EstimationOptions.Data = Data;
 EstimationOptions.Solve = @StochasticVolatilitySolution;
-EstimationOptions.Simulate = @StochasticVolatilityEstimation;
+EstimationOptions.Simulate = @StochasticVolatilitySimulation;
 
 EstimationOptions.ExoCovariance = eye( 2 );
 
