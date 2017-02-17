@@ -96,6 +96,8 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     end
     
     StdDevThreshold = Options.StdDevThreshold;
+    
+    NEndo = size( EndoSimulation, 1 );
 
     wm = [ EndoSimulation; ExoPoints; zeros( nm, NCubaturePoints ); NewMeasurementPoints ];
     
@@ -169,9 +171,9 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     
     [ ~, wmno, deltaetano, cholPRRQno ] = CalibrateMomentsEST( tauno, nuno, Mean_wm, Median_wm, cholVariance_wm, [], [] );
 
-    assert( NAugEndo + NExo1 + nm + nm == nwm );
+    assert( NEndo + NExo1 + nm + nm == nwm );
     
-    wBlock = 1 : ( NAugEndo + NExo1 + nm );
+    wBlock = 1 : ( NEndo + NExo1 + nm );
     mBlock = ( nwm - nm + 1 ) : nwm;
     
     wno = wmno( wBlock );
