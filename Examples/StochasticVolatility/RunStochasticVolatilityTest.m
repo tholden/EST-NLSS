@@ -15,6 +15,7 @@ Data = Data( :, ( Drop + 1 ) : end );
 
 EstimationOptions = struct;
 
+EstimationOptions.CompileLikelihood = true;
 EstimationOptions.DynamicNu = true;
 EstimationOptions.FilterCubatureDegree = 9;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';

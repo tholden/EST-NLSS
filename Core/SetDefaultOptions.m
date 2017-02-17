@@ -1,4 +1,5 @@
 function Options = SetDefaultOptions( Options )
+    Options = SetDefaultOption( Options, 'CompileLikelihood', false );
     Options = SetDefaultOption( Options, 'Data', [] );
     Options = SetDefaultOption( Options, 'DynamicNu', false );
     Options = SetDefaultOption( Options, 'ExoCovariance', [] );
