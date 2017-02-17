@@ -30,8 +30,8 @@ EstimationOptions.ParameterNames = { 'log( mu )', 'log( ( 1 + phi ) / ( 1 - phi 
 EstimationOptions.VariableNames = { 'log( sigma )', 'e' };
 
 EstimationOptions.Data = Data;
-EstimationOptions.Solve = @StochasticVolatiilitySolution;
-EstimationOptions.Simulate = @StochasticVolatiilityEstimation;
+EstimationOptions.Solve = @StochasticVolatilitySolution;
+EstimationOptions.Simulate = @StochasticVolatilityEstimation;
 
 EstimationOptions.ExoCovariance = eye( 2 );
 
