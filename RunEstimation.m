@@ -15,13 +15,13 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
         InputParameters( end + 1 ) = log( Options.InitialNu );
     end
 
-    [ LogLikelihood, PersistentState ] = EstimationObjective( InputParameters, Options, PersistentState, false );
+    ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
+    
+    [ LogLikelihood, PersistentState ] = ObjectiveFunction( InputParameters, PersistentState );
     PersistentState.InitialRun = false;
     disp( 'Initial log-likelihood:' );
     disp( LogLikelihood );
 
-    OptiFunction = @( p, s ) EstimationObjective( p, Options, s, false );
-    
     LB = Options.LB;
     UB = Options.UB;
     if isempty( LB )
@@ -38,13 +38,13 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
     
     for i = 1 : length( MaximisationFunctions )
         FMaxEstimateFunctor = str2func( MaximisationFunctions{ i } );
-        [ InputParameters, LogLikelihood, PersistentState ] = FMaxEstimateFunctor( OptiFunction, InputParameters, OptiLB, OptiUB, PersistentState );
+        [ InputParameters, LogLikelihood, PersistentState ] = FMaxEstimateFunctor( ObjectiveFunction, InputParameters, OptiLB, OptiUB, PersistentState );
     end
     
     disp( 'Final log-likelihood:' );
     disp( LogLikelihood );
 
-    [ LogLikelihood, PersistentState ] = EstimationObjective( InputParameters, Options, PersistentState, false );
+    [ LogLikelihood, PersistentState ] = ObjectiveFunction( InputParameters, PersistentState );
     disp( 'Paranoid verification of final log-likelihood:' );
     disp( LogLikelihood );
 
@@ -81,10 +81,10 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
         ObservationCount = size( Options.EstimationData, 1 );
         OneOverRootObservationCount = 1 / sqrt( ObservationCount );
 
-        JacobianScoreVector = GetJacobian( @( p ) GetScoreVector( p, EstimationData, PersistentState ), InputParameters, ObservationCount );
+        JacobianScoreVector = GetJacobian( @( p ) GetScoreVector( p, Options, PersistentState ), InputParameters, ObservationCount );
         [ ~, TriaJacobianScoreVector ] = qr( JacobianScoreVector * OneOverRootObservationCount, 0 );
 
-        HessianLogLikelihood = GetJacobian( @( p1 ) GetJacobian( @( p2 ) EstimationObjective( p2, EstimationData, PersistentState, false ), p1, 1 )', InputParameters, length( InputParameters ) );
+        HessianLogLikelihood = GetJacobian( @( p1 ) GetJacobian( @( p2 ) ObjectiveFunction( p2, PersistentState ), p1, 1 )', InputParameters, length( InputParameters ) );
         HessianLogLikelihood = ( 0.5 / ObservationCount ) * ( HessianLogLikelihood + HessianLogLikelihood' );
 
         RootEstimatedParameterCovarianceMatrix = OneOverRootObservationCount * ( HessianLogLikelihood \ ( TriaJacobianScoreVector' ) );
