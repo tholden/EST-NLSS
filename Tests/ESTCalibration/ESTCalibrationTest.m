@@ -1,5 +1,5 @@
 clear all; %#ok<CLALL>
-addpath ../../private
+addpath ../../Core
 
 Order = 4;
 N = 10;
@@ -132,8 +132,10 @@ disp( [ delta, deltaHat ] );
 disp( 'diag( cholOmega ) comparison:' );
 disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
 
-Estim4 = lsqnonlin( @( in ) CalibrateMomentsEST( in( 1 ), in( 2 ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 1e300, tau ); min( 1e300, nu ) ], [ -Inf; 4 ], [], optimoptions( @lsqnonlin, 'display', 'iter', 'MaxFunctionEvaluations', Inf, 'MaxIterations', Inf ) );
-Estim3 = lsqnonlin( @( in ) CalibrateMomentsEST( in( 1 ), nu, mu, lambda, cholSigma, sZ3, [] ), min( 1e300, tau ), [], [], optimoptions( @lsqnonlin, 'display', 'iter', 'MaxFunctionEvaluations', Inf, 'MaxIterations', Inf ) );
+Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); log( min( 100, nu ) - 4 ) ] );
+Estim3 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nu, mu, lambda, cholSigma, sZ3, [] ), min( 10, tau ) );
+
+Estim4( 2 ) = 4 + exp( Estim4( 2 ) );
 
 disp( 'Estim4 Estim3 Truth:' );
 disp( [ Estim4( 1 ), Estim3, tau; Estim4( 2 ), nu, nu ] );
