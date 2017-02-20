@@ -113,7 +113,7 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
         ObservationCount = size( Options.EstimationData, 1 );
         OneOverRootObservationCount = 1 / sqrt( ObservationCount );
 
-        JacobianScoreVector = GetJacobian( @( p ) GetScoreVector( p, Options, PersistentState ), InputParameters, ObservationCount );
+        JacobianScoreVector = GetJacobian( @( p ) GetScoreVector( p, PersistentState, ObjectiveFunction ), InputParameters, ObservationCount );
         [ ~, TriaJacobianScoreVector ] = qr( JacobianScoreVector * OneOverRootObservationCount, 0 );
 
         HessianLogLikelihood = GetJacobian( @( p1 ) GetJacobian( @( p2 ) ObjectiveFunction( p2, PersistentState ), p1, 1 )', InputParameters, length( InputParameters ) );
