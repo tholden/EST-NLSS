@@ -1,16 +1,17 @@
-function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = EstimationObjective( InputParameters, Options, PersistentState, Smoothing )
+function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = EstimationObjective( EstimatedParameters, Options, PersistentState, Smoothing )
 
+    Prior = Options.Prior;
+    Solve = Options.Solve;
+    Simulate = Options.Simulate;
+    
     DynamicNu = Options.DynamicNu;
     NoSkewLikelihood = Options.NoSkewLikelihood;
     NoTLikelihood = Options.NoTLikelihood;
-    Prior = Options.Prior;
     StationaryDistPeriods = Options.StationaryDistPeriods;
     StationaryDistDrop = Options.StationaryDistDrop;
     StdDevThreshold = Options.StdDevThreshold;
     
     Data = Options.Data;
-    Solve = Options.Solve;
-    Simulate = Options.Simulate;
     
     ExoCovariance = Options.ExoCovariance;
     
@@ -21,17 +22,17 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     end
 
     if NoTLikelihood
-        Parameters = InputParameters( 1 : ( end - N ) );
-        diagLambda = exp( 2 * InputParameters( ( end - N + 1 ) : end ) );
+        Parameters = EstimatedParameters( 1 : ( end - N ) );
+        diagLambda = exp( 2 * EstimatedParameters( ( end - N + 1 ) : end ) );
         nuoo = Inf;
     elseif DynamicNu
-        Parameters = InputParameters( 1 : ( end - N ) );
-        diagLambda = exp( 2 * InputParameters( ( end - N + 1 ) : end ) );
+        Parameters = EstimatedParameters( 1 : ( end - N ) );
+        diagLambda = exp( 2 * EstimatedParameters( ( end - N + 1 ) : end ) );
         nuoo = [];
     else
-        Parameters = InputParameters( 1 : ( end - N - 1 ) );
-        diagLambda = exp( 2 * InputParameters( ( end - N ) : ( end - 1 ) ) );
-        nuoo = exp( InputParameters( end ) );
+        Parameters = EstimatedParameters( 1 : ( end - N - 1 ) );
+        diagLambda = exp( 2 * EstimatedParameters( ( end - N ) : ( end - 1 ) ) );
+        nuoo = exp( EstimatedParameters( end ) );
     end
     
     [ PersistentState, StateSteadyState, StateVariableIndices ] = Solve( Parameters, PersistentState );
@@ -99,7 +100,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     Psoo = cholPsoo * cholPsoo';
     Ssoo = ObtainEstimateRootCovariance( Psoo, StdDevThreshold );
 
-    PriorValue = Prior( InputParameters );
+    PriorValue = Prior( EstimatedParameters );
     ScaledPriorValue = PriorValue / T;
     
     if Smoothing
