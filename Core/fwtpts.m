@@ -55,10 +55,6 @@ function [ Weights, Points, NumPoints, Integral ] = fwtpts( S, Order, TypeIsCube
 
 persistent fwtptsCache
 
-if isempty( fwtptsCache )
-    fwtptsCache = cell( 0, 3 );
-end
-
 if nargin < 3
     TypeIsCube = false;
 end
@@ -70,6 +66,24 @@ else
 end
 
 FoundInCache = false;
+
+coder.varsize( 'Weights', [], [ true, true ] );
+Weights = zeros( 1, 0 );
+coder.varsize( 'Points', [], [ true, true ] );
+Points = zeros( S, 0 );
+NumPoints = 0;
+
+coder.varsize( 'fwtptsCache', [], [ true, false ] );
+coder.varsize( 'fwtptsCache{:}', [], [ true, true ] );
+
+if isempty( fwtptsCache )
+    if coder.target( 'MATLAB' )
+        fwtptsCache = cell( 0, 3 );
+    else
+        fwtptsCache = { NaN( 3, 1 ), NaN( 1, 0 ), NaN( S, 0 ) };
+    end
+end
+
 InputParameters = [ S, Order, TypeIsCube ];
 for i = 1 : size( fwtptsCache, 1 )
     if all( fwtptsCache{ i, 1 } == InputParameters )
@@ -151,6 +165,9 @@ if ~FoundInCache
     %***  Begin loop for each D
     %      for each D find all distinct partitions M with |M| <= D
     %
+    
+    coder.varsize( 'PP', [], [ true, true ] );
+    
     while D <= Order
       %     
       %***  Calculate the weight for partitions of M and 
@@ -180,11 +197,13 @@ function wt = FULWGT( S, M, DM, MOM )
 %
 KZ = DM; K = M; WS = zeros(1,S+1); 
 while 1
+  tI = 0;
   for I = 1 : S, WS(1) = 1;
+    tI = I;
     if KZ >= 0, WS(I+1) = WS(I+1) + MOM(M(I)+1,K(I)+1)*WS(I);
       WS(I) = 0; K(I) = K(I) + 1; KZ = KZ - 1; break
     end, KZ = KZ + K(I) - M(I); K(I) = M(I); 
-  end, if I == S && K(S) == M(S), break, end
+  end, if tI == S && K(S) == M(S), break, end
 end, wt = WS(S+1)/2^sum(M>0); 
 
 end
@@ -196,10 +215,12 @@ function [ M, PRTCNT, MODM ] = NXPART( PIN, S, MI, MDI )
 %*** Determine the next S partition of MDI
 %
 if PIN == 0, M = zeros(1,S); PRTCNT = 1; MODM = 0;
-else PRTCNT = PIN + 1; MODM = MDI; M = MI; MSUM = M(1);
+else
+    PRTCNT = PIN + 1; MODM = MDI; M = MI; MSUM = M(1);
   for I = 2 : S, MSUM = MSUM + M(I);
     if M(1) <= M(I) + 1, M(I) = 0;
-    else M(1) = MSUM - (I-1)*( M(I) + 1 ); M(2:I) = M(I) + 1; return
+    else
+        M(1) = MSUM - (I-1)*( M(I) + 1 ); M(2:I) = M(I) + 1; return
     end
   end, M(1) = MSUM + 1; MODM = M(1);
 end
@@ -229,9 +250,15 @@ while pr, X = -G(M+1)'; pr = 0; ml = 1;
   for I = 2 : S, MI = M(I);
     if M(I-1) > MI, IX = I - 1;
       if I > 2
-        for L = 1 : IX/2, ML = M(L); if ML <= MI, IX = IX - 1; end
-          IL = I - L; M(L) = M(IL); M(IL) = ML; if M(L) > MI, LX = L; end
-        end, if M(IX) <= MI, IX = LX; end
+        LX = 0;
+        for L = 1 : IX/2, ML = M(L);
+            if ML <= MI, IX = IX - 1; end
+            IL = I - L;
+            M(L) = M(IL);
+            M(IL) = ML;
+            if M(L) > MI, LX = L; end
+        end
+        if M(IX) <= MI, IX = LX; end
       end, M(I) = M(IX); M(IX) = MI; pr = 1; break
     end
   end

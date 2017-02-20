@@ -6,7 +6,7 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
     NumParameters = size( Parameters, 1 );
     NumObservables = size( Options.Data, 1 );
     
-    Options = SetDefaultOptions( Options );
+    Options = SetDefaultOptions( Options, false );
     
     EstimatedParameters = [ Parameters; bsxfun( @plus, log( Options.InitialMEStd ), zeros( NumObservables, 1 ) ) ];
         
@@ -35,16 +35,45 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
         cfg.ExtrinsicCalls = false;
         cfg.EchoExpressions = false;
         cfg.GlobalDataSyncMethod = 'NoSync';
+        
+        TmpOptions = Options;
+        TmpOptions = rmfield( TmpOptions, 'ParameterNames' );
+        TmpOptions = rmfield( TmpOptions, 'VariableNames' );
 
         ARGS = cell( 4, 1 );
-        ARGS{1} = coder.typeof( Parameters );
-        ARGS{2} = coder.Constant( Options );
+        ARGS{1} = coder.typeof( EstimatedParameters );
+        ARGS{2} = coder.Constant( TmpOptions );
         ARGS{3} = coder.typeof( PersistentState );
         ARGS{4} = coder.Constant( false ); %#ok<NASGU>
+        
+        EstimationObjectiveText = fileread( 'EstimationObjective.m' );
+        EstimationObjectiveLines = strsplit( EstimationObjectiveText, { '\n', '\r' } );
+        EstimationObjectiveLines( 2:4 ) = [];
+        EstimationObjectiveText = strjoin( EstimationObjectiveLines, '\n' );
+        EstimationObjectiveText = strrep( EstimationObjectiveText, 'Prior', Options.Prior );
+        EstimationObjectiveText = strrep( EstimationObjectiveText, 'Solve', Options.Solve );
+        EstimationObjectiveText = strrep( EstimationObjectiveText, 'Simulate', Options.Simulate );
+        EstimationObjectiveText = strrep( EstimationObjectiveText, 'EstimationObjective', 'ESTNLSSTempEstimationObjective' );
+        EstimationObjectiveText = strrep( EstimationObjectiveText, 'KalmanStep', 'ESTNLSSTempKalmanStep' );
+        
+        TempEstimationObjectiveFID = fopen( 'ESTNLSSTempEstimationObjective.m', 'w' );
+        fprintf( TempEstimationObjectiveFID, '%s', EstimationObjectiveText );
+        fclose( TempEstimationObjectiveFID );
 
-        codegen -config cfg EstimationObjective -args ARGS -o ESTNLSSTempEstimationObjective;
+        KalmanStepText = fileread( 'KalmanStep.m' );
+        KalmanStepLines = strsplit( KalmanStepText, { '\n', '\r' } );
+        KalmanStepLines( 4 ) = [];
+        KalmanStepText = strjoin( KalmanStepLines, '\n' );
+        KalmanStepText = strrep( KalmanStepText, 'Simulate', Options.Simulate );
+        KalmanStepText = strrep( KalmanStepText, 'KalmanStep', 'ESTNLSSTempKalmanStep' );
+        
+        TempKalmanStepFID = fopen( 'ESTNLSSTempKalmanStep.m', 'w' );
+        fprintf( TempKalmanStepFID, '%s', KalmanStepText );
+        fclose( TempKalmanStepFID );
+
+        codegen -config cfg ESTNLSSTempEstimationObjective -args ARGS -o ESTNLSSTempEstimationObjectiveMex;
         rehash;
-        ObjectiveFunction = @ESTNLSSTempEstimationObjective;
+        ObjectiveFunction = @ESTNLSSTempEstimationObjectiveMex;
     else
         ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
     end

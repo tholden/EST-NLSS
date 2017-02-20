@@ -1,4 +1,4 @@
-function Options = SetDefaultOptions( Options )
+function Options = SetDefaultOptions( Options, Smoothing )
     Options = SetDefaultOption( Options, 'CompileLikelihood', false );
     Options = SetDefaultOption( Options, 'Data', [] );
     Options = SetDefaultOption( Options, 'DynamicNu', false );
@@ -21,4 +21,26 @@ function Options = SetDefaultOptions( Options )
     Options = SetDefaultOption( Options, 'UB', [] );
     Options = SetDefaultOption( Options, 'VariableNames', {} );
     Options = orderfields( Options );
+    
+    if ~Smoothing && Options.CompileLikelihood
+        if ~ischar( Options.Prior )
+            Options.Prior = func2str( Options.Prior );
+        end
+        if ~ischar( Options.Simulate )
+            Options.Simulate = func2str( Options.Simulate );
+        end
+        if ~ischar( Options.Solve )
+            Options.Solve = func2str( Options.Solve );
+        end
+    else
+        if ischar( Options.Prior )
+            Options.Prior = str2func( Options.Prior );
+        end
+        if ischar( Options.Simulate )
+            Options.Simulate = str2func( Options.Simulate );
+        end
+        if ischar( Options.Solve )
+            Options.Solve = str2func( Options.Solve );
+        end
+    end
 end

@@ -208,7 +208,7 @@ if nargin==0 && nargout==0, help LMFnlsq2, return, end     %   Display help
 %   Options = LMFnlsq2('default');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       Default Options
-if nargin==0 || (nargin==1 && strcmpi('default',varargin(1)))
+if nargin==0 || (nargin==1 && strcmpi('default',varargin{1}))
    xf.Display  = [0,0];     %   no print of iterations
    xf.Jacobian = 'finjac';  %   finite difference Jacobian approximation
    xf.MaxIter  = 0;         %   maximum number of iterations allowed
@@ -271,12 +271,12 @@ end
 %               OPTIONS
 %               *******
 FUN=varargin{1};            %   function handle
-if ~(isvarname(FUN) || isa(FUN,'function_handle'))
+if ((~coder.target('MATLAB'))||(~isvarname(FUN))) && (~isa(FUN,'function_handle'))
    error('FUN Must be a Function Handle or M-file Name.')
 end
 xc = varargin{2};           %   Xo
 xc = xc(:);                 %   Xo is a column vector
-if ~exist('options','var')
+if (~coder.target('MATLAB'))||(~exist('options','var'))
     options = LMFnlsq2('default');
 end
 if nargin>2                 %   OPTIONS
@@ -288,26 +288,29 @@ if nargin>2                 %   OPTIONS
         end
     end
 else
-    if ~exist('options','var')
+    if (~coder.target('MATLAB'))||(~exist('options','var'))
         options = LMFnlsq2('default');
     end
 end
 
-
+if ischar( FUN )
+    FUN = str2func( FUN );
+end
 
 
 %               INITIATION OF SOLUTION
 %               **********************
-tic;
 x = xc(:);
 n = length(x);
 
-bdx = options.Basdx;        %   basic step dx for gradient evaluation
-lb  = length(bdx);
+tbdx = options.Basdx;        %   basic step dx for gradient evaluation
+lb  = length(tbdx);
 if lb==1
-    bdx = bdx*ones(n,1);
+    bdx = tbdx*ones(n,1);
 elseif lb~=n
     error(['Dimensions of vector dx ',num2str(lb),'~=',num2str(n)]);
+else
+    bdx = tbdx;
 end
 
 epsf  = options.FunTol(:);
@@ -319,7 +322,9 @@ printf= options.Printf;
 
 l  = options.Lambda;
 lc = 1;
-r  = feval(FUN,x);          %   initial "residuals"
+
+r  = FUN(x);          %   initial "residuals"
+r = r(:,1);
 %~~~~~~~~~~~~~~~~
 SS = r'*r;
 
@@ -339,15 +344,17 @@ else
     XY = [];
 end
 
-D = options.ScaleD(:);      %   CONSTANT SCALE CONTROL D
-if isempty(D)
+tD = options.ScaleD(:);      %   CONSTANT SCALE CONTROL D
+if isempty(tD)
     D = diag(A);            %   automatic scaling
 else
-    ld = length(D);
+    ld = length(tD);
     if ld==1
-        D = abs(D)*ones(n,1); %   scalar of unique scaling
+        D = abs(tD)*ones(n,1); %   scalar of unique scaling
     elseif ld~=n
         error(['wrong number of scales D, lD = ',num2str(ld)])
+    else
+        D = tD;
     end
 end
 D(D<=0)=1;
@@ -358,6 +365,12 @@ Rhi=0.75;
 
 %               SOLUTION
 %               ********    MAIN ITERATION CYCLE
+
+dS = 0;
+dq = 0;
+SSP = 0;
+rd = r;
+
 while 1 %                   ********************
     if cnt>0
         feval(printf,ipr,cnt,res,SS,x,dx,l,lc)
@@ -373,6 +386,7 @@ while 1 %                   ********************
 %            l = max(l, 0.00001);    %   inserted on 2012-12-01
             A = UA'+UA+diag(d+l*D);
             [U,p] = chol(A);        %   Choleski decomposition
+            U = U( 1:n, 1:n );
             %~~~~~~~~~~~~~~~
             if p==0, break, end
             l = 2*l;
@@ -391,7 +405,8 @@ while 1 %                   ********************
         end
         dq = s'*dx;
         s  = x-dx;
-        rd = feval(FUN,s);
+        rd = FUN(s);
+        rd = rd(:,1);
 %            ~~~~~~~~~~~~
         res = res+1;
         SSP = rd'*rd;
@@ -467,7 +482,9 @@ if ipr(1)~=0
 end
 xf = x;
 if trcXY, XY(:,cnt+2)=x; end
+if size(XY,2)>0
 XY(:,cnt+3:end) = [];
+end
 if res>=maxit, cnt=-maxit; end
 return
 %end
@@ -478,14 +495,15 @@ function [A,v] = getAv(FUN,JAC,x,r,bdx,ipr)
 if isa(JAC,'function_handle')
     J = JAC(x);
 else
-    J = feval(JAC,FUN,r,x,bdx,ipr);
+    assert( strcmp( JAC, 'finjac' ) );
+    J = finjac(FUN,r,x,bdx,ipr);
 end
 A = J'*J;
 v = J'*r;
 %end % getAv
 % --------------------------------------------------------------------
 
-function J = finjac(FUN,r,x,bdx,ipr) %#ok<DEFNU>
+function J = finjac(FUN,r,x,bdx,ipr)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  numer. approximation to Jacobi matrix
 f =' %7.4f %7.4f %7.4f %7.4f';
 rc = r(:);
@@ -495,14 +513,15 @@ for k = 1:lx
     dx = bdx(k);
     xd = x;
     xd(k) = xd(k)+dx;
-    rd = feval(FUN,xd);
+    rd = FUN(xd);
+    rd = rd(:,1);
 %   ~~~~~~~~~~~~~~~~~~~
     J(:,k)=((rd(:)-rc)/dx);
     
 % output columns of Jacobian matrix    
   if ipr(1)~=0 && ipr(2)>0
     fprintf(' Column #%3d\n',k);
-    tim  = toc;
+    tim  = 0;
     mins = floor(tim/60);
     secs = tim-mins*60;
     fprintf(' Elapsed time  =%4d min%5.1f sec\n',mins,secs)
@@ -543,7 +562,7 @@ if ipr(1)~=0
    else                     %   iteration output
       if rem(cnt,ipr(1))==0
           if ipr(2)>0
-              tim  = toc;
+              tim  = 0;
               mins = floor(tim/60);
               secs = tim-mins*60;
               fprintf('\n Elapsed time  =%4d min%5.1f sec\n',mins,secs)

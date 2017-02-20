@@ -28,7 +28,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     elseif DynamicNu
         Parameters = EstimatedParameters( 1 : ( end - N ) );
         diagLambda = exp( 2 * EstimatedParameters( ( end - N + 1 ) : end ) );
-        nuoo = [];
+        nuoo = 0;
     else
         Parameters = EstimatedParameters( 1 : ( end - N - 1 ) );
         diagLambda = exp( 2 * EstimatedParameters( ( end - N ) : ( end - 1 ) ) );
@@ -69,7 +69,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
         sZ3 = skewness( ZcheckStatDist, 0 );
         sZ4 = max( 3, kurtosis( ZcheckStatDist, 0 ) );
 
-        if isempty( nuoo )
+        if nuoo == 0
             tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + exp( in( 2 ) ), MeanStatDist, StateSteadyState, cholVarianceStatDist, sZ3, sZ4 ), [ 2; 2 ] );
             tauoo = tauoo_nuoo( 1 );
             nuoo = 4 + exp( tauoo_nuoo( 2 ) );
@@ -79,7 +79,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     else
         tauoo = Inf;
         
-        if isempty( nuoo )
+        if nuoo == 0
             kurtDir = max( 0, kurtosis( DeMeanedStatDistPoints, 0, 2 ) - 3 );
 
             if kurtDir' * kurtDir < eps
@@ -121,7 +121,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     for t = 1:T
         if Smoothing
             if DynamicNu
-                nuno = [];
+                nuno = 0;
             end
             [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
                 KalmanStep( Data( :, t ), xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoCovariance, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
