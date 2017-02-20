@@ -99,20 +99,8 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     Psoo = cholPsoo * cholPsoo';
     Ssoo = ObtainEstimateRootCovariance( Psoo, StdDevThreshold );
 
-    if ~isempty( Prior )
-        if ischar( Prior )
-            if strcmpi( Prior, 'FlatPrior' )
-                PriorValue = 0;
-            else
-                PriorValue = feval( Prior, InputParameters );
-            end
-        else
-            PriorValue = Prior( InputParameters );
-        end
-        ScaledPriorValue = PriorValue / T;
-    else
-        ScaledPriorValue = 0;
-    end
+    PriorValue = Prior( InputParameters );
+    ScaledPriorValue = PriorValue / T;
     
     if Smoothing
         wnn_ = cell( T, 1 );
