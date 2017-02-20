@@ -1,4 +1,4 @@
-function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, PersistentState )
+function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, Options, PersistentState )
 
     CorePath = [ fileparts( which( 'RunEstimation' ) ) '/Core/' ];
     addpath( CorePath );
@@ -8,11 +8,11 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
     
     Options = SetDefaultOptions( Options );
     
-    InputParameters = [ Parameters; bsxfun( @plus, log( Options.InitialMEStd ), zeros( NumObservables, 1 ) ) ];
+    EstimatedParameters = [ Parameters; bsxfun( @plus, log( Options.InitialMEStd ), zeros( NumObservables, 1 ) ) ];
         
     EstimatedNu = ~Options.NoTLikelihood && ~Options.DynamicNu;
     if EstimatedNu
-        InputParameters( end + 1 ) = log( Options.InitialNu );
+        EstimatedParameters( end + 1 ) = log( Options.InitialNu );
     end
 
     if Options.CompileLikelihood
@@ -49,7 +49,7 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
         ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
     end
     
-    [ LogLikelihood, PersistentState ] = ObjectiveFunction( InputParameters, PersistentState );
+    [ LogLikelihood, PersistentState ] = ObjectiveFunction( EstimatedParameters, PersistentState );
     PersistentState.InitialRun = false;
     disp( 'Initial log-likelihood:' );
     disp( LogLikelihood );
@@ -70,13 +70,13 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
     
     for i = 1 : length( MaximisationFunctions )
         FMaxEstimateFunctor = str2func( MaximisationFunctions{ i } );
-        [ InputParameters, LogLikelihood, PersistentState ] = FMaxEstimateFunctor( ObjectiveFunction, InputParameters, OptiLB, OptiUB, PersistentState );
+        [ EstimatedParameters, LogLikelihood, PersistentState ] = FMaxEstimateFunctor( ObjectiveFunction, EstimatedParameters, OptiLB, OptiUB, PersistentState );
     end
     
     disp( 'Final log-likelihood:' );
     disp( LogLikelihood );
 
-    [ LogLikelihood, PersistentState ] = ObjectiveFunction( InputParameters, PersistentState );
+    [ LogLikelihood, PersistentState ] = ObjectiveFunction( EstimatedParameters, PersistentState );
     disp( 'Paranoid verification of final log-likelihood:' );
     disp( LogLikelihood );
 
@@ -90,7 +90,7 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
             else
                 ParamName = Options.ParameterNames{ i };
             end
-            fprintf( '%s:\t\t%#.17g\n', ParamName, InputParameters( i ) );
+            fprintf( '%s:\t\t%#.17g\n', ParamName, EstimatedParameters( i ) );
         end
         fprintf( '\n' );
         disp( 'Final measurement error standard deviation estimates:' );
@@ -100,12 +100,12 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
             else
                 VariableName = Options.VariableNames{ i };
             end
-            fprintf( '%s:\t\t%#.17g\n', VariableName, exp( InputParameters( NumParameters + i ) ) );
+            fprintf( '%s:\t\t%#.17g\n', VariableName, exp( EstimatedParameters( NumParameters + i ) ) );
         end
         if EstimatedNu
             fprintf( '\n' );
             disp( 'Final measurement degrees of freedom parameter:' );
-            fprintf( '%s:\t\t%#.17g\n', 'nu', 2 + exp( InputParameters( end ) ) );
+            fprintf( '%s:\t\t%#.17g\n', 'nu', 2 + exp( EstimatedParameters( end ) ) );
         end
     else
         disp( 'Calculating standard errors.' );
@@ -113,10 +113,10 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
         ObservationCount = size( Options.EstimationData, 1 );
         OneOverRootObservationCount = 1 / sqrt( ObservationCount );
 
-        JacobianScoreVector = GetJacobian( @( p ) GetScoreVector( p, PersistentState, ObjectiveFunction ), InputParameters, ObservationCount );
+        JacobianScoreVector = GetJacobian( @( p ) GetScoreVector( p, PersistentState, ObjectiveFunction ), EstimatedParameters, ObservationCount );
         [ ~, TriaJacobianScoreVector ] = qr( JacobianScoreVector * OneOverRootObservationCount, 0 );
 
-        HessianLogLikelihood = GetJacobian( @( p1 ) GetJacobian( @( p2 ) ObjectiveFunction( p2, PersistentState ), p1, 1 )', InputParameters, length( InputParameters ) );
+        HessianLogLikelihood = GetJacobian( @( p1 ) GetJacobian( @( p2 ) ObjectiveFunction( p2, PersistentState ), p1, 1 )', EstimatedParameters, length( EstimatedParameters ) );
         HessianLogLikelihood = ( 0.5 / ObservationCount ) * ( HessianLogLikelihood + HessianLogLikelihood' );
 
         RootEstimatedParameterCovarianceMatrix = OneOverRootObservationCount * ( HessianLogLikelihood \ ( TriaJacobianScoreVector' ) );
@@ -131,7 +131,7 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
             else
                 ParamName = Options.ParameterNames{ i };
             end
-            fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', ParamName, InputParameters( i ), EstimatedParameterStandardErrors( i ) );
+            fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', ParamName, EstimatedParameters( i ), EstimatedParameterStandardErrors( i ) );
         end
         fprintf( '\n' );
         disp( 'Final measurement error standard deviation estimates:' );
@@ -141,18 +141,18 @@ function [ Parameters, PersistentState ] = RunEstimation( Parameters, Options, P
             else
                 VariableName = Options.VariableNames{ i };
             end
-            TmpEstimatedParameter = exp( InputParameters( NumParameters + i ) );
+            TmpEstimatedParameter = exp( EstimatedParameters( NumParameters + i ) );
             fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', VariableName, TmpEstimatedParameter, TmpEstimatedParameter * EstimatedParameterStandardErrors( NumParameters + i ) ); % delta method
         end
         if EstimatedNu
             fprintf( '\n' );
             disp( 'Final measurement degrees of freedom parameter:' );
-            TmpEstimatedParameter = exp( InputParameters( end ) );
+            TmpEstimatedParameter = exp( EstimatedParameters( end ) );
             fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', 'nu', 2 + TmpEstimatedParameter, TmpEstimatedParameter * EstimatedParameterStandardErrors( end ) ); % delta method
         end
     end
     
-    Parameters = InputParameters( 1:NumParameters );
+    Parameters = EstimatedParameters( 1:NumParameters );
     
     rmpath( CorePath );
 
