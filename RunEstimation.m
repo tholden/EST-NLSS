@@ -181,8 +181,6 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
         end
     end
     
-    Parameters = EstimatedParameters( 1:NumParameters );
-    
     rmpath( CorePath );
 
 end
