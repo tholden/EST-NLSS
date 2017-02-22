@@ -1,4 +1,4 @@
-function [ x, f, PersistentState ] = ACDWrapper( OptiFunction, x, lb, ub, OldPersistentState, varargin )
+function [ x, f, PersistentState ] = ACDWrapper( OptiFunction, x, lb, ub, PersistentState, varargin )
 
     try
         pool = gcp;
@@ -21,8 +21,8 @@ function [ x, f, PersistentState ] = ACDWrapper( OptiFunction, x, lb, ub, OldPer
     Order = max( 1, ceil( ( -log( 2 ) + log( ( 20 * nw + 1 ) ^ ( 1 / ProductSearchDimension ) + 1 ) ) / log( 2 ) ) );
     
     [ x, f, PersistentState ] = ACDMinimisation( ...
-        @( XV, PersistentState, DesiredNumberOfNonTimeouts ) ParallelWrapper( @( X ) OptiFunction( X, PersistentState ), XV, DesiredNumberOfNonTimeouts, InitialTimeOutLikelihoodEvaluation ),...
-        x, sigma, eps, lb, ub, [], [], Inf, -Inf, 1, Order, 1, ProductSearchDimension, OldPersistentState, false );
+        @( XV, PS, DesiredNumberOfNonTimeouts ) ParallelWrapper( @( X ) OptiFunction( X, PS ), XV, DesiredNumberOfNonTimeouts, InitialTimeOutLikelihoodEvaluation ),...
+        x, sigma, eps, lb, ub, [], [], Inf, -Inf, 1, Order, 1, ProductSearchDimension, PersistentState, false );
     
     x = max( lb, min( ub, x ) );
     

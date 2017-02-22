@@ -1,4 +1,4 @@
-function [ x, f, PersistentState ] = CMAESResumeWrapper( OptiFunction, x, lb, ub, OldPersistentState, varargin )
+function [ x, f, PersistentState ] = CMAESResumeWrapper( OptiFunction, x, lb, ub, PersistentState, varargin )
 
     try
         pool = gcp;
@@ -11,9 +11,9 @@ function [ x, f, PersistentState ] = CMAESResumeWrapper( OptiFunction, x, lb, ub
         end
     end
 
-    if isempty( OldPersistentState ) && exist( 'variablescmaes.mat', 'file' )
+    if isempty( PersistentState ) && exist( 'variablescmaes.mat', 'file' )
         LoadedVariablesCMAES = load( 'variablescmaes.mat' );
-        OldPersistentState = LoadedVariablesCMAES.PersistentState;
+        PersistentState = LoadedVariablesCMAES.PersistentState;
     end
 
     cmaesOptions = cmaes;
@@ -40,8 +40,8 @@ function [ x, f, PersistentState ] = CMAESResumeWrapper( OptiFunction, x, lb, ub
     InitialTimeOutLikelihoodEvaluation = 200;
     
     [~,~,~,~,~,best] = CMAESMinimisation( ...
-        @( XV, PersistentState, DesiredNumberOfNonTimeouts ) ParallelWrapper( @( X ) OptiFunction( X, PersistentState ), XV, DesiredNumberOfNonTimeouts, InitialTimeOutLikelihoodEvaluation ),...
-        x, sigma, OldPersistentState, cmaesOptions );
+        @( XV, PS, DesiredNumberOfNonTimeouts ) ParallelWrapper( @( X ) OptiFunction( X, PS ), XV, DesiredNumberOfNonTimeouts, InitialTimeOutLikelihoodEvaluation ),...
+        x, sigma, PersistentState, cmaesOptions );
     
     x = max( lb, min( ub, best.x ) );
     f = -best.f;

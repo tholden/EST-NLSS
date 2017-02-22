@@ -1,4 +1,4 @@
-function [ x, f, PersistentState ] = FMinConWrapper( OptiFunction, x, LB, UB, OldPersistentState, varargin )
+function [ x, f, PersistentState ] = FMinConWrapper( OptiFunction, x, LB, UB, PersistentState, varargin )
 
     TypicalAbsX = abs( x );
     SelectFiniteLB = isfinite( LB );
@@ -34,7 +34,7 @@ function [ x, f, PersistentState ] = FMinConWrapper( OptiFunction, x, LB, UB, Ol
     global WrappedOptiFunctionPersistentState
     WrappedOptiFunctionPersistentState = [];
     
-    [ x, f ] = fmincon( @( x ) WrappedOptiFunction( x, OptiFunction, OldPersistentState, TypicalAbsX ), x, [], [], [], [], LB, UB, [], Options );
+    [ x, f ] = fmincon( @( x ) WrappedOptiFunction( x, OptiFunction, PersistentState, TypicalAbsX ), x, [], [], [], [], LB, UB, [], Options );
     
     x = max( LB, min( UB, x ) );
     
