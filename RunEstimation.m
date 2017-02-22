@@ -62,7 +62,7 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
 
         KalmanStepText = fileread( 'KalmanStep.m' );
         KalmanStepLines = strsplit( KalmanStepText, { '\n', '\r' } );
-        KalmanStepLines( 4 ) = [];
+        KalmanStepLines( 3 ) = [];
         KalmanStepText = strjoin( KalmanStepLines, '\n' );
         KalmanStepText = strrep( KalmanStepText, 'Simulate', Options.Simulate );
         KalmanStepText = strrep( KalmanStepText, 'KalmanStep', 'ESTNLSSTempKalmanStep' );

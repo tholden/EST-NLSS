@@ -1,7 +1,5 @@
 function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lambda, cholSigma, sZ3, sZ4 )
 
-    coder.extrinsic( 'cholupdate', '-sync:off' );
-
     tcdf_tau_nu = StudentTCDF( tau, nu );
     
     resid = zeros( 0, 1 );
@@ -68,19 +66,12 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
         OmegaScaleRatio = 1;
     end
     
-    if ~coder.target( 'MATLAB' )
-        cholOmega = coder.nullcopy( cholSigma ); %#ok<NASGU>
-    end
     if ET2 < ET12
-        cholOmega = cholupdate( cholSigma, sqrt( ET12 - ET2 ) * delta );
-        cholOmega = sqrt( OmegaScaleRatio ) * cholOmega;
+        cholOmega = sqrt( OmegaScaleRatio ) * cholupdate( cholSigma, sqrt( ET12 - ET2 ) * delta );
     else
-        if ~coder.target( 'MATLAB' )
-            p = coder.nullcopy( 0 ); %#ok<NASGU>
-        end
         [ cholOmega, p ] = cholupdate( cholSigma, sqrt( ET2 - ET12 ) * delta, '-' );
         if p == 0
-            cholOmega = cholOmega * sqrt( OmegaScaleRatio );
+            cholOmega = sqrt( OmegaScaleRatio ) * cholOmega;
         else
             [ ~, cholOmega ] = NearestSPD( OmegaScaleRatio * ( cholSigma' * cholSigma - ( ET2 - ET12 ) * delta_deltaT ) );
         end
@@ -90,9 +81,6 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
         return;
     end
     
-    if ~coder.target( 'MATLAB' )
-        cholOmegaCheck = coder.nullcopy( cholOmega ); %#ok<NASGU>
-    end
     cholOmegaCheck = cholupdate( cholOmega, delta );
     
     deltaT_delta = delta' * delta;
