@@ -97,10 +97,13 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
         OptiLB = [ LB; -Inf( NumObservables + EstimatedNu, 1 ) ];
         OptiUB = [ UB; Inf( NumObservables + EstimatedNu, 1 ) ];
 
-        MaximisationFunctions = strsplit( Options.MaximisationFunctions, { ',', ';', '#' } );
-
+        MaximisationFunctions = Options.MaximisationFunctions;
+        
         for i = 1 : length( MaximisationFunctions )
-            FMaxEstimateFunctor = str2func( MaximisationFunctions{ i } );
+            FMaxEstimateFunctor = MaximisationFunctions{ i };
+            if ischar( FMaxEstimateFunctor )
+                FMaxEstimateFunctor = str2func( FMaxEstimateFunctor );
+            end
             [ EstimatedParameters, LogLikelihood, PersistentState ] = FMaxEstimateFunctor( ObjectiveFunction, EstimatedParameters, OptiLB, OptiUB, PersistentState );
         end
 
