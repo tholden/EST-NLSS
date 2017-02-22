@@ -40,7 +40,7 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
 
             TmpOptions = Options;
             TmpOptions = rmfield( TmpOptions, 'ParameterNames' );
-            TmpOptions = rmfield( TmpOptions, 'VariableNames' );
+            TmpOptions = rmfield( TmpOptions, 'MeasurementVariableNames' );
 
             ARGS = cell( 4, 1 );
             ARGS{1} = coder.typeof( EstimatedParameters );
@@ -129,10 +129,10 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
             fprintf( '\n' );
             disp( 'Final measurement error standard deviation estimates:' );
             for i = 1 : NumObservables
-                if isempty( Options.VariableNames ) || length( Options.VariableNames ) < i
+                if isempty( Options.MeasurementVariableNames ) || length( Options.MeasurementVariableNames ) < i
                     VariableName = '';
                 else
-                    VariableName = Options.VariableNames{ i };
+                    VariableName = Options.MeasurementVariableNames{ i };
                 end
                 fprintf( '%s:\t\t%#.17g\n', VariableName, exp( EstimatedParameters( NumParameters + i ) ) );
             end
@@ -170,10 +170,10 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
             fprintf( '\n' );
             disp( 'Final measurement error standard deviation estimates:' );
             for i = 1 : NumObservables
-                if isempty( Options.VariableNames ) || length( Options.VariableNames ) < i
+                if isempty( Options.MeasurementVariableNames ) || length( Options.MeasurementVariableNames ) < i
                     VariableName = '';
                 else
-                    VariableName = Options.VariableNames{ i };
+                    VariableName = Options.MeasurementVariableNames{ i };
                 end
                 TmpEstimatedParameter = exp( EstimatedParameters( NumParameters + i ) );
                 fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', VariableName, TmpEstimatedParameter, TmpEstimatedParameter * EstimatedParameterStandardErrors( NumParameters + i ) ); % delta method

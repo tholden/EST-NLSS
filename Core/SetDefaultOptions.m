@@ -12,14 +12,14 @@ function Options = SetDefaultOptions( Options, Smoothing )
     Options = SetDefaultOption( Options, 'NoTLikelihood', false );
     Options = SetDefaultOption( Options, 'ParameterNames', {} );
     Options = SetDefaultOption( Options, 'Prior', @FlatPrior );
-    Options = SetDefaultOption( Options, 'Simulate', @( Parameters, PersistentState, ShockSequence ) [] );
+    Options = SetDefaultOption( Options, 'Simulate', @( Parameters, PersistentState, InitialStates, ShockSequence, t ) [] );
     Options = SetDefaultOption( Options, 'Solve', @( Parameters, PersistentState ) [] );
     Options = SetDefaultOption( Options, 'SkipStandardErrors', false );
     Options = SetDefaultOption( Options, 'StationaryDistPeriods', 1000 );
     Options = SetDefaultOption( Options, 'StationaryDistDrop', 100 );
     Options = SetDefaultOption( Options, 'StdDevThreshold', eps ^ 0.375 );    
     Options = SetDefaultOption( Options, 'UB', [] );
-    Options = SetDefaultOption( Options, 'VariableNames', {} );
+    Options = SetDefaultOption( Options, 'MeasurementVariableNames', {} );
     Options = orderfields( Options );
     
     if ~Smoothing && Options.CompileLikelihood
