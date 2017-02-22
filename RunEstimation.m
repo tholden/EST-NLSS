@@ -1,3 +1,5 @@
+% Temp
+
 function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState ] = RunEstimation( Parameters, Options, PersistentState )
 
     CorePath = [ fileparts( which( 'RunEstimation' ) ) '/Core/' ];

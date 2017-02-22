@@ -1,3 +1,5 @@
+% Temp
+
 function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters, Options, PersistentState )
 
     CorePath = [ fileparts( which( 'RunSmoothing' ) ) '/Core/' ];
