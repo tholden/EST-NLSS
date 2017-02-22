@@ -1,4 +1,4 @@
-function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, Options, PersistentState )
+function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState ] = RunEstimation( Parameters, Options, PersistentState )
 
     CorePath = [ fileparts( which( 'RunEstimation' ) ) '/Core/' ];
     addpath( CorePath );
@@ -141,6 +141,7 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
                 disp( 'Final measurement degrees of freedom parameter:' );
                 fprintf( '%s:\t\t%#.17g\n', 'nu', 2 + exp( EstimatedParameters( end ) ) );
             end
+            EstimatedParameterCovarianceMatrix = [];
         else
             disp( 'Calculating standard errors.' );
             fprintf( '\n' );
@@ -155,7 +156,6 @@ function [ EstimatedParameters, PersistentState ] = RunEstimation( Parameters, O
 
             RootEstimatedParameterCovarianceMatrix = OneOverRootObservationCount * ( HessianLogLikelihood \ ( TriaJacobianScoreVector' ) );
             EstimatedParameterCovarianceMatrix = RootEstimatedParameterCovarianceMatrix * RootEstimatedParameterCovarianceMatrix';
-            Options.EstimatedParameterCovarianceMatrix = EstimatedParameterCovarianceMatrix;
             EstimatedParameterStandardErrors = sqrt( diag( EstimatedParameterCovarianceMatrix ) );
 
             disp( 'Final parameter estimates:' );
