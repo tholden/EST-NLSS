@@ -349,7 +349,7 @@ if ~flgresume % not resuming a former run
 else % flgresume is true, do resume former run
   tmp = whos('-file', opts.SaveFilename);
   for i = 1:length(tmp)
-    if strcmp(tmp(i).name, 'localopts');
+    if strcmp(tmp(i).name, 'localopts')
       error('Saved variables include variable "localopts", please remove');
     end
   end
