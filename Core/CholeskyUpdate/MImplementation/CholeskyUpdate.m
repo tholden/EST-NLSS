@@ -1,4 +1,4 @@
-function [ R, p ] = cholupdate( R, x, SignString )
+function [ R, p ] = CholeskyUpdate( R, x, SignString )
     if nargin < 3 || strcmp( SignString, '+' )
         Sign = +1;
     else
