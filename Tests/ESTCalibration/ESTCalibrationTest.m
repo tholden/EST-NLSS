@@ -132,7 +132,7 @@ disp( [ delta, deltaHat ] );
 disp( 'diag( cholOmega ) comparison:' );
 disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
 
-Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); log( min( 100, nu ) - 4 ) ] );
+Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); log( min( 100, nu ) - 4 ) ] );
 Estim3 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nu, mu, lambda, cholSigma, sZ3, [] ), min( 10, tau ) );
 
 Estim4( 2 ) = 4 + exp( Estim4( 2 ) );

@@ -70,7 +70,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
         sZ4 = max( 3, kurtosis( ZcheckStatDist, 0 ) );
 
         if nuoo == 0
-            tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + exp( in( 2 ) ), MeanStatDist, StateSteadyState, cholVarianceStatDist, sZ3, sZ4 ), [ 2; 2 ] );
+            tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), MeanStatDist, StateSteadyState, cholVarianceStatDist, sZ3, sZ4 ), [ 2; 2 ] );
             tauoo = tauoo_nuoo( 1 );
             nuoo = 4 + exp( tauoo_nuoo( 2 ) );
         else

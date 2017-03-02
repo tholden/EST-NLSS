@@ -140,7 +140,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         sZ4 = max( 3, Zcheck_wm.^4 * CubatureWeights' );
 
         if nuno == 0
-            tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + exp( in( 2 ) ), Mean_wm, Median_wm, cholVariance_wm, sZ3, sZ4 ), [ min( 10, tauoo ); log( min( 100, nuoo ) - 4 ) ] );
+            tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), Mean_wm, Median_wm, cholVariance_wm, sZ3, sZ4 ), [ min( 10, tauoo ); log( min( 100, nuoo ) - 4 ) ] );
             tauno = tauno_nuno( 1 );
             nuno = 4 + exp( tauno_nuno( 2 ) );
         else

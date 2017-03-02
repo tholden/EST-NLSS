@@ -4,6 +4,14 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     
     resid = zeros( 0, 1 );
     
+    assert( nu > 2 );
+    if ~isempty( sZ3 )
+        assert( nu > 3 );
+    end
+    if ~isempty( sZ4 )
+        assert( nu > 4 );
+    end
+    
     if tcdf_tau_nu == 1
         Z3 = 0;
         if isfinite( nu )
