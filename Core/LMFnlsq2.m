@@ -386,9 +386,11 @@ while 1 %                   ********************
 %            l = max(l, 0.00001);    %   inserted on 2012-12-01
             A = UA'+UA+diag(d+l*D);
             [U,p] = chol(A);        %   Choleski decomposition
-            U = U( 1:n, 1:n );
             %~~~~~~~~~~~~~~~
-            if p==0, break, end
+            if p==0
+                U = U( 1:n, 1:n ); % for the sake of Coder
+                break
+            end
             l = 2*l;
             if l==0, l=1; end
         end
