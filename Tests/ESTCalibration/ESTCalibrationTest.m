@@ -135,7 +135,7 @@ disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
 Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); log( min( 100, nu ) - 4 ) ] );
 Estim3 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nu, mu, lambda, cholSigma, sZ3, [] ), min( 10, tau ) );
 
-Estim4( 2 ) = 4 + exp( Estim4( 2 ) );
+Estim4( 2 ) = 4 + eps( 4 ) + exp( Estim4( 2 ) );
 
 disp( 'Estim4 Estim3 Truth:' );
 disp( [ Estim4( 1 ), Estim3, tau; Estim4( 2 ), nu, nu ] );
