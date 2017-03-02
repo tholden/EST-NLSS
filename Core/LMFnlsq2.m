@@ -394,7 +394,13 @@ while 1 %                   ********************
             l = 2*l;
             if l==0, l=1; end
         end
-        dx = U\(U'\v);              %   vector of x increments
+        WarningState = warning( 'off', 'MATLAB:singularMatrix' );
+        try
+            dx = U\(U'\v);              %   vector of x increments
+        catch
+            dx = zeros( size( v ) );
+        end
+        warning( WarningState );
         vw = dx'*v;
         fin = -1;
         if vw<=0, break, end        %   The END
