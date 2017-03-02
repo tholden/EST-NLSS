@@ -240,6 +240,11 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             EstimatedParameters( end + 1 ) = log( Options.InitialNu );
         end
 
+        WarningState = warning( 'off', 'MATLAB:rmpath:DirNotFound' );
+        rmpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
+        rmpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
+        warning( WarningState );
+
         if Options.CompileLikelihood
             cfg = coder.config( 'mex' );
             cfg.EnableMemcpy = false;
@@ -299,8 +304,10 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             
             if verLessThan( 'matlab', '9.2' )
                 addpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
-                rehash;
+            else
+                addpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
             end
+            rehash;
 
             Error = [];
             try
