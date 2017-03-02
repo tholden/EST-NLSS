@@ -388,7 +388,6 @@ while 1 %                   ********************
             [U,p] = chol(A);        %   Choleski decomposition
             %~~~~~~~~~~~~~~~
             if p==0
-                U = U( 1:n, 1:n ); % for the sake of Coder
                 break
             end
             l = 2*l;
@@ -403,6 +402,7 @@ while 1 %                   ********************
             end
             warning( WarningState );
         else
+            U = U( 1:n, 1:n );          % for the sake of Coder
             dx = U\(U'\v);              %   vector of x increments
         end
         vw = dx'*v;
