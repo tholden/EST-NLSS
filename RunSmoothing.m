@@ -28,8 +28,8 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 %   fully compatible clone) is required. 
 % * For estimation using the included fmincon wrapper, the MATLAB Optimization Toolbox (or a fully 
 %   compatible clone) is required. 
-% * For compilation of the likelihood, MATLAB version R2017a or later, with MATLAB Coder, is 
-%   required. 
+% * For compilation of the likelihood, we require MATLAB version R2016b or later, with MATLAB Coder, 
+%   and MATLAB version R2017a or later is strongly recommended. 
 % * For compilation of the likelihood, a working compiler for MEX which is supported by MATLAB Coder 
 %   is required. On Windows, a free compiler meeting these requirements is available from: 
 %   https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx . Alternatively, on Windows, 
