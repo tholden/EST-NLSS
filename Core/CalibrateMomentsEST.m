@@ -75,9 +75,9 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     end
     
     if ET2 < ET12
-        cholOmega = sqrt( OmegaScaleRatio ) * cholupdate( cholSigma, sqrt( ET12 - ET2 ) * delta );
+        cholOmega = sqrt( OmegaScaleRatio ) * CholeskyUpdate( cholSigma, sqrt( ET12 - ET2 ) * delta );
     else
-        [ cholOmega, p ] = cholupdate( cholSigma, sqrt( ET2 - ET12 ) * delta, '-' );
+        [ cholOmega, p ] = CholeskyUpdate( cholSigma, sqrt( ET2 - ET12 ) * delta, '-' );
         if p == 0
             cholOmega = sqrt( OmegaScaleRatio ) * cholOmega;
         else
@@ -89,7 +89,7 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
         return;
     end
     
-    cholOmegaCheck = cholupdate( cholOmega, delta );
+    cholOmegaCheck = CholeskyUpdate( cholOmega, delta );
     
     deltaT_delta = delta' * delta;
     deltaT_delta2 = deltaT_delta * deltaT_delta;

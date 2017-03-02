@@ -31,7 +31,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         tmp_deltasoo = Ssoo \ deltasoo;
         if all( abs( ( Ssoo * tmp_deltasoo - deltasoo ) / max( eps, norm( deltasoo ) ) ) < realsqrt( eps ) )
             % Ssoo * Ssoo' + deltasoo * deltasoo' = Ssoo * Ssoo' + Ssoo * tmp_deltasoo * tmp_deltasoo' * Ssoo' = Ssoo * ( I' * I + tmp_deltasoo * tmp_deltasoo' ) * Ssoo'
-            Ssoo = Ssoo * cholupdate( eye( NAugState2 ), tmp_deltasoo );
+            Ssoo = Ssoo * CholeskyUpdate( eye( NAugState2 ), tmp_deltasoo );
         else
             Ssoo = [ Ssoo, deltasoo ];
         end
@@ -200,7 +200,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     Psno = Pno( StateVariableIndices, StateVariableIndices );
     
     if nm > 0
-        cholPnoCheck = cholupdate( cholPno, deltano );
+        cholPnoCheck = CholeskyUpdate( cholPno, deltano );
         
         RnoCheck = Rno + deltano * etano';
         [ ~, cholQnoCheck ] = NearestSPD( Qno + etano * etano' );
