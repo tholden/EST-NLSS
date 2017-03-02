@@ -20,8 +20,9 @@ function [ R, p ] = CholeskyUpdate( R, x, SignString )
         c = r / R( p, p );
         s = x( p ) / R( p, p );
         R( p, p ) = r;
-        R( p, ( p + 1 ) : n ) = ( R( p, ( p + 1 ) : n ) + Sign * s * x( ( p + 1 ) : n )' ) / c;
-        x( ( p + 1 ) : n ) = c * x( ( p + 1 ) : n ) - s * R( p, ( p + 1 ) : n )';
+        Indices = ( ( p + 1 ) : n )';
+        R( p, Indices ) = ( R( p, Indices ) + Sign * s * x( Indices )' ) / c;
+        x( Indices ) = c * x( Indices ) - s * R( p, Indices )';
     end
     p = 0;
 end
