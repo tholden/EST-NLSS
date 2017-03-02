@@ -297,9 +297,8 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             fprintf( TempKalmanStepFID, '%s', KalmanStepText );
             fclose( TempKalmanStepFID );
             
-            if verLessThan( 'matlab', 'R2017a' )
-                ESTNLSSPath = fileparts( which( 'RunEstimation.m' ) );
-                addpath( [ ESTNLSSPath '/Core/CholeskyUpdate/MImplementation/' ] );
+            if verLessThan( 'matlab', '9.2' )
+                addpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
                 rehash;
             end
 
@@ -312,8 +311,8 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
                 Options = SetDefaultOptions( Options, false );
             end
 
-            if verLessThan( 'matlab', 'R2017a' )
-                rmpath( [ ESTNLSSPath '/Core/CholeskyUpdate/MImplementation/' ] );
+            if verLessThan( 'matlab', '9.2' )
+                rmpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
                 rehash;
             elseif isempty( Error )
                 rehash;
@@ -323,7 +322,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             Error = true;
         end
         
-        addpath( [ ESTNLSSPath '/Core/CholeskyUpdate/InbuiltImplementation/' ] );
+        addpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
         
         if isempty( Error )
             ObjectiveFunction = @ESTNLSSTempEstimationObjectiveMex;
@@ -445,9 +444,11 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     catch Error
     end
     
+    WarningState = warning( 'off', 'MATLAB:rmpath:DirNotFound' );
     rmpath( CorePath );
-    rmpath( [ ESTNLSSPath '/Core/CholeskyUpdate/MImplementation/' ] );
-    rmpath( [ ESTNLSSPath '/Core/CholeskyUpdate/InbuiltImplementation/' ] );
+    rmpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
+    rmpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
+    warning( WarningState );
     
     if ~isempty( Error )
         rethrow( Error );
