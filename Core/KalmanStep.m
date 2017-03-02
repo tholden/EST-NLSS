@@ -213,7 +213,11 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         deltaTildeno = deltano - RCheck_IcholQnoCheck * TIcholQnoCheck_eta;
         
         wnn = RCheck_IcholQnoCheck * TIcholQnoCheck_mInnovation;
-        scalePnn = ( nuno + TIcholQnoCheck_mInnovation' * TIcholQnoCheck_mInnovation ) / ( nuno + nm );
+        if isfinite( nuno )
+            scalePnn = ( nuno + TIcholQnoCheck_mInnovation' * TIcholQnoCheck_mInnovation ) / ( nuno + nm );
+        else
+            scalePnn = 1;
+        end
         scaledeltann = 1 / ( 1 - TIcholQnoCheck_eta' * TIcholQnoCheck_eta );
         Pnn = scalePnn * NearestSPD( PTildeno - ( deltaTildeno * deltaTildeno' ) * scaledeltann );
         deltann = realsqrt( scalePnn * scaledeltann ) * deltaTildeno;
