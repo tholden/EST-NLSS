@@ -396,14 +396,14 @@ while 1 %                   ********************
         end
         if coder.target('MATLAB')
             WarningState = warning( 'off', 'MATLAB:singularMatrix' );
-        end
-        try
-            dx = U\(U'\v);              %   vector of x increments
-        catch
-            dx = zeros( size( v ) );
-        end
-        if coder.target('MATLAB')
+            try
+                dx = U\(U'\v);              %   vector of x increments
+            catch
+                dx = zeros( size( v ) );
+            end
             warning( WarningState );
+        else
+            dx = U\(U'\v);              %   vector of x increments
         end
         vw = dx'*v;
         fin = -1;
