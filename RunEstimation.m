@@ -313,9 +313,6 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
 
             if verLessThan( 'matlab', '9.2' )
                 rmpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
-                rehash;
-            elseif isempty( Error )
-                rehash;
             end
 
         else
@@ -323,6 +320,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
         end
         
         addpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
+        rehash;
         
         if isempty( Error )
             ObjectiveFunction = @ESTNLSSTempEstimationObjectiveMex;
