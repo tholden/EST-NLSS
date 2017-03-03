@@ -7,22 +7,23 @@ function [ R, p ] = CholeskyUpdate( R, x, SignString )
     % derived from https://en.wikipedia.org/wiki/Cholesky_decomposition#Rank-one_update
     x = x(:);
     n = length( x );
-    for p = 1 : n
-        r2 = R( p, p ) .* R( p, p ) + Sign * x( p ) .* x( p );
-        if r2 <= 0 || R( p, p ) == 0
+    for k = 1 : n
+        r2 = R( k, k ) .* R( k, k ) + Sign * x( k ) .* x( k );
+        if r2 <= 0 || R( k, k ) == 0
             if nargout < 2
                 error( 'ESTNLSS:NonPDFollowingCholeskyUpdate', 'CholeskyUpdate produced a non-positive-definite matrix.' );
             else
+                p = k;
                 return;
             end
         end
         r = sqrt( r2 );
-        c = r / R( p, p );
-        s = x( p ) / R( p, p );
-        R( p, p ) = r;
-        Indices = ( ( p + 1 ) : n )';
-        R( p, Indices ) = ( R( p, Indices ) + Sign * s * x( Indices )' ) / c;
-        x( Indices ) = c * x( Indices ) - s * R( p, Indices )';
+        c = r / R( k, k );
+        s = x( k ) / R( k, k );
+        R( k, k ) = r;
+        Indices = ( ( k + 1 ) : n )';
+        R( k, Indices ) = ( R( k, Indices ) + Sign * s * x( Indices )' ) / c;
+        x( Indices ) = c * x( Indices ) - s * R( k, Indices )';
     end
     p = 0;
 end
