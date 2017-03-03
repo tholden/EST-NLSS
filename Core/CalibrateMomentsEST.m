@@ -54,7 +54,7 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     nuTnu = nu * nu;
     
     tpdfRatio = StudentTPDF( tau, nu ) / tcdf_tau_nu;
-    MedT = tinv( 1 - 0.5 * tcdf_tau_nu, nu );
+    MedT = StudentTInvCDF( 1 - 0.5 * tcdf_tau_nu, nu );
     
     ET1 = nuOnuM1 * OPtauTtauDnu * tpdfRatio;
     ET2 = nuOnuM2 * StudentTCDF( tau2, nu - 2 ) / tcdf_tau_nu - tau * ET1;

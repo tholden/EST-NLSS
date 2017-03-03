@@ -53,9 +53,9 @@ end
 if tcdf_tau_nu < 1
     PhiN0 = normcdf( pTmp( end, : ) );
     pTmp( end, : ) = [];
-    FInvEST = tinv( 1 - ( 1 - PhiN0 ) * tcdf_tau_nu, nu );
+    FInvEST = StudentTInvCDF( 1 - ( 1 - PhiN0 ) * tcdf_tau_nu, nu );
     tpdfRatio = StudentTPDF( tau, nu ) / tcdf_tau_nu;
-    MedT = tinv( 1 - 0.5 * tcdf_tau_nu, nu );
+    MedT = StudentTInvCDF( 1 - 0.5 * tcdf_tau_nu, nu );
     N11Scaler = N11Scaler .* sqrt( ( nu + FInvEST .^ 2 ) / ( 1 + nu ) );
 else
     FInvEST = zeros( size( Weights ) );
