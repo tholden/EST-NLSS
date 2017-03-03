@@ -5,7 +5,7 @@ function [ y, log_y ] = StudentTPDF( x, nu )
     assert( numel( nu ) == 1 );
     assert( nu > 0 );
 
-    log_y = zeros( size( x ) );
+    % log_y = zeros( size( x ) );
     
     if isfinite( nu )
         nuP1O2 = 0.5 * ( nu + 1 );
