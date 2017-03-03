@@ -15,10 +15,15 @@ function [ RV, BestPersistentState ] = ParallelWrapper( objective_function, XV, 
     if isempty( XStore ) || isempty( LogLObsStore )
         if exist( 'ValueStore.mat', 'file' )
             ValueStore = load( 'ValueStore.mat' );
-            XStore = ValueStore.XStore;
-            LogLObsStore = ValueStore.LogLObsStore;
+            if size( ValueStore.XStore, 1 ) == D
+                XStore = ValueStore.XStore;
+                LogLObsStore = ValueStore.LogLObsStore;
+            else
+                XStore = zeros( D, 0 );
+                LogLObsStore = cell( 0, 0 );
+            end
         else
-            XStore = zeros( D - 1, 0 );
+            XStore = zeros( D, 0 );
             LogLObsStore = cell( 0, 0 );
         end
     end
