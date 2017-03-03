@@ -225,6 +225,10 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 
     CorePath = [ fileparts( which( 'RunSmoothing' ) ) '/Core/' ];
     addpath( CorePath );
+    addpath( [ CorePath 'Optimisation/' ] );
+    addpath( [ CorePath 'StudentTDist/' ] );
+    addpath( [ CorePath 'Utils/' ] );
+    addpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
     
     try
         
@@ -248,6 +252,10 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
     end
     
     rmpath( CorePath );
+    rmpath( [ CorePath 'Optimisation/' ] );
+    rmpath( [ CorePath 'StudentTDist/' ] );
+    rmpath( [ CorePath 'Utils/' ] );
+    rmpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
     
     if ~isempty( Error )
         rethrow( Error );

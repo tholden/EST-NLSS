@@ -225,6 +225,9 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
 
     CorePath = [ fileparts( which( 'RunEstimation' ) ) '/Core/' ];
     addpath( CorePath );
+    addpath( [ CorePath 'Optimisation/' ] );
+    addpath( [ CorePath 'StudentTDist/' ] );
+    addpath( [ CorePath 'Utils/' ] );
     
     try
 
@@ -449,8 +452,12 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     catch Error
     end
     
-    WarningState = warning( 'off', 'MATLAB:rmpath:DirNotFound' );
     rmpath( CorePath );
+    rmpath( [ CorePath 'Optimisation/' ] );
+    rmpath( [ CorePath 'StudentTDist/' ] );
+    rmpath( [ CorePath 'Utils/' ] );
+    
+    WarningState = warning( 'off', 'MATLAB:rmpath:DirNotFound' );
     rmpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
     rmpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
     warning( WarningState );

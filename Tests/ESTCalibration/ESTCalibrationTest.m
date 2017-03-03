@@ -1,5 +1,8 @@
 clear all; %#ok<CLALL>
 addpath ../../Core
+addpath ../../Core/CholeskyUpdate/InbuiltImplementation
+addpath ../../Core/StudentTDist
+addpath ../../Core/Utils
 
 Order = 4;
 N = 10;
@@ -21,7 +24,7 @@ tcdf_tau_nu = StudentTCDF( tau, nu );
 
 if tcdf_tau_nu == 1
     IntDim = IntDim - 1;
-    cholOmega = cholupdate( cholOmega, delta );
+    cholOmega = CholeskyUpdate( cholOmega, delta );
     Omega = cholOmega' * cholOmega;
     delta = zeros( N, 1 );
 end
