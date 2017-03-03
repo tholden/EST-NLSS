@@ -396,14 +396,15 @@ while 1 %                   ********************
         if coder.target('MATLAB')
             WarningState = warning( 'off', 'MATLAB:singularMatrix' );
             try
-                dx = U\(U'\v);              %   vector of x increments
+                Ufixed = U( 1:n, 1:n );          % for the sake of Coder
+                dx = Ufixed\(Ufixed'\v);              %   vector of x increments
             catch
                 dx = zeros( size( v ) );
             end
             warning( WarningState );
         else
-            U = U( 1:n, 1:n );          % for the sake of Coder
-            dx = U\(U'\v);              %   vector of x increments
+            Ufixed = U( 1:n, 1:n );          % for the sake of Coder
+            dx = Ufixed\(Ufixed'\v);              %   vector of x increments
         end
         vw = dx'*v;
         fin = -1;
@@ -429,7 +430,7 @@ while 1 %                   ********************
         end
         fin=0;
         if dS>=Rlo*dq, break, end
-        A = U;
+        A = Ufixed;
         y = .5;
         z = 2*vw-dS;
         if z>0, y=vw/z; end
