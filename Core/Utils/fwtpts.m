@@ -157,8 +157,10 @@ if ~FoundInCache
     %
     MOM = zeros(Order+1); MOM(1,1) = T(1);
     for L = 1 : NZM, MP = 1; GLS = G(L)^2;
-      for I = 2 : NZM, GI = G(I-1); if I > L, GI = G(I); end
-        MP = MP*( GLS - GI^2 ); if I >= L, MOM(L,I) = T(I)/MP; end
+      for I = 2 : NZM, GI = G(I-1);
+          if I > L, GI = G(I); end
+          MP = MP*( GLS - GI^2 );
+          if I >= L, MOM(L,I) = T(I)/MP; end
       end
     end, [ M, PRT, D ] = NXPART( 0, S ); IC = 0; 
     %
