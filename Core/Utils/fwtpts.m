@@ -80,7 +80,7 @@ if isempty( fwtptsCache )
     if coder.target( 'MATLAB' )
         fwtptsCache = cell( 0, 3 );
     else
-        fwtptsCache = { NaN( 3, 1 ), NaN( 1, 0 ), NaN( S, 0 ) };
+        fwtptsCache = { NaN( 1, 3 ), NaN( 1, 0 ), NaN( S, 0 ) };
     end
 end
 
