@@ -155,7 +155,7 @@ if ~FoundInCache
     %
     %***  Calculate moments 
     %
-    MOM = zeros(Order+1);
+    MOM = zeros(max(NZM,Order+1));
     MOM(1,1) = T(1);
     for L = 1 : NZM
         MP = 1;
@@ -181,15 +181,17 @@ if ~FoundInCache
     coder.varsize( 'PP', [], [ true, true ] );
     
     while D <= Order
-      %     
-      %***  Calculate the weight for partitions of M and 
-      %***     fully symmetric point sets ( when necessary )
-      %
-      if D + sum(Z(M+1)) <= Order, [ PP, SP ] = FULPTS( S, M, G ); 
-        Weights(IC+1:IC+SP) = FULWGT( S, M, Order-D, MOM );   
-        Points(:,IC+1:IC+SP) = PP; IC = IC + SP;
-      end, [ M, PRT, D ] = NXPART( PRT, S, M, D );      
-    end, NumPoints = IC;
+        %     
+        %***  Calculate the weight for partitions of M and 
+        %***     fully symmetric point sets ( when necessary )
+        %
+        if D + sum(Z(M+1)) <= Order
+            [ PP, SP ] = FULPTS( S, M, G ); 
+            Weights(IC+1:IC+SP) = FULWGT( S, M, Order-D, MOM );   
+            Points(:,IC+1:IC+SP) = PP; IC = IC + SP;
+        end, [ M, PRT, D ] = NXPART( PRT, S, M, D );      
+    end
+    NumPoints = IC;
     
     fwtptsCache{ end + 1, 1 } = InputParameters;
     fwtptsCache{ end, 2 } = Weights;
