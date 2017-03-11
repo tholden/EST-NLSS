@@ -43,18 +43,21 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     %  cholAhat - The cholesky root of Ahat
 
     if nargin ~= 1
-      error('Exactly one argument must be provided.')
+        error( 'ESTNLSS:NearestSPD:Arguments', 'Exactly one argument must be provided to NearestSPD.' );
+    end
+    if any( ~isfinite( A(:) ) )
+        error( 'ESTNLSS:NearestSPD:NonFinite', 'The input to NearestSPD must be finite.' );
     end
 
     % test for a square matrix A
     [ r, c ] = size( A );
     if r ~= c
-      error('A must be a square matrix.')
+    	error( 'ESTNLSS:NearestSPD:NonSquare', 'The input to NearestSPD must be a square matrix.' );
     elseif r == 1
-      % A was scalar
-      Ahat = max( real( A ), eps );
-      cholAhat = sqrt( Ahat );
-      return
+        % A was scalar
+        Ahat = max( real( A ), eps );
+        cholAhat = sqrt( Ahat );
+        return
     end
 
     % symmetrize A into B
@@ -77,11 +80,11 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
 
         % test that Ahat is in fact PD. if it is not so, then tweak it just a bit.
         p = 1;
-        k = 0;
-        while p ~= 0
+        for k = 0:100
             [ cholAhat, p ] = chol( Ahat );
-            k = k + 1;
-            if p ~= 0
+            if p == 0
+                break;
+            end
             % Ahat failed the chol test. It must have been just a hair off,
             % due to floating point trash, so it is simplest now just to
             % tweak by adding a tiny multiple of an identity matrix.
@@ -90,7 +93,9 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
             IScale = IScale + eps( IScale );
             IScale = max( IScale, eps( max( EigAhat ) ) );
             Ahat = Ahat + ( IScale * k.^2 ) * eye( size( A ) );
-            end
+        end
+        if p > 0
+            error( 'ESTNLSS:NearestSPD:Failure', 'Failed to find the nearest semi-positive definite matrix.' );
         end
 
     end
