@@ -67,28 +67,25 @@ function [ Weights, Points, NumPoints, Integral ] = fwtpts( S, Order, TypeIsCube
 
     FoundInCache = false;
 
-    coder.varsize( 'Weights', [], [ true, true ] );
+    coder.varsize( 'Weights', [], [ false, true ] );
     Weights = zeros( 1, 0 );
     coder.varsize( 'Points', [], [ true, true ] );
     Points = zeros( S, 0 );
+    
     NumPoints = 0;
 
-    coder.varsize( 'fwtptsCache', [], [ true, false ] );
-    coder.varsize( 'fwtptsCache{:}', [], [ true, true ] );
-
     if isempty( fwtptsCache )
-        if coder.target( 'MATLAB' )
-            fwtptsCache = cell( 0, 3 );
-        else
-            fwtptsCache = { NaN( 1, 3 ), NaN( 1, 0 ), NaN( S, 0 ) };
-        end
+        coder.varsize( 'fwtptsCache', [], [ true, false ] );
+        fwtptsCache = struct( 'InputParameters', [ 0, 0, 0 ], 'Weights', zeros( 1 , 0 ), 'Points', zeros( 0, 0 ) );
+        coder.varsize( 'fwtptsCache(:).Weights', [], [ false, true ] );
+        coder.varsize( 'fwtptsCache(:).Points', [], [ true, true ] );
     end
 
     InputParameters = [ S, Order, TypeIsCube ];
-    for i = 1 : size( fwtptsCache, 1 )
-        if all( fwtptsCache{ i, 1 } == InputParameters )
-            Weights = fwtptsCache{ i, 2 };
-            Points = fwtptsCache{ i, 3 };
+    for i = 1 : numel( fwtptsCache )
+        if all( fwtptsCache( i ).InputParameters == InputParameters )
+            Weights = fwtptsCache( i ).Weights;
+            Points = fwtptsCache( i ).Points;
             NumPoints = numel( Weights );
             FoundInCache = true;
             break;
@@ -189,19 +186,20 @@ function [ Weights, Points, NumPoints, Integral ] = fwtpts( S, Order, TypeIsCube
             %***     fully symmetric point sets ( when necessary )
             %
             if D + sum(Z(M+1)) <= Order
+                coder.varsize( 'PP', [], [ true, true ] );
                 [ PP, SP ] = FULPTS( S, M, G ); 
-                Weights(IC+1:IC+SP) = FULWGT( S, M, Order-D, MOM );   
-                Points(:,IC+1:IC+SP) = PP;
+                Weights = [ Weights, FULWGT( S, M, Order-D, MOM ) ];    %#ok<AGROW>
+                Points = [ Points, PP ]; %#ok<AGROW>
                 IC = IC + SP;
             end
             [ M, PRT, D ] = NXPART( PRT, S, M, D );
         end
         NumPoints = IC;
-
-        fwtptsCache{ end + 1, 1 } = InputParameters;
-        fwtptsCache{ end, 2 } = Weights;
-        fwtptsCache{ end, 3 } = Points;
-
+        
+        ToCache = struct( 'InputParameters', InputParameters, 'Weights', Weights, 'Points', Points );
+        
+        fwtptsCache = [ fwtptsCache; ToCache ];
+        
     end
 
     Integral = 0;
@@ -278,26 +276,27 @@ function [ PTS, SUMCLS ] = FULPTS( S, MN, G )
     %
     M = MN;
     SUMCLS = 0;
-    pr = 1;
-    PTS = zeros(S,1);
+    pr = true;
+    coder.varsize( 'PTS', [], [ true, true ] );    
+    PTS = zeros(S,0);
     % 
     %*******  Compute centrally symmetric sum points for permutation of M
     %
     while pr
         X = -G(M+1)';
-        pr = 0;
-        ml = 1;
+        pr = false;
+        ml = true;
         %
         %*******  Integration loop for M
         %
         while ml
-            ml = 0;
+            ml = false;
             SUMCLS = SUMCLS + 1;
-            PTS(:,SUMCLS) = X; 
+            PTS = [ PTS, X ];  %#ok<AGROW>
             for I = 1 : S
                 X(I) = -X(I);
                 if X(I) > 0
-                    ml = 1;
+                    ml = true;
                     break;
                 end
             end
@@ -329,7 +328,7 @@ function [ PTS, SUMCLS ] = FULPTS( S, MN, G )
                 end
                 M(I) = M(IX);
                 M(IX) = MI;
-                pr = 1;
+                pr = true;
                 break;
             end
         end
