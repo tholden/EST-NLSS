@@ -74,9 +74,7 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     
     delta = ( mu - lambda ) / ( ET1 - MedT );
     
-    if nargout > 1
-        xi = mu - delta * ET1;
-    end
+    xi = mu - delta * ET1;
     delta_deltaT = delta * delta';
     ET12 = ET1 * ET1;
     
