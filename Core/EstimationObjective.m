@@ -53,9 +53,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
 
     StatDistPoints = StatDistPoints( :, ( StationaryDistDrop + 1 ):end );
 
-    if any( ~isfinite( StatDistPoints(:) ) )
-        error( 'ESTNLSS:NonFiniteStationaryDistSimultation', 'Non-finite values were encountered during the simulation of the stationary distribution.' );
-    end
+    assert( all( isfinite( StatDistPoints(:) ) ), 'ESTNLSS:EstimationObjective:NonFiniteStationaryDistSimultation', 'Non-finite values were encountered during the simulation of the stationary distribution.' );
 
     MeanStatDist = mean( StatDistPoints, 2 );
     DeMeanedStatDistPoints = bsxfun( @minus, StatDistPoints, MeanStatDist );
