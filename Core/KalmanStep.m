@@ -1,6 +1,14 @@
 function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
     KalmanStep( m, xoo, Ssoo, deltasoo, tauoo, nuoo, RootExoVar, diagLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t )
 
+    assert( all( isfinite( m(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputM', 'KalmanStep was invoked with a non-finite input m.' );
+    assert( all( isfinite( xoo(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputXoo', 'KalmanStep was invoked with a non-finite input xoo.' );
+    assert( all( isfinite( Ssoo(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputSsoo', 'KalmanStep was invoked with a non-finite input Ssoo.' );
+    assert( all( isfinite( deltasoo(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputDeltasoo', 'KalmanStep was invoked with a non-finite input deltasoo.' );
+    assert( all( isfinite( RootExoVar(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputRootExoVar', 'KalmanStep was invoked with a non-finite input RootExoVar.' );
+    assert( all( isfinite( diagLambda(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputDiatLambda', 'KalmanStep was invoked with a non-finite input diagLambda.' );
+    assert( all( isfinite( Parameters(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteInputParameters', 'KalmanStep was invoked with a non-finite input Parameters.' );
+
     Simulate = Options.Simulate;
     
 %     LogObservationLikelihood = NaN;
@@ -249,6 +257,20 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     
     Ssnn = ObtainEstimateRootCovariance( Psnn, StdDevThreshold );
        
+    % [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
+
+    assert( isfinite( LogObservationLikelihood ), 'ESTNLSS:KalmanStep:NonFiniteOutputLogObservationLikelihood', 'KalmanStep returned a non-finite output log observation likelihood.' );
+    assert( all( isfinite( xnn(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputXnn', 'KalmanStep returned a non-finite output xnn.' );
+    assert( all( isfinite( Ssnn(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputSsnn', 'KalmanStep returned a non-finite output Ssnn.' );
+    assert( all( isfinite( deltasnn(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputDeltasnn', 'KalmanStep returned a non-finite output deltasnn.' );
+    assert( all( isfinite( wnn(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputWnn', 'KalmanStep returned a non-finite output wnn.' );
+    assert( all( isfinite( Pnn(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputPnn', 'KalmanStep returned a non-finite output Pnn.' );
+    assert( all( isfinite( deltann(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputDeltann', 'KalmanStep returned a non-finite output deltann.' );
+    assert( all( isfinite( xno(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputXno', 'KalmanStep returned a non-finite output xno.' );
+    assert( all( isfinite( Psno(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputPsno', 'KalmanStep returned a non-finite output Psno.' );
+    assert( all( isfinite( deltasno(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputDeltasno', 'KalmanStep returned a non-finite output deltasno.' );
+
+
 end
 
 function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, FilterCubatureDegree )
