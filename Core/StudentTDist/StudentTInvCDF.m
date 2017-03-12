@@ -14,19 +14,31 @@ function x = StudentTInvCDF( y, nu )
     
     % Use Newton's algorithm to polish
     Converged = ~isfinite( x );
-    odx = Inf( size( x ) );
-    for iter = 1 : 20
-        [ ~, log_y_x ] = StudentTCDF( x, nu );
-        [ ~, log_dy_x ] = StudentTPDF( x, nu );
-        f_x = log_y_x - log_y;
-        inv_df_x = exp( log_y_x - log_dy_x );
-        dx = f_x .* inv_df_x;
-        Converged = Converged | ( abs( dx ) <= max( eps, eps( x ) ) ) | ( dx > odx );
-        odx = dx;
-        x = x - dx;
-        if all( Converged )
-            break;
+    
+    if ~all( Converged(:) )
+    
+        odx = Inf( size( x ) );
+        for iter = 1 : 20
+            
+            [ ~, log_y_x ] = StudentTCDF( x, nu );
+            [ ~, log_dy_x ] = StudentTPDF( x, nu );
+            
+            f_x = log_y_x - log_y;
+            inv_df_x = exp( log_y_x - log_dy_x );
+            dx = f_x .* inv_df_x;
+            
+            Converged = Converged | ( abs( dx ) <= max( eps, eps( x ) ) ) | ( dx > odx ) | ~isfinite( dx );
+            
+            dx( ~isfinite( dx ) ) = 0;
+            odx = dx;
+            x = x - dx;
+            
+            if all( Converged(:) )
+                break;
+            end
+            
         end
+    
     end
 
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNOutputX', 'StudentTInvCDF returned a NaN output x.' );
