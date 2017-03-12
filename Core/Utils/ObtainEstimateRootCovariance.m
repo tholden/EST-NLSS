@@ -3,7 +3,7 @@ function [ RootCovariance, InvRootCovariance, LogDetCovariance ] = ObtainEstimat
     assert( all( isfinite( Covariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteInputCovariance' );
 
     Covariance = full( 0.5 * ( Covariance + Covariance' ) );
-    [ U, D ] = schur( Covariance, 'real' );
+    [ U, D ] = schur( Covariance, 'complex' );
     diagD = diag( D );
     RootD = sqrt( max( 0, real( diagD ) ) );
     IDv = RootD > StdDevThreshold;
