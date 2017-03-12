@@ -2,8 +2,9 @@ function [ y, log_y ] = StudentTPDF( x, nu )
 
     % To see why we do not use the MATLAB function, try plot( tpdf( 0, exp( 0:1:300 ) ) ) and plot( tpdf( 0, exp( 0:1:1000 ) ) )
 
-    assert( numel( nu ) == 1 );
-    assert( nu > 0 );
+    assert( numel( nu ) == 1, 'ESTNLSS:StudentTPDF:NuSize', 'StudentTPDF only supports univariate nu.' );
+    assert( nu > 0, 'ESTNLSS:StudentTPDF:NuSign', 'StudentTPDF requires nu to be strictly positive.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTPDF:NaNInputX', 'StudentTPDF was passed a NaN input x.' );
 
     % log_y = zeros( size( x ) );
     
@@ -32,4 +33,7 @@ function [ y, log_y ] = StudentTPDF( x, nu )
     
     y = exp( log_y );
 
+    assert( all( isfinite( y(:) ) ), 'ESTNLSS:StudentTPDF:NonFiniteOutputY', 'StudentTPDF returned a non-finite output y.' );
+    assert( all( isfinite( log_y(:) ) ), 'ESTNLSS:StudentTPDF:NonFiniteOutputLogY', 'StudentTPDF returned a non-finite output log_y.' );    
+    
 end

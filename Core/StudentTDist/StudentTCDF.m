@@ -1,9 +1,8 @@
 function [ y, log_y ] = StudentTCDF( x, nu )
 
-    % To see why we do not use the MATLAB function, try plot( tpdf( 0, exp( 0:1:300 ) ) ) and plot( tpdf( 0, exp( 0:1:1000 ) ) )
-
-    assert( numel( nu ) == 1 );
-    assert( nu > 0 );
+    assert( numel( nu ) == 1, 'ESTNLSS:StudentTCDF:NuSize', 'StudentTCDF only supports univariate nu.' );
+    assert( nu > 0, 'ESTNLSS:StudentTCDF:NuSign', 'StudentTCDF requires nu to be strictly positive.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTCDF:NaNInputX', 'StudentTCDF was passed a NaN input x.' );
     
     y = zeros( size( x ) );
     log_y = zeros( size( x ) );
@@ -55,5 +54,8 @@ function [ y, log_y ] = StudentTCDF( x, nu )
     tM8 = tM4 .* tM4;
     log_y( SelBad ) = -.500000000000000000*t2-.918938533204672742-log(-t)-tM2+2.50000000000000000*tM4-12.3333333333333333*tM6+88.2500000000000000*tM8;
     y( SelBad ) = exp( log_y( SelBad ) );
+    
+    assert( all( isfinite( y(:) ) ), 'ESTNLSS:StudentTCDF:NonFiniteOutputY', 'StudentTCDF returned a non-finite output y.' );
+    assert( all( isfinite( log_y(:) ) ), 'ESTNLSS:StudentTCDF:NonFiniteOutputLogY', 'StudentTCDF returned a non-finite output log_y.' );    
     
 end

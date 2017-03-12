@@ -1,7 +1,8 @@
 function [ y, log_y ] = MVTStudentTPDF( x, nu )
 
-    assert( numel( nu ) == 1 );
-    assert( nu > 0 );
+    assert( numel( nu ) == 1, 'ESTNLSS:MVTStudentTPDF:NuSize', 'MVTStudentTPDF only supports univariate nu.' );
+    assert( nu > 0, 'ESTNLSS:MVTStudentTPDF:NuSign', 'MVTStudentTPDF requires nu to be strictly positive.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:MVTStudentTPDF:NaNInputX', 'MVTStudentTPDF was passed a NaN input x.' );
     
     x = x(:);
     
@@ -37,5 +38,8 @@ function [ y, log_y ] = MVTStudentTPDF( x, nu )
     end
     
     y = exp( log_y );
-
+    
+    assert( all( isfinite( y(:) ) ), 'ESTNLSS:MVTStudentTPDF:NonFiniteOutputY', 'MVTStudentTPDF returned a non-finite output y.' );
+    assert( all( isfinite( log_y(:) ) ), 'ESTNLSS:MVTStudentTPDF:NonFiniteOutputLogY', 'MVTStudentTPDF returned a non-finite output log_y.' );    
+    
 end

@@ -1,7 +1,8 @@
 function x = StudentTInvCDF( y, nu )
 
-    assert( numel( nu ) == 1 );
-    assert( nu > 0 );
+    assert( numel( nu ) == 1, 'ESTNLSS:StudentTInvCDF:NuSize', 'StudentTInvCDF only supports univariate nu.' );
+    assert( nu > 0, 'ESTNLSS:StudentTInvCDF:NuSign', 'StudentTInvCDF requires nu to be strictly positive.' );
+    assert( all( ~isnan( y(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNInputY', 'StudentTInvCDF was passed a NaN input y.' );
     
     x = tinv( y, nu );
     
@@ -27,5 +28,7 @@ function x = StudentTInvCDF( y, nu )
             break;
         end
     end
+
+    assert( all( isfinite( x(:) ) ), 'ESTNLSS:StudentTInvCDF:NonFiniteOutputX', 'StudentTInvCDF returned a non-finite output x.' );
     
 end
