@@ -31,13 +31,12 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
         if ~isempty( sZ4 )
             resid = [ resid; sZ4 - Z4 ];
         end
-        if nargout > 1
-            xi = mu;
-            delta = zeros( size( mu ) );
-            cholOmega = cholSigma;
-            if isfinite( nu )
-                cholOmega = cholOmega * sqrt( ( nu - 2 ) / nu );
-            end
+        
+        xi = mu;
+        delta = zeros( size( mu ) );
+        cholOmega = cholSigma;
+        if isfinite( nu )
+            cholOmega = cholOmega * sqrt( ( nu - 2 ) / nu );
         end
         
         assert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
