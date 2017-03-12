@@ -1,5 +1,7 @@
 function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = EstimationObjective( EstimatedParameters, Options, PersistentState, Smoothing )
 
+    assert( all( isfinite( EstimatedParameters(:) ) ), 'ESTNLSS:EstimationObjective:NonFiniteInputParameters', 'Non-finite parameters were passed to EstimationObjective.' );
+    
     Prior = Options.Prior;
     Solve = Options.Solve;
     Simulate = Options.Simulate;
@@ -36,6 +38,8 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     end
     
     [ PersistentState, StateSteadyState, StateVariableIndices ] = Solve( Parameters, PersistentState );
+    
+    assert( all( isfinite( StateSteadyState(:) ) ), 'ESTNLSS:EstimationObjective:NonFiniteInitialStateSteadyState', 'The solve functor returned a non-finite initial steady-state.' );
     
     RootExoCovariance = ObtainEstimateRootCovariance( ExoCovariance, StdDevThreshold );
 

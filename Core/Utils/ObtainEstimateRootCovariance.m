@@ -1,4 +1,7 @@
 function [ RootCovariance, InvRootCovariance, LogDetCovariance ] = ObtainEstimateRootCovariance( Covariance, StdDevThreshold )
+
+    assert( all( isfinite( Covariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteInputCovariance' );
+
     Covariance = full( 0.5 * ( Covariance + Covariance' ) );
     [ U, D ] = schur( Covariance, 'real' );
     diagD = diag( D );

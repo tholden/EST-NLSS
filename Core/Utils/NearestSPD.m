@@ -42,18 +42,14 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     %  Ahat - The matrix chosen as the nearest SPD matrix to A.
     %  cholAhat - The cholesky root of Ahat
 
-    if nargin ~= 1
-        error( 'ESTNLSS:NearestSPD:Arguments', 'Exactly one argument must be provided to NearestSPD.' );
-    end
-    if any( ~isfinite( A(:) ) )
-        error( 'ESTNLSS:NearestSPD:NonFinite', 'The input to NearestSPD must be finite.' );
-    end
+    assert( nargin == 1, 'ESTNLSS:NearestSPD:Arguments', 'Exactly one argument must be provided to NearestSPD.' );
+    assert( all( isfinite( A(:) ), 'ESTNLSS:NearestSPD:NonFinite', 'The input to NearestSPD must be finite.' );
 
     % test for a square matrix A
     [ r, c ] = size( A );
-    if r ~= c
-    	error( 'ESTNLSS:NearestSPD:NonSquare', 'The input to NearestSPD must be a square matrix.' );
-    elseif r == 1
+    assert( r == c, 'ESTNLSS:NearestSPD:NonSquare', 'The input to NearestSPD must be a square matrix.' );
+    
+    if r == 1
         % A was scalar
         Ahat = max( real( A ), eps );
         cholAhat = sqrt( Ahat );
@@ -94,9 +90,7 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
             IScale = max( IScale, eps( max( EigAhat ) ) );
             Ahat = Ahat + ( IScale * k.^2 ) * eye( size( A ) );
         end
-        if p > 0
-            error( 'ESTNLSS:NearestSPD:Failure', 'Failed to find the nearest semi-positive definite matrix.' );
-        end
+        assert( p == 0, 'ESTNLSS:NearestSPD:Failure', 'Failed to find the nearest semi-positive definite matrix.' );
 
     end
 
