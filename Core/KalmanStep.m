@@ -76,13 +76,8 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     StatePoints = StateExoPoints( 1:NAugState1, : );
     ExoPoints = StateExoPoints( (NAugState1+1):(NAugState1+NExo1), : );
 
-    if any( ~isfinite( StatePoints( : ) ) )
-        error( 'ESTNLSS:NonFiniteStatePointsKalmanStep', 'Non-finite values were encountered during calculation of the StatePoints in the Kalman step.' );
-    end
-    
-    if any( ~isfinite( ExoPoints( : ) ) )
-        error( 'ESTNLSS:NonFiniteExoPointsKalmanStep', 'Non-finite values were encountered during calculation of the ExoPoints in the Kalman step.' );
-    end
+    assert( all( isfinite( StatePoints( : ) ) ), 'ESTNLSS:KalmanStep:NonFiniteStatePoints', 'Non-finite values were encountered during calculation of the StatePoints in the Kalman step.' );   
+    assert( all( isfinite( ExoPoints( : ) ) ), 'ESTNLSS:KalmanStep:NonFiniteExoPoints', 'Non-finite values were encountered during calculation of the ExoPoints in the Kalman step.' );
     
     Observed = find( isfinite( m ) );
     m = m( Observed );
@@ -91,20 +86,16 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     if nm > 0
         [ PersistentState, EndoSimulation, MeasurementSimulation ] = Simulate( Parameters, PersistentState, StatePoints, ExoPoints, t );
         
-        if any( ~isfinite( EndoSimulation( : ) ) )
-            error( 'ESTNLSS:NonFiniteSimultationKalmanStep', 'Non-finite values were encountered during simulation in the Kalman step.' );
-        end
+        assert( all( isfinite( EndoSimulation( : ) ) ), 'ESTNLSS:KalmanStep:NonFiniteSimultation', 'Non-finite values were encountered during simulation in the Kalman step.' );
 
         NewMeasurementPoints = MeasurementSimulation( Observed, : );
-        if any( ~isfinite( NewMeasurementPoints(:) ) )
-            error( 'ESTNLSS:NonFiniteMeasurements', 'Non-finite values were encountered during calculation of observation equations in the Kalman step.' );
-        end
+        
+        assert( all( isfinite( NewMeasurementPoints(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteMeasurements', 'Non-finite values were encountered during calculation of observation equations in the Kalman step.' );
+        
     else
         [ PersistentState, EndoSimulation ] = Simulate( Parameters, PersistentState, StatePoints, ExoPoints, t );
         
-        if any( ~isfinite( EndoSimulation( : ) ) )
-            error( 'ESTNLSS:NonFiniteSimultationKalmanStep', 'Non-finite values were encountered during simulation in the Kalman step.' );
-        end
+        assert( all( isfinite( EndoSimulation( : ) ) ), 'ESTNLSS:KalmanStep:NonFiniteSimultation', 'Non-finite values were encountered during simulation in the Kalman step.' );
 
         NewMeasurementPoints = zeros( 0, NCubaturePoints );
     end
