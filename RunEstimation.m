@@ -234,7 +234,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
         NumParameters = size( Parameters, 1 );
         NumObservables = size( Options.Data, 1 );
 
-        Options = SetDefaultOptions( Options, false );
+        Options = ESTNLSSSetDefaultOptions( Options, false );
 
         EstimatedParameters = [ Parameters; bsxfun( @plus, log( Options.InitialMEStd ), zeros( NumObservables, 1 ) ) ];
 

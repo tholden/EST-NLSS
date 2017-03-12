@@ -237,7 +237,7 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
         NumParameters = size( EstimatedParameters, 1 );
         NumObservables = size( Options.Data, 1 );
 
-        Options = SetDefaultOptions( Options, true );
+        Options = ESTNLSSSetDefaultOptions( Options, true );
 
         EstimatedParameters = [ EstimatedParameters; bsxfun( @plus, log( Options.InitialMEStd ), zeros( NumObservables, 1 ) ) ];
 
