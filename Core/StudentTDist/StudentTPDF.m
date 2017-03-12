@@ -34,6 +34,6 @@ function [ y, log_y ] = StudentTPDF( x, nu )
     y = exp( log_y );
 
     assert( all( isfinite( y(:) ) ), 'ESTNLSS:StudentTPDF:NonFiniteOutputY', 'StudentTPDF returned a non-finite output y.' );
-    assert( all( isfinite( log_y(:) ) ), 'ESTNLSS:StudentTPDF:NonFiniteOutputLogY', 'StudentTPDF returned a non-finite output log_y.' );    
+    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTPDF:NaNOutputLogY', 'StudentTPDF returned a NaN output log_y.' );    
     
 end

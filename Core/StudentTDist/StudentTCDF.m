@@ -56,6 +56,6 @@ function [ y, log_y ] = StudentTCDF( x, nu )
     y( SelBad ) = exp( log_y( SelBad ) );
     
     assert( all( isfinite( y(:) ) ), 'ESTNLSS:StudentTCDF:NonFiniteOutputY', 'StudentTCDF returned a non-finite output y.' );
-    assert( all( isfinite( log_y(:) ) ), 'ESTNLSS:StudentTCDF:NonFiniteOutputLogY', 'StudentTCDF returned a non-finite output log_y.' );    
+    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTCDF:NaNOutputLogY', 'StudentTCDF returned a NaN output log_y.' );    
     
 end

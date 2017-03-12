@@ -40,6 +40,6 @@ function [ y, log_y ] = MVTStudentTPDF( x, nu )
     y = exp( log_y );
     
     assert( all( isfinite( y(:) ) ), 'ESTNLSS:MVTStudentTPDF:NonFiniteOutputY', 'MVTStudentTPDF returned a non-finite output y.' );
-    assert( all( isfinite( log_y(:) ) ), 'ESTNLSS:MVTStudentTPDF:NonFiniteOutputLogY', 'MVTStudentTPDF returned a non-finite output log_y.' );    
+    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:MVTStudentTPDF:NaNOutputLogY', 'MVTStudentTPDF returned a NaN output log_y.' );    
     
 end

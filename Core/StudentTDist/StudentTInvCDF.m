@@ -29,6 +29,6 @@ function x = StudentTInvCDF( y, nu )
         end
     end
 
-    assert( all( isfinite( x(:) ) ), 'ESTNLSS:StudentTInvCDF:NonFiniteOutputX', 'StudentTInvCDF returned a non-finite output x.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNOutputX', 'StudentTInvCDF returned a NaN output x.' );
     
 end
