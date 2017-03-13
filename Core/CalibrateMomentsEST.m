@@ -6,7 +6,7 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     assert( isempty( sZ3 ) || isfinite( sZ3 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputThirdMoment', 'CalibrateMomentsEST was invoked with a non-finite input third moment.' );
     assert( isempty( sZ4 ) || isfinite( sZ4 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputFourthMoment', 'CalibrateMomentsEST was invoked with a non-finite input fourth moment.' );
     
-    tcdf_tau_nu = StudentTCDF( tau, nu );
+    log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
     
     resid = zeros( 0, 1 );
     
@@ -18,7 +18,8 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
         assert( nu > 4 );
     end
     
-    if tcdf_tau_nu == 1
+    if log_tcdf_tau_nu == 0
+        
         Z3 = 0;
         if isfinite( nu )
             Z4 = ( 3 * nu - 6 ) / ( nu - 4 );
@@ -64,18 +65,17 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     tau2 = tau / realsqrt( nuOnuM2 );
     nuTnu = nu * nu;
     
-    tpdfRatio = StudentTPDF( tau, nu ) / tcdf_tau_nu;
+    tpdfRatio = exp( StudentTLogPDF( tau, nu ) - log_tcdf_tau_nu );
     
-    ICDFTmp1 = 0.5 * tcdf_tau_nu;
-    ICDFTmp2 = 1 - ICDFTmp1;
-    if ICDFTmp2 <= 0.5
-        MedT = StudentTInvCDF( ICDFTmp2, nu );
+    ICDFTmp = 1 - 0.5 * exp( log_tcdf_tau_nu );
+    if ICDFTmp <= 0.5
+        MedT = StudentTInvLogCDF( reallog( ICDFTmp ), nu );
     else
-        MedT = -StudentTInvCDF( ICDFTmp1, nu );
+        MedT = -StudentTInvLogCDF( log_tcdf_tau_nu - 0.693147180559945, nu ); % log( 0.5 ) = -0.693147180559945
     end
     
     ET1 = nuOnuM1 * OPtauTtauDnu * tpdfRatio;
-    ET2 = nuOnuM2 * StudentTCDF( tau2, nu - 2 ) / tcdf_tau_nu - tau * ET1;
+    ET2 = nuOnuM2 * exp( StudentTLogCDF( tau2, nu - 2 ) - log_tcdf_tau_nu ) - tau * ET1;
     ET3 = 2 * nuOnuM1 * nuOnuM3 * OPtauTtauDnu * OPtauTtauDnu * tpdfRatio + tauTtau * ET1;
     
     delta = ( mu - lambda ) / ( ET1 - MedT );
@@ -142,8 +142,8 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
             nuOnuM4 = 1;
         end
         tau4 = tau / realsqrt( nuOnuM4 );
-        if tcdf_tau_nu < 1
-            ET4 = 3 * nuOnuM2 * nuOnuM4 * StudentTCDF( tau4, nu - 4 ) / tcdf_tau_nu - 1.5 * tau * ET3 + 0.5 * tauTtau * tau * ET1;
+        if log_tcdf_tau_nu < 0
+            ET4 = 3 * nuOnuM2 * nuOnuM4 * exp( StudentTLogCDF( tau4, nu - 4 ) - log_tcdf_tau_nu ) - 1.5 * tau * ET3 + 0.5 * tauTtau * tau * ET1;
         else
             ET4 = 3 * nuOnuM2 * nuOnuM4;
         end

@@ -20,9 +20,9 @@ disp( [ tau, nu ] );
 
 IntDim = N + 2;
 
-tcdf_tau_nu = StudentTCDF( tau, nu );
+log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
 
-if tcdf_tau_nu == 1
+if log_tcdf_tau_nu == 0
     IntDim = IntDim - 1;
     cholOmega = CholeskyUpdate( cholOmega, delta );
     Omega = cholOmega' * cholOmega;
@@ -34,7 +34,7 @@ if isfinite( nu )
     disp( 'T:' );
     disp( T );
     PhiN10 = normcdf( pTmp( end, : ) );
-    if tcdf_tau_nu < 1
+    if log_tcdf_tau_nu < 0
         N11Scaler = realsqrt( 0.5 * ( nu + 1 ) ./ gammaincinv( PhiN10, 0.5 * ( nu + 1 ), 'upper' ) );
     else
         N11Scaler = realsqrt( 0.5 * nu ./ gammaincinv( PhiN10, 0.5 * nu, 'upper' ) );
@@ -50,12 +50,25 @@ else
     pTmp( end, : ) = [];
 end
 
-if tcdf_tau_nu < 1
+if log_tcdf_tau_nu < 0
     PhiN0 = normcdf( pTmp( end, : ) );
     pTmp( end, : ) = [];
-    FInvEST = StudentTInvCDF( 1 - ( 1 - PhiN0 ) * tcdf_tau_nu, nu );
-    tpdfRatio = StudentTPDF( tau, nu ) / tcdf_tau_nu;
-    MedT = StudentTInvCDF( 1 - 0.5 * tcdf_tau_nu, nu );
+    
+    ICDFTmp = 1 - ( 1 - PhiN0 ) * exp( log_tcdf_tau_nu );
+    FInvEST = zeros( size( ICDFTmp ) );
+    FInvESTSelectLeft = ICDFTmp <= 0.5;
+    FInvEST( FInvESTSelectLeft ) = StudentTInvLogCDF( reallog( ICDFTmp( FInvESTSelectLeft ) ), nu );
+    FInvEST( ~FInvESTSelectLeft ) = -StudentTInvLogCDF( log_tcdf_tau_nu + reallog( 1 - PhiN0( ~FInvESTSelectLeft ) ), nu );
+    
+    tpdfRatio = exp( StudentTLogPDF( tau, nu ) - log_tcdf_tau_nu );
+    
+    ICDFTmp = 1 - 0.5 * exp( log_tcdf_tau_nu );
+    if ICDFTmp <= 0.5
+        MedT = StudentTInvLogCDF( reallog( ICDFTmp ), nu );
+    else
+        MedT = -StudentTInvLogCDF( log_tcdf_tau_nu - 0.693147180559945, nu ); % log( 0.5 ) = -0.693147180559945
+    end
+    
     N11Scaler = N11Scaler .* realsqrt( ( nu + FInvEST .^ 2 ) / ( 1 + nu ) );
 else
     FInvEST = zeros( size( Weights ) );
@@ -81,7 +94,7 @@ if isfinite( nu )
 else
     nuOnuM1 = 1;
 end
-if tcdf_tau_nu < 1
+if log_tcdf_tau_nu < 0
     ET1 = nuOnuM1 * OPtauTtauDnu * tpdfRatio;
 else
     ET1 = 0;

@@ -32,9 +32,9 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     
     IntDim = NAugState2 + NExo2 + 2;
     
-    tcdf_tauoo_nuoo = StudentTCDF( tauoo, nuoo );
+    log_tcdf_tauoo_nuoo = StudentTLogCDF( tauoo, nuoo );
     
-    if tcdf_tauoo_nuoo == 1
+    if log_tcdf_tauoo_nuoo == 0
         IntDim = IntDim - 1;
         tmp_deltasoo = Ssoo \ deltasoo;
         if all( abs( ( Ssoo * tmp_deltasoo - deltasoo ) / max( eps, norm( deltasoo ) ) ) < realsqrt( eps ) )
@@ -50,7 +50,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         
         [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, Options.FilterCubatureDegree );
         PhiN10 = normcdf( CubaturePoints( end, : ) );
-        if tcdf_tauoo_nuoo > 0
+        if isfinite( log_tcdf_tauoo_nuoo )
             N11Scaler = realsqrt( 0.5 * ( nuoo + 1 ) ./ real( gammaincinv( PhiN10, 0.5 * ( nuoo + 1 ), 'upper' ) ) );
         else
             N11Scaler = realsqrt( 0.5 * nuoo ./ real( gammaincinv( PhiN10, 0.5 * nuoo, 'upper' ) ) );
@@ -70,17 +70,15 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         N11Scaler = ones( 1, NCubaturePoints );
     end
     
-    if tcdf_tauoo_nuoo < 1 
+    if log_tcdf_tauoo_nuoo < 0
         PhiN0 = normcdf( CubaturePoints( end, : ) );
         CubaturePoints( end, : ) = [];
         
-        ICDFTmp1 = ( 1 - PhiN0 ) * tcdf_tauoo_nuoo;
-        ICDFTmp2 = 1 - ICDFTmp1;
-        if ICDFTmp2 <= 0.5
-            FInvEST = StudentTInvCDF( ICDFTmp2, nuoo );
-        else
-            FInvEST = -StudentTInvCDF( ICDFTmp1, nuoo );
-        end
+        ICDFTmp = 1 - ( 1 - PhiN0 ) * exp( log_tcdf_tauoo_nuoo );
+        FInvEST = zeros( size( ICDFTmp ) );
+        FInvESTSelectLeft = ICDFTmp <= 0.5;
+        FInvEST( FInvESTSelectLeft ) = StudentTInvLogCDF( reallog( ICDFTmp( FInvESTSelectLeft ) ), nuoo );
+        FInvEST( ~FInvESTSelectLeft ) = -StudentTInvLogCDF( log_tcdf_tauoo_nuoo + reallog( 1 - PhiN0( ~FInvESTSelectLeft ) ), nuoo );
         
         N11Scaler = N11Scaler .* realsqrt( ( nuoo + FInvEST .* FInvEST ) / ( 1 + nuoo ) );
     else
@@ -239,11 +237,11 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         taunn = realsqrt( scaledeltann / scalePnn ) * ( TIcholQnoCheck_eta' * TIcholQnoCheck_mInnovation + tauno );
         nunn = nuno + nm;
         
-        [ ~, logMVTStudentTPDF_TIcholQnoCheck_mInnovation_nuno ] = MVTStudentTPDF( TIcholQnoCheck_mInnovation, nuno );
-        [ ~, log_tcdf_tauno_nuno ] = StudentTCDF( tauno, nuno );
-        [ ~, log_tcdf_taunn_nunn ] = StudentTCDF( taunn, nunn );
+        MVTStudentTLogPDF_TIcholQnoCheck_mInnovation_nuno = MVTStudentTLogPDF( TIcholQnoCheck_mInnovation, nuno );
+        log_tcdf_tauno_nuno = StudentTLogCDF( tauno, nuno );
+        log_tcdf_taunn_nunn = StudentTLogCDF( taunn, nunn );
         
-        LogObservationLikelihood = -sum( reallog( abs( diag( cholQnoCheck ) ) ) ) + logMVTStudentTPDF_TIcholQnoCheck_mInnovation_nuno;
+        LogObservationLikelihood = -sum( reallog( abs( diag( cholQnoCheck ) ) ) ) + MVTStudentTLogPDF_TIcholQnoCheck_mInnovation_nuno;
 
         if isfinite( log_tcdf_tauno_nuno ) || isfinite( log_tcdf_taunn_nunn )
             tcdfDifference = log_tcdf_taunn_nunn - log_tcdf_tauno_nuno;

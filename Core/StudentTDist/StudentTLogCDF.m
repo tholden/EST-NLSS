@@ -1,8 +1,8 @@
-function [ y, log_y ] = StudentTCDF( x, nu )
+function log_y = StudentTLogCDF( x, nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:StudentTCDF:NuSize', 'StudentTCDF only supports univariate nu.' );
-    assert( nu > 0, 'ESTNLSS:StudentTCDF:NuSign', 'StudentTCDF requires nu to be strictly positive.' );
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTCDF:NaNInputX', 'StudentTCDF was passed a NaN input x.' );
+    assert( numel( nu ) == 1, 'ESTNLSS:StudentTLogCDF:NuSize', 'StudentTLogCDF only supports univariate nu.' );
+    assert( nu > 0, 'ESTNLSS:StudentTLogCDF:NuSign', 'StudentTLogCDF requires nu to be strictly positive.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNInputX', 'StudentTLogCDF was passed a NaN input x.' );
     
     y = zeros( size( x ) );
     log_y = zeros( size( x ) );
@@ -53,9 +53,7 @@ function [ y, log_y ] = StudentTCDF( x, nu )
     tM6 = tM4 .* tM2;
     tM8 = tM4 .* tM4;
     log_y( SelBad ) = -.500000000000000000*t2-.918938533204672742-reallog(-t)-tM2+2.50000000000000000*tM4-12.3333333333333333*tM6+88.2500000000000000*tM8;
-    y( SelBad ) = exp( log_y( SelBad ) );
     
-    assert( all( isfinite( y(:) ) ), 'ESTNLSS:StudentTCDF:NonFiniteOutputY', 'StudentTCDF returned a non-finite output y.' );
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTCDF:NaNOutputLogY', 'StudentTCDF returned a NaN output log_y.' );    
+    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNOutputLogY', 'StudentTLogCDF returned a NaN output log_y.' );    
     
 end

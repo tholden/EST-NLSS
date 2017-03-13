@@ -1,18 +1,13 @@
-function x = StudentTInvCDF( y, nu )
+function x = StudentTInvLogCDF( log_y, nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:StudentTInvCDF:NuSize', 'StudentTInvCDF only supports univariate nu.' );
-    assert( nu > 0, 'ESTNLSS:StudentTInvCDF:NuSign', 'StudentTInvCDF requires nu to be strictly positive.' );
-    assert( all( ~isnan( y(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNInputY', 'StudentTInvCDF was passed a NaN input y.' );
+    assert( numel( nu ) == 1, 'ESTNLSS:StudentTInvLogCDF:NuSize', 'StudentTInvLogCDF only supports univariate nu.' );
+    assert( nu > 0, 'ESTNLSS:StudentTInvLogCDF:NuSign', 'StudentTInvLogCDF requires nu to be strictly positive.' );
+    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTInvLogCDF:NaNInputY', 'StudentTInvLogCDF was passed a NaN input log_y.' );
     
-    FlipSign = y > 0.5;
-    y( FlipSign ) = 1 - y( FlipSign );
+    x = tinv( exp( log_y ), nu );
     
-    x = tinv( y, nu );
-    
-    SelBad = ( x == -Inf ) & ( y > 0 );
+    SelBad = ( x == -Inf ) & ( log_y > -Inf );
 
-    log_y = reallog( y );
-    
     x( SelBad ) = -exp( 0.5 * reallog( nu ) - ( betaln( 0.5, 0.5 * nu ) + reallog( nu ) + log_y( SelBad ) ) / nu );
     
     % Use Newton's algorithm to polish
@@ -23,8 +18,8 @@ function x = StudentTInvCDF( y, nu )
         odx = Inf( size( x ) );
         for iter = 1 : 20
             
-            [ ~, log_y_x ] = StudentTCDF( x, nu );
-            [ ~, log_dy_x ] = StudentTPDF( x, nu );
+            log_y_x = StudentTLogCDF( x, nu );
+            log_dy_x = StudentTLogPDF( x, nu );
             
             f_x = log_y_x - log_y;
             inv_df_x = exp( log_y_x - log_dy_x );
@@ -44,8 +39,6 @@ function x = StudentTInvCDF( y, nu )
     
     end
     
-    x( FlipSign ) = -x( FlipSign );
-
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNOutputX', 'StudentTInvCDF returned a NaN output x.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvLogCDF:NaNOutputX', 'StudentTInvLogCDF returned a NaN output x.' );
     
 end
