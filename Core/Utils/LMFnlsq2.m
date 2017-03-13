@@ -138,17 +138,17 @@ function [xf, SS, cnt, res, XY] = LMFnlsq2(varargin)
 % of the unit diameter centered at the origin. In this case, it is necessary 
 % to build third function, a penalty, which is zero inside the circle and 
 % increasing outside it. This property has, say, the next function:
-%    f3(x) = sqrt(x(1)^2 + x(2)^2) - d, where d is a distance from the 
+%    f3(x) = realsqrt(x(1)^2 + x(2)^2) - d, where d is a distance from the 
 % circle border. Its implementation using named function has the form
 %   function r = rosen(x)
 %% ROSEN   Rosenbrock valey with a constraint
-%   d = sqrt(x(1)^2+x(2)^2)-.5; %   distance from r=0.5
+%   d = realsqrt(x(1)^2+x(2)^2)-.5; %   distance from r=0.5
 %   r = [ 10*(x(2)-x(1)^2)      %   first part,  f1(x)
 %         1-x(1)                %   second part, f2(x)
 %         (d>0)*d*w             %   penalty outside the feasible domain
 %       ];                      %   w = 1000 is a weight of the condition
 % or when anonymous functions are prefered
-%    d     = @(x) sqrt(x'*x)-.5; %   A distance from the radius r=0.5
+%    d     = @(x) realsqrt(x'*x)-.5; %   A distance from the radius r=0.5
 %    rosen = @(x) [10*(x(2)-x(1)^2); 1-x(1); (d(x)>0)*d(x)*1000];
 %
 % The solution is obtained in all cases by setting (say) FUN='rosen' in the
@@ -358,7 +358,7 @@ else
     end
 end
 D(D<=0)=1;
-T = sqrt(D);
+T = realsqrt(D);
 
 Rlo=0.25;
 Rhi=0.75;

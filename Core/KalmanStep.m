@@ -82,7 +82,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
             FInvEST = -StudentTInvCDF( ICDFTmp1, nuoo );
         end
         
-        N11Scaler = N11Scaler .* realsqrt( ( nuoo + FInvEST .^ 2 ) / ( 1 + nuoo ) );
+        N11Scaler = N11Scaler .* realsqrt( ( nuoo + FInvEST .* FInvEST ) / ( 1 + nuoo ) );
     else
         FInvEST = zeros( 1, NCubaturePoints );
     end
@@ -148,14 +148,14 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
 
         meanZcheck_wm = Zcheck_wm * CubatureWeights';
         Zcheck_wm = Zcheck_wm - meanZcheck_wm;
-        meanZcheck_wm2 = Zcheck_wm.^2 * CubatureWeights';
+        meanZcheck_wm2 = ( Zcheck_wm .* Zcheck_wm ) * CubatureWeights';
         Zcheck_wm = Zcheck_wm / realsqrt( meanZcheck_wm2 );
 
-        sZ3 = Zcheck_wm.^3 * CubatureWeights';
-        sZ4 = max( 3, Zcheck_wm.^4 * CubatureWeights' );
+        sZ3 = realpow( Zcheck_wm, 3 ) * CubatureWeights';
+        sZ4 = max( 3, realpow( Zcheck_wm, 4 ) * CubatureWeights' );
 
         if nuno == 0
-            tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), Mean_wm, Median_wm, cholVariance_wm, sZ3, sZ4 ), [ min( 10, tauoo ); log( min( 100, nuoo ) - 4 ) ] );
+            tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), Mean_wm, Median_wm, cholVariance_wm, sZ3, sZ4 ), [ min( 10, tauoo ); reallog( min( 100, nuoo ) - 4 ) ] );
             tauno = tauno_nuno( 1 );
             nuno = 4 + eps( 4 ) + exp( tauno_nuno( 2 ) );
         else
@@ -167,13 +167,13 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         if nuno == 0
             Zcheck_wm = ano;
 
-            meanZcheck_wm2 = Zcheck_wm.^2 * CubatureWeights';
+            meanZcheck_wm2 = ( Zcheck_wm .* Zcheck_wm ) * CubatureWeights';
             Zcheck_wm = bsxfun( @times, Zcheck_wm, 1 ./ realsqrt( meanZcheck_wm2 ) );
 
-            kurtDir = max( 0, Zcheck_wm.^4 * CubatureWeights' - 3 );
+            kurtDir = max( 0, realpow( Zcheck_wm, 4 ) * CubatureWeights' - 3 );
 
             if kurtDir' * kurtDir < eps
-                kurtDir = Zcheck_wm.^4 * CubatureWeights';
+                kurtDir = realpow( Zcheck_wm, 4 ) * CubatureWeights';
             end
 
             kurtDir = kurtDir / norm( kurtDir );
@@ -182,10 +182,10 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
 
             meanZcheck_wm = Zcheck_wm * CubatureWeights';
             Zcheck_wm = Zcheck_wm - meanZcheck_wm;
-            meanZcheck_wm2 = Zcheck_wm.^2 * CubatureWeights';
+            meanZcheck_wm2 = ( Zcheck_wm .* Zcheck_wm ) * CubatureWeights';
             Zcheck_wm = Zcheck_wm / realsqrt( meanZcheck_wm2 );
 
-            sZ4 = max( 3, Zcheck_wm.^4 * CubatureWeights' );
+            sZ4 = max( 3, realpow( Zcheck_wm, 4 ) * CubatureWeights' );
             nuno = 4 + 6 / ( sZ4( 1 ) - 3 );
         end
     end
@@ -243,7 +243,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         [ ~, log_tcdf_tauno_nuno ] = StudentTCDF( tauno, nuno );
         [ ~, log_tcdf_taunn_nunn ] = StudentTCDF( taunn, nunn );
         
-        LogObservationLikelihood = -sum( log( abs( diag( cholQnoCheck ) ) ) ) + logMVTStudentTPDF_TIcholQnoCheck_mInnovation_nuno;
+        LogObservationLikelihood = -sum( reallog( abs( diag( cholQnoCheck ) ) ) ) + logMVTStudentTPDF_TIcholQnoCheck_mInnovation_nuno;
 
         if isfinite( log_tcdf_tauno_nuno ) || isfinite( log_tcdf_taunn_nunn )
             tcdfDifference = log_tcdf_taunn_nunn - log_tcdf_tauno_nuno;

@@ -32,7 +32,7 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
 end
 
 function Endo = SimulationStep( Endo, Shocks, log_mu, phi, omega, rho )
-    L = [ 1, 0; rho, sqrt( 1 - rho * rho ) ];
+    L = [ 1, 0; rho, realsqrt( 1 - rho * rho ) ];
     CorrelatedShocks = L * Shocks;
     NewLogSigma = ( 1 - phi ) * log_mu + phi * Endo( 1 ) + omega * CorrelatedShocks( 1 );
     Endo = [ NewLogSigma; exp( NewLogSigma ) * CorrelatedShocks( 2 ) ];

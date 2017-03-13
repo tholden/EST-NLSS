@@ -66,7 +66,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     nuno = nuoo;
     
     if cholVarianceStatDist_MeanStatDistMMedianStatDist2 > eps && ~NoSkewLikelihood
-        ZcheckStatDist = ( MeanStatDistMMedianStatDist' * DeMeanedStatDistPoints ) / sqrt( cholVarianceStatDist_MeanStatDistMMedianStatDist2 );
+        ZcheckStatDist = ( MeanStatDistMMedianStatDist' * DeMeanedStatDistPoints ) / realsqrt( cholVarianceStatDist_MeanStatDistMMedianStatDist2 );
 
         sZ3 = skewness( ZcheckStatDist, 0 );
         sZ4 = max( 3, kurtosis( ZcheckStatDist, 0 ) );

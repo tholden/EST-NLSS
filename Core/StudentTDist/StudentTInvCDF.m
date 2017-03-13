@@ -11,9 +11,9 @@ function x = StudentTInvCDF( y, nu )
     
     SelBad = ( x == -Inf ) & ( y > 0 );
 
-    log_y = log( y );
+    log_y = reallog( y );
     
-    x( SelBad ) = -exp( 0.5 * log( nu ) - ( betaln( 0.5, 0.5 * nu ) + log( nu ) + log_y( SelBad ) ) / nu );
+    x( SelBad ) = -exp( 0.5 * reallog( nu ) - ( betaln( 0.5, 0.5 * nu ) + reallog( nu ) + log_y( SelBad ) ) / nu );
     
     % Use Newton's algorithm to polish
     Converged = ~isfinite( x );

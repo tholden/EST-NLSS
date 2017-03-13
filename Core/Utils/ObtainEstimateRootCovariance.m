@@ -5,7 +5,7 @@ function [ RootCovariance, InvRootCovariance, LogDetCovariance ] = ObtainEstimat
     Covariance = full( 0.5 * ( Covariance + Covariance' ) );
     [ U, D ] = schur( Covariance, 'complex' );
     diagD = diag( D );
-    RootD = sqrt( max( 0, real( diagD ) ) );
+    RootD = realsqrt( max( 0, real( diagD ) ) );
     IDv = RootD > StdDevThreshold;
     Usub = real( U( :, IDv ) );
     RootCovariance = Usub * diag( RootD( IDv ) );
@@ -20,7 +20,7 @@ function [ RootCovariance, InvRootCovariance, LogDetCovariance ] = ObtainEstimat
         
         if nargout > 2
 
-            LogDetCovariance = sum( log( RootD ) );
+            LogDetCovariance = sum( reallog( RootD ) );
 
             assert( isfinite( LogDetCovariance ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteLogDetCovariance', 'ObtainEstimateRootCovariance returned a non-finite output log det covariance.' );
         

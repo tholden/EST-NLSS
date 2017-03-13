@@ -35,13 +35,13 @@ if isfinite( nu )
     disp( T );
     PhiN10 = normcdf( pTmp( end, : ) );
     if tcdf_tau_nu < 1
-        N11Scaler = sqrt( 0.5 * ( nu + 1 ) ./ gammaincinv( PhiN10, 0.5 * ( nu + 1 ), 'upper' ) );
+        N11Scaler = realsqrt( 0.5 * ( nu + 1 ) ./ gammaincinv( PhiN10, 0.5 * ( nu + 1 ), 'upper' ) );
     else
-        N11Scaler = sqrt( 0.5 * nu ./ gammaincinv( PhiN10, 0.5 * nu, 'upper' ) );
+        N11Scaler = realsqrt( 0.5 * nu ./ gammaincinv( PhiN10, 0.5 * nu, 'upper' ) );
     end
 end
 
-if ~isfinite( nu ) || all( abs( N11Scaler - 1 ) <= sqrt( eps ) )
+if ~isfinite( nu ) || all( abs( N11Scaler - 1 ) <= realsqrt( eps ) )
     IntDim = IntDim - 1;
     [ Weights, pTmp, T ] = fwtpts( IntDim, Order );
     disp( 'T:' );
@@ -56,7 +56,7 @@ if tcdf_tau_nu < 1
     FInvEST = StudentTInvCDF( 1 - ( 1 - PhiN0 ) * tcdf_tau_nu, nu );
     tpdfRatio = StudentTPDF( tau, nu ) / tcdf_tau_nu;
     MedT = StudentTInvCDF( 1 - 0.5 * tcdf_tau_nu, nu );
-    N11Scaler = N11Scaler .* sqrt( ( nu + FInvEST .^ 2 ) / ( 1 + nu ) );
+    N11Scaler = N11Scaler .* realsqrt( ( nu + FInvEST .^ 2 ) / ( 1 + nu ) );
 else
     FInvEST = zeros( size( Weights ) );
     tpdfRatio = 0;
@@ -98,7 +98,7 @@ disp( [ lambda, lambdaAlt ] );
 
 cholSigma_muMlambda = cholSigma * ( mu - lambda );
 
-Zcheck = ( ( mu - lambda )' * DemeanedESTPoints ) / sqrt( cholSigma_muMlambda' * cholSigma_muMlambda );
+Zcheck = ( ( mu - lambda )' * DemeanedESTPoints ) / realsqrt( cholSigma_muMlambda' * cholSigma_muMlambda );
 
 meanZcheck = Zcheck * Weights';
 meanZcheck2 = Zcheck.^2 * Weights';
@@ -108,7 +108,7 @@ disp( [ meanZcheck, meanZcheck2 ] );
 
 Zcheck = Zcheck - meanZcheck;
 meanZcheck2 = Zcheck.^2 * Weights';
-Zcheck = Zcheck / sqrt( meanZcheck2 );
+Zcheck = Zcheck / realsqrt( meanZcheck2 );
 
 [ fZcheck, xiZcheck ] = ksdensity( Zcheck, linspace( min( Zcheck ), max( Zcheck ), 2000 ), 'NumPoints', 2000, 'Weights', Weights );
 fZcheck = max( 0, fZcheck );
@@ -135,7 +135,7 @@ disp( [ delta, deltaHat ] );
 disp( 'diag( cholOmega ) comparison:' );
 disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
 
-Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); log( min( 100, nu ) - 4 ) ] );
+Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); reallog( min( 100, nu ) - 4 ) ] );
 Estim3 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nu, mu, lambda, cholSigma, sZ3, [] ), min( 10, tau ) );
 
 Estim4( 2 ) = 4 + eps( 4 ) + exp( Estim4( 2 ) );

@@ -24,11 +24,11 @@ function [ y, log_y ] = StudentTPDF( x, nu )
                 .250000000000000000 + 0.416666666666666667e-1.*inu2 - 0.500000000000000000e-1.*inu4 + .151785714285714286.*inu6 - .861111111111111111.*inu8 + 7.85227272727272727.*inu10 - 105.019230769230769.*inu12 + 1936.60208333333333.*inu14 - 47092.5147058823529.*inu16 ...
             );
         else
-            logGammaRootNuRatio = gammaln( nuP1O2 ) - gammaln( 0.5 * nu ) - 0.5 * log( nu );
+            logGammaRootNuRatio = gammaln( nuP1O2 ) - gammaln( 0.5 * nu ) - 0.5 * reallog( nu );
         end
-        log_y = logGammaRootNuRatio - 0.572364942924700085 - nuP1O2 .* log1p( x .^ 2 ./ nu );
+        log_y = logGammaRootNuRatio - 0.572364942924700085 - nuP1O2 .* log1p( ( x .* x ) ./ nu );
     else
-        log_y = - 0.5 * x .^ 2 - 0.918938533204672742;
+        log_y = - 0.5 * ( x .* x ) - 0.918938533204672742;
     end
     
     y = exp( log_y );

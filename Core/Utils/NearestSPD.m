@@ -52,7 +52,7 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     if r == 1
         % A was scalar
         Ahat = max( real( A ), eps );
-        cholAhat = sqrt( Ahat );
+        cholAhat = realsqrt( Ahat );
         assert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
         assert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
         return
@@ -90,7 +90,7 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
             IScale = abs( min( EigAhat ) );
             IScale = IScale + eps( IScale );
             IScale = max( IScale, eps( max( EigAhat ) ) );
-            Ahat = Ahat + ( IScale * k.^2 ) * eye( size( A ) );
+            Ahat = Ahat + ( IScale * ( k .* k ) ) * eye( size( A ) );
         end
         assert( p == 0, 'ESTNLSS:NearestSPD:Failure', 'Failed to find the nearest semi-positive definite matrix.' );
 
