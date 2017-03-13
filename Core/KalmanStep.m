@@ -73,7 +73,15 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     if tcdf_tauoo_nuoo < 1 
         PhiN0 = normcdf( CubaturePoints( end, : ) );
         CubaturePoints( end, : ) = [];
-        FInvEST = StudentTInvCDF( 1 - ( 1 - PhiN0 ) * tcdf_tauoo_nuoo, nuoo );
+        
+        ICDFTmp1 = ( 1 - PhiN0 ) * tcdf_tauoo_nuoo;
+        ICDFTmp2 = 1 - ICDFTmp1;
+        if ICDFTmp2 <= 0.5
+            FInvEST = StudentTInvCDF( ICDFTmp2, nuoo );
+        else
+            FInvEST = -StudentTInvCDF( ICDFTmp1, nuoo );
+        end
+        
         N11Scaler = N11Scaler .* realsqrt( ( nuoo + FInvEST .^ 2 ) / ( 1 + nuoo ) );
     else
         FInvEST = zeros( 1, NCubaturePoints );

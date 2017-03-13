@@ -4,6 +4,9 @@ function x = StudentTInvCDF( y, nu )
     assert( nu > 0, 'ESTNLSS:StudentTInvCDF:NuSign', 'StudentTInvCDF requires nu to be strictly positive.' );
     assert( all( ~isnan( y(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNInputY', 'StudentTInvCDF was passed a NaN input y.' );
     
+    FlipSign = y > 0.5;
+    y( FlipSign ) = 1 - y( FlipSign );
+    
     x = tinv( y, nu );
     
     SelBad = ( x == -Inf ) & ( y > 0 );
@@ -40,6 +43,8 @@ function x = StudentTInvCDF( y, nu )
         end
     
     end
+    
+    x( FlipSign ) = -x( FlipSign );
 
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvCDF:NaNOutputX', 'StudentTInvCDF returned a NaN output x.' );
     
