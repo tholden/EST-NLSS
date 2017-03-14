@@ -8,7 +8,23 @@ function x = StudentTInvLogCDF( log_y, nu )
     
     SelBad = ( x == -Inf ) & ( log_y > -Inf );
 
-    x( SelBad ) = -exp( 0.5 * reallog( nu ) - ( betaln( 0.5, 0.5 * nu ) + reallog( nu ) + log_y( SelBad ) ) / nu );
+    betalnTmp = NaN;
+    if isfinite( nu )
+        betalnTmp = betaln( 0.5, 0.5 * nu );
+        if isfinite( betalnTmp )
+            x( SelBad ) = -exp( 0.5 * reallog( nu ) - ( betalnTmp + reallog( nu ) + log_y( SelBad ) ) / nu );
+        end
+    end
+    if ~isfinite( betalnTmp )
+        log_Mx_SelBad = 0;
+        log_y_SelBad = log_y( SelBad );
+        NormConst = 0.918938533204672741780329736407;
+        for norm_iter = 1 : 5
+            Mx_SelBad = realsqrt( -2 * min( 0, log_y_SelBad + NormConst + log_Mx_SelBad ) );
+            log_Mx_SelBad = log( Mx_SelBad );
+        end
+        x( SelBad ) = -Mx_SelBad;
+    end
     
     % Use Newton's algorithm to polish
     Converged = ~isfinite( x );
