@@ -2,6 +2,7 @@ clear all; %#ok<CLALL>
 addpath ../../Core
 addpath ../../Core/CholeskyUpdate/InbuiltImplementation
 addpath ../../Core/StudentTDist
+addpath ../../Core/ESTDist
 addpath ../../Core/Utils
 
 Order = 4;

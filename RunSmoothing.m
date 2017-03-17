@@ -227,6 +227,7 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
     addpath( CorePath );
     addpath( [ CorePath 'Optimisation/' ] );
     addpath( [ CorePath 'StudentTDist/' ] );
+    addpath( [ CorePath 'ESTDist/' ] );
     addpath( [ CorePath 'Utils/' ] );
     addpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
     
