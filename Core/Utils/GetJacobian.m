@@ -1,10 +1,11 @@
 function Jacobian = GetJacobian( f, x, nf )
     nx = length( x );
     Jacobian = NaN( nf, nx );
-    seps = sqrt( eps );
+    creps = eps^(1/3);
+    sreps = sqrt( eps );
     parfor i = 1 : nx
         xi = x( i );
-        h = abs( seps * xi );
+        h = max( [ sreps, abs( creps * xi ) ] );
         while true
             if h < eps
                 h = eps;
