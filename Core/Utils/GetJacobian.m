@@ -1,11 +1,15 @@
 function Jacobian = GetJacobian( f, x, nf )
     nx = length( x );
     Jacobian = NaN( nf, nx );
-    creps = eps^(1/3);
+    if ~all( isfinite( f( x ) ) )
+        return;
+    end
     sreps = sqrt( eps );
+    srsreps = sqrt( sreps );
     parfor i = 1 : nx
+        WarningState = warning( 'off', 'all' );
         xi = x( i );
-        h = max( [ sreps, abs( creps * xi ) ] );
+        h = max( [ sreps, abs( srsreps * xi ) ] );
         while true
             if h < eps
                 h = eps;
@@ -20,6 +24,7 @@ function Jacobian = GetJacobian( f, x, nf )
                 h = 0.5 * h;
             end
         end
+        warning( WarningState );
     end
 end
 
