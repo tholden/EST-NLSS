@@ -67,12 +67,7 @@ function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lam
     
     tpdfRatio = exp( StudentTLogPDF( tau, nu ) - log_tcdf_tau_nu );
     
-    ICDFTmp = 1 - 0.5 * exp( log_tcdf_tau_nu );
-    if ICDFTmp <= 0.5
-        MedT = StudentTInvLogCDF( reallog( ICDFTmp ), nu );
-    else
-        MedT = -StudentTInvLogCDF( log_tcdf_tau_nu - 0.693147180559945, nu ); % log( 0.5 ) = -0.693147180559945
-    end
+    MedT = -StudentTInvLogCDF( log_tcdf_tau_nu - 0.693147180559945309, nu ); % log( 0.5 ) = -0.693147180559945309
     
     ET1 = nuOnuM1 * OPtauTtauDnu * tpdfRatio;
     ET2 = nuOnuM2 * exp( StudentTLogCDF( tau2, nu - 2 ) - log_tcdf_tau_nu ) - tau * ET1;
