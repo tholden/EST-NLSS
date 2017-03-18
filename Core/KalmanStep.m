@@ -216,37 +216,18 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         cholPnoCheck = CholeskyUpdate( cholPno, deltano );
         
         RnoCheck = Rno + deltano * etano';
-        [ ~, cholQnoCheck ] = NearestSPD( Qno + etano * etano' );
+        
+        [ LogObservationLikelihood, cholQnoCheck, TIcholQnoCheck_mInnovation, TIcholQnoCheck_eta, scalePnn, scaledeltann, taunn, nunn ] = ESTLogPDF( m, mno, cholQno, etano, tauno, nuno );
 
         RCheck_IcholQnoCheck = RnoCheck / cholQnoCheck;
-        TIcholQnoCheck_mInnovation = cholQnoCheck' \ ( m - mno );
-        TIcholQnoCheck_eta = cholQnoCheck' \ etano;
         
         PTildeno = cholPnoCheck * cholPnoCheck' - RCheck_IcholQnoCheck * RCheck_IcholQnoCheck';
         deltaTildeno = deltano - RCheck_IcholQnoCheck * TIcholQnoCheck_eta;
         
         wnn = RCheck_IcholQnoCheck * TIcholQnoCheck_mInnovation;
-        if isfinite( nuno )
-            scalePnn = ( nuno + TIcholQnoCheck_mInnovation' * TIcholQnoCheck_mInnovation ) / ( nuno + nm );
-        else
-            scalePnn = 1;
-        end
-        scaledeltann = 1 / ( 1 - TIcholQnoCheck_eta' * TIcholQnoCheck_eta );
-        Pnn = scalePnn * NearestSPD( PTildeno - ( deltaTildeno * deltaTildeno' ) * scaledeltann );
-        deltann = realsqrt( scalePnn * scaledeltann ) * deltaTildeno;
-        taunn = realsqrt( scaledeltann / scalePnn ) * ( TIcholQnoCheck_eta' * TIcholQnoCheck_mInnovation + tauno );
-        nunn = nuno + nm;
-        
-        MVTStudentTLogPDF_TIcholQnoCheck_mInnovation_nuno = MVTStudentTLogPDF( TIcholQnoCheck_mInnovation, nuno );
-        log_tcdf_tauno_nuno = StudentTLogCDF( tauno, nuno );
-        log_tcdf_taunn_nunn = StudentTLogCDF( taunn, nunn );
-        
-        LogObservationLikelihood = -sum( reallog( abs( diag( cholQnoCheck ) ) ) ) + MVTStudentTLogPDF_TIcholQnoCheck_mInnovation_nuno;
 
-        if isfinite( log_tcdf_tauno_nuno ) || isfinite( log_tcdf_taunn_nunn )
-            tcdfDifference = log_tcdf_taunn_nunn - log_tcdf_tauno_nuno;
-            LogObservationLikelihood = LogObservationLikelihood + tcdfDifference;
-        end
+        Pnn = scalePnn * NearestSPD( PTildeno - ( deltaTildeno * deltaTildeno' ) * scaledeltann );
+        deltann = realsqrt( scalePnn * scaledeltann ) * deltaTildeno;        
     else
         wnn = wno;
         Pnn = Pno;
@@ -277,16 +258,4 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
     assert( all( isfinite( deltasno(:) ) ), 'ESTNLSS:KalmanStep:NonFiniteOutputDeltasno', 'KalmanStep returned a non-finite output deltasno.' );
 
 
-end
-
-function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetCubaturePoints( IntDim, FilterCubatureDegree )
-    if FilterCubatureDegree > 0
-        CubatureOrder = ceil( 0.5 * ( FilterCubatureDegree - 1 ) );
-        [ CubatureWeights, CubaturePoints, NCubaturePoints ] = fwtpts( IntDim, CubatureOrder );
-    else
-        NCubaturePoints = 2 * IntDim + 1;
-        wTemp = 0.5 * realsqrt( 2 * NCubaturePoints );
-        CubaturePoints = [ zeros( IntDim, 1 ), wTemp * eye( IntDim ), -wTemp * eye( IntDim ) ];
-        CubatureWeights = 1 / NCubaturePoints;
-    end
 end
