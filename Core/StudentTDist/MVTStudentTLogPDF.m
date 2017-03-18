@@ -4,9 +4,7 @@ function log_y = MVTStudentTLogPDF( x, nu )
     assert( nu > 0, 'ESTNLSS:MVTStudentTLogPDF:NuSign', 'MVTStudentTLogPDF requires nu to be strictly positive.' );
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:MVTStudentTLogPDF:NaNInputX', 'MVTStudentTLogPDF was passed a NaN input x.' );
     
-    x = x(:);
-    
-    D = length( x );
+    D = size( x, 1 );
     HD = 0.5 * D;
     fHD = floor( HD );
     
@@ -32,9 +30,9 @@ function log_y = MVTStudentTLogPDF( x, nu )
                 logGammaRatio = logGammaRatio + gammaln( nuPDO2 ) - gammaln( 0.5 * fnu );
             end
         end
-        log_y = logGammaRatio - HD * reallog( nu ) - HD * 1.14472988584940017 - nuPDO2 .* log1p( ( x' * x ) ./ nu );
+        log_y = logGammaRatio - HD * reallog( nu ) - HD * 1.14472988584940017 - nuPDO2 .* log1p( sum( x .* x, 1 ) ./ nu ); % log( pi ) = 1.14472988584940017
     else
-        log_y = - 0.5 * ( x' * x ) - 0.5 * D * 1.83787706640934548;
+        log_y = - 0.5 * sum( x .* x, 1 ) - D * 0.91893853320467274; % 0.5 * log( 2 * pi ) = 0.91893853320467274
     end
     
     assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:MVTStudentTLogPDF:NaNOutputLogY', 'MVTStudentTLogPDF returned a NaN output log_y.' );    
