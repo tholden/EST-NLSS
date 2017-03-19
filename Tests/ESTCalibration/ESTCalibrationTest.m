@@ -6,7 +6,7 @@ addpath ../../Core/ESTDist
 addpath ../../Core/Utils
 
 N = 1;
-FilterCubatureDegree = 51;
+FilterCubatureDegree = 5;
 
 xi = 10 * randn( N, 1 );
 RootOmega = 0.1 * randn( N, N );
@@ -35,13 +35,13 @@ cholSigma_muMlambda = cholSigma * ( mu - lambda );
 Zcheck = ( ( mu - lambda )' * DemeanedESTPoints ) / realsqrt( cholSigma_muMlambda' * cholSigma_muMlambda );
 
 meanZcheck = Zcheck * Weights';
-meanZcheck2 = realpow( Zcheck, 2 ) * Weights';
+meanZcheck2 = ( Zcheck .* Zcheck ) * Weights';
 
 disp( 'EZ, EZ^2:' );
 disp( [ meanZcheck, meanZcheck2 ] );
 
 Zcheck = Zcheck - meanZcheck;
-meanZcheck2 = Zcheck.^2 * Weights';
+meanZcheck2 = ( Zcheck .* Zcheck ) * Weights';
 Zcheck = Zcheck / realsqrt( meanZcheck2 );
 
 [ fZcheck, xiZcheck ] = ksdensity( Zcheck, linspace( min( Zcheck ), max( Zcheck ), 2000 ), 'NumPoints', 2000, 'Weights', Weights );
