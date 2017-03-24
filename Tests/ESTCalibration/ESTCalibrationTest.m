@@ -9,7 +9,7 @@ N = 1;
 FilterCubatureDegree = 20;
 AllowTailEvaluations = true;
 
-xi = 10 * randn( N, 1 );
+xi = 0; % 10 * randn( N, 1 );
 RootOmega = 0.001; % 0.1 * randn( N, N );
 Omega = RootOmega * RootOmega';
 [ Omega, cholOmega ] = NearestSPD( Omega );
@@ -25,17 +25,10 @@ disp( [ tau, nu ] );
 disp( 'ET1, MedT:' );
 disp( [ ET1, MedT ] );
 
+mu = sum( bsxfun( @times, ESTPoints, Weights ), 2 );
 muAlt = xi + delta * ET1;
 
-mu = sum( bsxfun( @times, ESTPoints, Weights ), 2 );
-DemeanedESTPoints = bsxfun( @minus, ESTPoints, mu );
-Weighted_DemeanedESTPoints = bsxfun( @times, DemeanedESTPoints, Weights );
-
-Sigma = DemeanedESTPoints * Weighted_DemeanedESTPoints';
-[ Sigma, cholSigma ] = NearestSPD( Sigma );
-
 lambda = ESTPoints( :, 1 );
-
 lambdaAlt = xi + delta * MedT;
 
 disp( 'mu, muAlt:' );
@@ -43,6 +36,12 @@ disp( [ mu, muAlt ] );
 
 disp( 'lambda, lambdaAlt:' );
 disp( [ lambda, lambdaAlt ] );
+
+DemeanedESTPoints = bsxfun( @minus, ESTPoints, mu );
+Weighted_DemeanedESTPoints = bsxfun( @times, DemeanedESTPoints, Weights );
+
+Sigma = DemeanedESTPoints * Weighted_DemeanedESTPoints';
+[ Sigma, cholSigma ] = NearestSPD( Sigma );
 
 cholSigma_muMlambda = cholSigma * ( mu - lambda );
 
