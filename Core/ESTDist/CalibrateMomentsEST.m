@@ -1,4 +1,4 @@
-function [ resid, xi, delta, cholOmega ] = CalibrateMomentsEST( tau, nu, mu, lambda, cholSigma, sZ3, sZ4 )
+function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu, mu, lambda, cholSigma, sZ3, sZ4 )
 
     assert( all( isfinite( mu(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputMu', 'CalibrateMomentsEST was invoked with a non-finite input mu.' );
     assert( all( isfinite( lambda(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputLambda', 'CalibrateMomentsEST was invoked with a non-finite input lambda.' );
