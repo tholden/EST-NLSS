@@ -1,11 +1,6 @@
-function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetESTCubaturePoints( xi, Omega, delta, tau, nu, FilterCubatureDegree )
+function [ CubatureWeights, CubaturePoints, NCubaturePoints, ET1, MedT ] = GetESTCubaturePoints( xi, Omega, delta, tau, nu, FilterCubatureDegree, StdDevThreshold, AllowTailEvaluations )
 
-    IntDim = length( xi );
-    
     log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
-    
-    tauTtau = tau * tau;
-    OPtauTtauDnu = 1 + tauTtau / nu;
     
     if isfinite( nu )
         nuOnuM1 = nu / ( nu - 1 );
@@ -17,12 +12,23 @@ function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetESTCubaturePo
     
     tau2 = tau / realsqrt( nuOnuM2 );
     
-    tpdfRatio = exp( StudentTLogPDF( tau, nu ) - log_tcdf_tau_nu );
+    tauTtau = tau * tau;
+    
+    if tauTtau < Inf
+        ET1 = nuOnuM1 * ( 1 + tauTtau / nu ) * exp( StudentTLogPDF( tau, nu ) - log_tcdf_tau_nu );
+        ET2 = nuOnuM2 * exp( StudentTLogCDF( tau2, nu - 2 ) - log_tcdf_tau_nu ) - tau * ET1;
+        VarT = max( 0, ET2 - ET1 * ET1 );
+    elseif tau >= 0
+        ET1 = 0;
+        ET2 = nuOnuM2;
+        VarT = nuOnuM2;
+    else
+        ET1 = Inf;
+        ET2 = Inf;
+        VarT = 0;
+    end
     
     MedT = -StudentTInvLogCDF( log_tcdf_tau_nu - 0.693147180559945309, nu ); % log( 0.5 ) = -0.693147180559945309
-    
-    ET1 = nuOnuM1 * OPtauTtauDnu * tpdfRatio;
-    ET2 = nuOnuM2 * exp( StudentTLogCDF( tau2, nu - 2 ) - log_tcdf_tau_nu ) - tau * ET1;
     
     lambda = xi + delta * MedT;
     
@@ -34,34 +40,48 @@ function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetESTCubaturePo
     
     ET1MMedT = ET1 - MedT;
     
-    SamplingCov = SamplingCovScale * Omega + ( max( 0, ET2 - ET1 * ET1 ) + ET1MMedT * ET1MMedT ) * ( delta * delta' );
+    SamplingCov = SamplingCovScale * Omega + ( VarT + ET1MMedT * ET1MMedT ) * ( delta * delta' );
     
-    [ ~, cholSamplingCov ] = NearestSPD( SamplingCov );
+    RootSamplingCov = ObtainEstimateRootCovariance( SamplingCov, StdDevThreshold );
     
-    [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetGaussianCubaturePoints( IntDim, FilterCubatureDegree );
+    IntDim = size( RootSamplingCov, 2 );
     
-    CubaturePoints = bsxfun( @plus, lambda, cholSamplingCov' * CubaturePoints );
+    [ CubatureWeights, UncorrelatedCubaturePoints, NCubaturePoints ] = GetGaussianCubaturePoints( IntDim, FilterCubatureDegree );
     
-    CubatureWeights = CubatureWeights .* exp( ESTLogPDF( CubaturePoints, xi, Omega, delta, tau, nu ) - MVTNormalLogPDF( CubaturePoints, lambda, cholSamplingCov ) );
+    if AllowTailEvaluations
+        SamplingNu = nu + IntDim - 1; % Lowest nu such that the ratio of desired pdf / sampling pdf is bounded below
+    else
+        SamplingNu = Inf;
+    end
+    
+    assert( SamplingNu > 2, 'ESTNLSS:GetESTCubaturePoints:SamplingNuTooSmall', 'GetESTCubaturePoints requires that nu + IntDim - 1 is greater than 2.' );
+    
+    if isfinite( SamplingNu )
+        RootSamplingCov = RootSamplingCov * sqrt( ( SamplingNu - 2 ) / SamplingNu );
+        UncorrelatedCubaturePointSigns = sign( UncorrelatedCubaturePoints );
+        UncorrelatedCubaturePoints = -abs( UncorrelatedCubaturePoints );
+        UncorrelatedCubaturePoints = UncorrelatedCubaturePointSigns .* StudentTInvLogCDF( StudentTLogCDF( UncorrelatedCubaturePoints, Inf ), SamplingNu );
+    end
+    
+    CubaturePoints = bsxfun( @plus, lambda, RootSamplingCov * UncorrelatedCubaturePoints );
+    
+    CubatureWeights = CubatureWeights .* exp( ESTLogPDF( CubaturePoints, xi, Omega, delta, tau, nu ) - StudentTLogPDF( UncorrelatedCubaturePoints, SamplingNu ) ); % no need to include the term in the determinant of RootSamplingCov as it washes out in the next line
     CubatureWeights = CubatureWeights ./ sum( CubatureWeights );
     
 end
 
 function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetGaussianCubaturePoints( IntDim, FilterCubatureDegree )
-    if FilterCubatureDegree > 0
-        CubatureOrder = ceil( 0.5 * ( FilterCubatureDegree - 1 ) );
-        [ CubatureWeights, CubaturePoints, NCubaturePoints ] = fwtpts( IntDim, CubatureOrder );
+    if imag( FilterCubatureDegree ) ~= 0
+        NCubaturePoints = 2 ^ imag( FilterCubatureDegree );
+        CubaturePoints = [ zeros( IntDim, 1 ), randn( IntDim, NCubaturePoints ) ];
+        CubatureWeights = 1;
+    elseif FilterCubatureDegree > 0
+         CubatureOrder = ceil( 0.5 * ( FilterCubatureDegree - 1 ) );
+         [ CubatureWeights, CubaturePoints, NCubaturePoints ] = fwtpts( IntDim, CubatureOrder );
     else
         NCubaturePoints = 2 * IntDim + 1;
         wTemp = 0.5 * realsqrt( 2 * NCubaturePoints );
         CubaturePoints = [ zeros( IntDim, 1 ), wTemp * eye( IntDim ), -wTemp * eye( IntDim ) ];
-        CubatureWeights = 1 / NCubaturePoints;
+        CubatureWeights = 1;
     end
-end
-
-function log_y = MVTNormalLogPDF( x, mu, cholSigma )
-    D = numel( mu );
-    log_y = - sum( reallog( abs( diag( cholSigma ) ) ) ) - 0.91893853320467274 * D; % 0.5 * log( 2 * pi ) = 0.91893853320467274
-    TIcholSigma_mInnovation = cholSigma' \ bsxfun( @minus, x, mu );
-    log_y = log_y - 0.5 * sum( TIcholSigma_mInnovation .* TIcholSigma_mInnovation, 1 );
 end
