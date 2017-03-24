@@ -73,7 +73,7 @@ end
 function [ CubatureWeights, CubaturePoints, NCubaturePoints ] = GetGaussianCubaturePoints( IntDim, FilterCubatureDegree )
     if imag( FilterCubatureDegree ) ~= 0
         NCubaturePoints = 2 ^ imag( FilterCubatureDegree );
-        CubaturePoints = [ zeros( IntDim, 1 ), randn( IntDim, NCubaturePoints ) ];
+        CubaturePoints = [ zeros( IntDim, 1 ), randn( IntDim, NCubaturePoints - 1 ) ];
         CubatureWeights = 1;
     elseif FilterCubatureDegree > 0
          CubatureOrder = ceil( 0.5 * ( FilterCubatureDegree - 1 ) );
