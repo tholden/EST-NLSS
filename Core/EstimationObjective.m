@@ -9,13 +9,12 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     DynamicNu = Options.DynamicNu;
     NoSkewLikelihood = Options.NoSkewLikelihood;
     NoTLikelihood = Options.NoTLikelihood;
-    StationaryDistPeriods = Options.StationaryDistPeriods;
-    StationaryDistDrop = Options.StationaryDistDrop;
     StdDevThreshold = Options.StdDevThreshold;
     
     Data = Options.Data;
     
-    ExoCovariance = Options.ExoCovariance;
+    RootExoCovariance = Options.RootExoCovariance;
+    StationaryDistDraws = Options.StationaryDistDraws;
     
     [ N, T ] = size( Data );
     
@@ -41,11 +40,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     
     assert( all( isfinite( StateSteadyState(:) ) ), 'ESTNLSS:EstimationObjective:NonFiniteInitialStateSteadyState', 'The solve functor returned a non-finite initial steady-state.' );
     
-    RootExoCovariance = ObtainEstimateRootCovariance( ExoCovariance, StdDevThreshold );
-
-    OldRNGState = rng( 'default' );
-    ShockSequence = RootExoCovariance * randn( size( RootExoCovariance, 2 ), StationaryDistPeriods + StationaryDistDrop );
-    rng( OldRNGState );
+    ShockSequence = RootExoCovariance * StationaryDistDraws;
     
 	[ PersistentState, EndoSimulation ] = Simulate( Parameters, PersistentState, [], ShockSequence, 0 );
     

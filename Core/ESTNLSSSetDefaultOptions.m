@@ -15,11 +15,19 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     Options = SetDefaultOption( Options, 'Simulate', @( Parameters, PersistentState, InitialStates, ShockSequence, t ) [] );
     Options = SetDefaultOption( Options, 'Solve', @( Parameters, PersistentState ) [] );
     Options = SetDefaultOption( Options, 'SkipStandardErrors', false );
-    Options = SetDefaultOption( Options, 'StationaryDistPeriods', 1000 );
-    Options = SetDefaultOption( Options, 'StationaryDistDrop', 100 );
+    Options = SetDefaultOption( Options, 'StationaryDistAccuracy', 10 );
     Options = SetDefaultOption( Options, 'StdDevThreshold', eps ^ 0.375 );    
     Options = SetDefaultOption( Options, 'UB', [] );
     Options = SetDefaultOption( Options, 'MeasurementVariableNames', {} );
+    
+    Options = SetDefaultOption( Options, 'RootExoCovariance', ObtainEstimateRootCovariance( Options.ExoCovariance, StdDevThreshold ) );
+    StationaryDistSimulationLength = 2 .^ StationaryDistAccuracy - 1;
+    QMCPoints = SobolSetWrapper( size( Options.RootExoCovariance, 2 ), StationaryDistSimulationLength );
+    OldRNGState = rng( 'default' );
+    QMCPointsIndices = randperm( StationaryDistSimulationLength );
+    rng( OldRNGState );
+    Options = SetDefaultOption( Options, 'StationaryDistDraws', QMCPoints( :, QMCPointsIndices ) );
+    
     Options = orderfields( Options );
     
     if ~Smoothing && Options.CompileLikelihood

@@ -92,7 +92,7 @@ Basic Usage
       where:
         * `Parameters` is a vector containing the model's current parameters.
         * `PersistentState` is the current `PersistentState` which can be a MATLAB variable of any kind. `PersistentState` may be used for e.g. storing the solution, or storing the solution of some slowly changing internal optimisation problem.
-        * `InitialStates` is either an empty array, or a matrix of state vectors from which simulation steps should be performed. Rows of `InitialStates` give variables, and columns give observations. If `InitialStates` is empty, then the simulation call should return in `EndoSimulation` a large number of draws from the distribution of the endogenous variables at time 0 (where time 1 is the first observation), of length given by the number of columns of `ShockSequence`. For stationary models, the easiest way to do this is to return a time-series simulation, starting from some arbitrary point (ideally, a draw from the ergodic distribution, but the steady-state will do).
+        * `InitialStates` is either an empty array, or a matrix of state vectors from which simulation steps should be performed. Rows of `InitialStates` give variables, and columns give observations. If `InitialStates` is empty, then the simulation call should return in `EndoSimulation` a large number of draws from the distribution of the endogenous variables at time 0 (where time 1 is the first observation), of length given by the number of columns of `ShockSequence`. For stationary models, the easiest way to do this is to return a time-series simulation, starting from some arbitrary point (ideally, either a draw from the ergodic distribution, or the final period of a previous simulation, saved to `PersistentState`).
         * `ShockSequence` is a matrix of pseudo-draws from a Gaussian distribution with covariance given by the set `ExoCovariance`. Rows of `ShockSequence` give particular shocks, and columns give observations. The simulation function should not use any other source of randomness.
         * `t` is a non-negative integer giving the current time period, ranging from `0` to the number of columns of the input `Data`.
         * `EndoSimulation` returns the generated simulation of the model's endogenous variables (i.e. all of the model's states, and any controls of interest). Rows of `EndoSimulation` give variables and columns give observations. `EndoSimulation` should have as many columns as `ShockSequence`.
@@ -107,10 +107,8 @@ Basic Usage
         * `StateVariableIndices` is a vector of indices specifying which of the variables returned by the `Simulate` functor in `EndoSimulation` are state variables. It should have the same length as `StateSteadyState`.
     * `SkipStandardErrors` (default: `false`)
       Makes EST-NLSS skip calculation of standard errors for the estimated parameters.
-    * `StationaryDistPeriods` (default: `1000`)
-      The number of periods used to evaluate the stationary distribution of the model.
-    * `StationaryDistDrop` (default: `100`)
-      The number of periods used as burn-in prior to evaluating the stationary distribution of the model.
+    * `StationaryDistAccuracy` (default: `10`)
+      `2 ^ StationaryDistAccuracy - 1` periods will be used to evaluate the stationary distribution of the model.
     * `StdDevThreshold` (default: `1e-6`)
       Specifies the threshold below which the standard deviation of the state is set to zero, for dimension reduction.
 * `PersistentState`
