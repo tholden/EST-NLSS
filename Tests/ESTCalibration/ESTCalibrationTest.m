@@ -6,20 +6,26 @@ addpath ../../Core/ESTDist
 addpath ../../Core/Utils
 
 N = 1;
-FilterCubatureDegree = 5;
+FilterCubatureDegree = 20;
+AllowTailEvaluations = true;
 
 xi = 10 * randn( N, 1 );
-RootOmega = 0.1 * randn( N, N );
+RootOmega = 0.001; % 0.1 * randn( N, N );
 Omega = RootOmega * RootOmega';
 [ Omega, cholOmega ] = NearestSPD( Omega );
-delta = randn( N, 1 );
-tau = 10 * randn;
-nu = 4.5 + 4 * randn ^ 2; % Inf;
+delta = 1; % randn( N, 1 );
+tau = 1; % 10 * randn;
+nu = 10; % 4.5 + 4 * randn ^ 2;
 
 disp( 'tau, nu:' );
 disp( [ tau, nu ] );
 
-[ Weights, ESTPoints, NCubaturePoints ] = GetESTCubaturePoints( xi, Omega, delta, tau, nu, FilterCubatureDegree );
+[ Weights, ESTPoints, NCubaturePoints, ET1, MedT ] = GetESTCubaturePoints( xi, Omega, delta, tau, nu, FilterCubatureDegree, eps ^ 0.375, AllowTailEvaluations );
+
+disp( 'ET1, MedT:' );
+disp( [ ET1, MedT ] );
+
+muAlt = xi + delta * ET1;
 
 mu = sum( bsxfun( @times, ESTPoints, Weights ), 2 );
 DemeanedESTPoints = bsxfun( @minus, ESTPoints, mu );
@@ -29,6 +35,14 @@ Sigma = DemeanedESTPoints * Weighted_DemeanedESTPoints';
 [ Sigma, cholSigma ] = NearestSPD( Sigma );
 
 lambda = ESTPoints( :, 1 );
+
+lambdaAlt = xi + delta * MedT;
+
+disp( 'mu, muAlt:' );
+disp( [ mu, muAlt ] );
+
+disp( 'lambda, lambdaAlt:' );
+disp( [ lambda, lambdaAlt ] );
 
 cholSigma_muMlambda = cholSigma * ( mu - lambda );
 
@@ -54,20 +68,8 @@ plot( xiZcheck( idx1Zcheck : idx2Zcheck ), fZcheck( idx1Zcheck : idx2Zcheck ) );
 sZ3 = realpow( Zcheck, 3 ) * Weights';
 sZ4 = max( 3, realpow( Zcheck, 4 ) * Weights' );
 
-disp( 'EZ^3, EZ^3:' );
+disp( 'EZ^3, EZ^4:' );
 disp( [ sZ3, sZ4 ] );
-
-[ resid, xiHat, deltaHat, cholOmegaHat ] = CalibrateMomentsEST( tau, nu, mu, lambda, cholSigma, sZ3, sZ4 );
-
-disp( 'at truth:' );
-disp( 'resid:' );
-disp( resid' );
-disp( 'xi comparison:' );
-disp( [ xi, xiHat ] );
-disp( 'delta comparison:' );
-disp( [ delta, deltaHat ] );
-disp( 'diag( cholOmega ) comparison:' );
-disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
 
 Estim4 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), mu, lambda, cholSigma, sZ3, sZ4 ), [ min( 10, tau ); reallog( min( 100, nu ) - 4 ) ] );
 Estim3 = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nu, mu, lambda, cholSigma, sZ3, [] ), min( 10, tau ) );
@@ -77,26 +79,13 @@ Estim4( 2 ) = 4 + eps( 4 ) + exp( Estim4( 2 ) );
 disp( 'Estim4 Estim3 Truth:' );
 disp( [ Estim4( 1 ), Estim3, tau; Estim4( 2 ), nu, nu ] );
 
-[ resid, xiHat, deltaHat, cholOmegaHat ] = CalibrateMomentsEST( Estim4( 1 ), Estim4( 2 ), mu, lambda, cholSigma, sZ3, sZ4 );
+fprintf( '\n' );
+
+disp( 'at truth:' );
+DisplayResults( tau, nu, mu, lambda, cholSigma, sZ3, sZ4, xi, delta, cholOmega );
 
 disp( 'at Estim4:' );
-disp( 'resid:' );
-disp( resid' );
-disp( 'xi comparison:' );
-disp( [ xi, xiHat ] );
-disp( 'delta comparison:' );
-disp( [ delta, deltaHat ] );
-disp( 'diag( cholOmega ) comparison:' );
-disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
-
-[ resid, xiHat, deltaHat, cholOmegaHat ] = CalibrateMomentsEST( Estim3( 1 ), nu, mu, lambda, cholSigma, sZ3, sZ4 );
+DisplayResults( Estim4( 1 ), Estim4( 2 ), mu, lambda, cholSigma, sZ3, sZ4, xi, delta, cholOmega );
 
 disp( 'at Estim3:' );
-disp( 'resid:' );
-disp( resid' );
-disp( 'xi comparison:' );
-disp( [ xi, xiHat ] );
-disp( 'delta comparison:' );
-disp( [ delta, deltaHat ] );
-disp( 'diag( cholOmega ) comparison:' );
-disp( [ diag( cholOmega ), diag( cholOmegaHat ) ] );
+DisplayResults( Estim3( 1 ), nu, mu, lambda, cholSigma, sZ3, sZ4, xi, delta, cholOmega );
