@@ -217,7 +217,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn
         
         RnoCheck = Rno + deltano * etano';
         
-        [ LogObservationLikelihood, cholQnoCheck, TIcholQnoCheck_mInnovation, TIcholQnoCheck_eta, scalePnn, scaledeltann, taunn, nunn ] = ESTLogPDF( m, mno, cholQno, etano, tauno, nuno );
+        [ LogObservationLikelihood, cholQnoCheck, TIcholQnoCheck_mInnovation, TIcholQnoCheck_eta, scalePnn, scaledeltann, taunn, nunn ] = ESTLogPDF( m, mno, Qno, etano, tauno, nuno );
 
         RCheck_IcholQnoCheck = RnoCheck / cholQnoCheck;
         
