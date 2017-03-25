@@ -26,7 +26,7 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     OldRNGState = rng( 'default' );
     QMCPointsIndices = randperm( StationaryDistSimulationLength );
     rng( OldRNGState );
-    Options = SetDefaultOption( Options, 'StationaryDistDraws', QMCPoints( :, QMCPointsIndices ) );
+    Options = SetDefaultOption( Options, 'StationaryDistDraws', QMCPoints( :, QMCPointsIndices ) ); % This procedure is justified by https://arxiv.org/pdf/0807.4858.pdf
     
     Options = orderfields( Options );
     
