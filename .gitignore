@@ -20,6 +20,8 @@ ESTNLSSTempEstimationObjective.m
 ESTNLSSTempEstimationObjectiveMex.mex*
 ESTNLSSTempKalmanStep.m
 
+HigherOrderSobolCache.mat
+
 codegen/
 
 .DS_Store
