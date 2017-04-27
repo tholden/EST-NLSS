@@ -10,7 +10,7 @@ FilterCubatureDegree = 20;
 AllowTailEvaluations = true;
 
 xi = 0; % 10 * randn( N, 1 );
-RootOmega = 0.001; % 0.1 * randn( N, N );
+RootOmega = 10; % 0.1 * randn( N, N );
 Omega = RootOmega * RootOmega';
 [ Omega, cholOmega ] = NearestSPD( Omega );
 delta = 1; % randn( N, 1 );
