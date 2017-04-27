@@ -15,16 +15,15 @@ Data = Data( :, ( Drop + 1 ) : end );
 
 EstimationOptions = struct;
 
-EstimationOptions.CompileLikelihood = true;
+EstimationOptions.CompileLikelihood = false;
 EstimationOptions.DynamicNu = true;
-EstimationOptions.FilterCubatureDegree = 9;
+EstimationOptions.FilterCubatureDegree = 19;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';
 EstimationOptions.NoSkewLikelihood = false;
 EstimationOptions.NoTLikelihood = false;
 EstimationOptions.Prior = '';
 EstimationOptions.SkipStandardErrors = false;
-EstimationOptions.StationaryDistPeriods = 1000;
-EstimationOptions.StationaryDistDrop = 100;
+EstimationOptions.StationaryDistAccuracy = 10;
 EstimationOptions.StdDevThreshold = eps;
 
 EstimationOptions.ParameterNames = { 'log( mu )', 'log( ( 1 + phi ) / ( 1 - phi ) )', 'log( omega )', 'log( ( 1 + rho ) / ( 1 - rho ) )' };
