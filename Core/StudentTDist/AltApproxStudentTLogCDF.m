@@ -1,8 +1,8 @@
-function log_y = StudentTLogCDF( x, nu )
+function log_y = AltApproxStudentTLogCDF( x, nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:StudentTLogCDF:NuSize', 'StudentTLogCDF only supports univariate nu.' );
-    assert( nu >= 0, 'ESTNLSS:StudentTLogCDF:NuSign', 'StudentTLogCDF requires nu to be weakly positive.' );
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNInputX', 'StudentTLogCDF was passed a NaN input x.' );
+    assert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
+    assert( nu >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
+    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
     
     lognu = log( nu );
     if lognu <= -Inf
@@ -31,7 +31,7 @@ function log_y = StudentTLogCDF( x, nu )
     
     if nu < Inf
         
-        yRemaining = tcdf( xRemaining, nu );
+        yRemaining = cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5;
         SelGood = yRemaining > 0;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
@@ -83,7 +83,7 @@ function log_y = StudentTLogCDF( x, nu )
         
     else
         
-        yRemaining = normcdf( xRemaining );
+        yRemaining = 0.5 + 0.5 * erfz( xRemaining * 0.7071067811865475244008 ); % 0.7071067811865475244008 = 1 / sqrt( 2 )
         SelGood = yRemaining > 0;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
@@ -112,6 +112,6 @@ function log_y = StudentTLogCDF( x, nu )
     IdxPos = Remaining( Pos_xRemaining );
     log_y( IdxPos ) = log1p( -exp( log_y( IdxPos ) ) );
     
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNOutputLogY', 'StudentTLogCDF returned a NaN output log_y.' );    
+    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNOutputLogY', 'ApproxStudentTLogCDF returned a NaN output log_y.' );    
     
 end
