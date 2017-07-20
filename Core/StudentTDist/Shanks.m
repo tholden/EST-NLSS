@@ -20,8 +20,7 @@ function Seq = Shanks( DSeq )
 
         Seq( FiniteAdj ) = Seq( FiniteAdj ) - Adj( FiniteAdj );
 
-        coder.unroll( );
-        for Idx = 1 : ( 0.5 * ( size( Seq, 1 ) - 1 ) )
+        for Idx = coder.unroll( 1 : ( 0.5 * ( size( Seq, 1 ) - 1 ) ) )
 
             DSeq = diff( Seq );
 
