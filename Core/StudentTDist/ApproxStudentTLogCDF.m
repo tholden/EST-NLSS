@@ -26,7 +26,7 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     
     xRemaining = x( Remaining );
     
-    Pos_xRemaining = real( xRemaining ) > 0;
+    Pos_xRemaining = ( real( xRemaining ) > 0 ) | ( ( real( xRemaining ) == 0 ) & ( imag( xRemaining ) > 0 ) );
     xRemaining( Pos_xRemaining ) = -xRemaining( Pos_xRemaining );
     
     if real( nu ) < Inf
