@@ -32,7 +32,7 @@ function log_y = StudentTLogCDF( x, nu )
     if nu < Inf
         
         yRemaining = tcdf( xRemaining, nu );
-        SelGood = yRemaining > 0;
+        SelGood = yRemaining > realmin;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
         IdxBad = Remaining( SelBad );

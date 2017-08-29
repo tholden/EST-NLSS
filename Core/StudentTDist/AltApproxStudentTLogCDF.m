@@ -32,7 +32,7 @@ function log_y = AltApproxStudentTLogCDF( x, nu )
     if real( nu ) < Inf
         
         yRemaining = cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5;
-        SelGood = real( yRemaining ) > 0;
+        SelGood = real( yRemaining ) > realmin;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
         IdxBad = Remaining( SelBad );
