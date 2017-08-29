@@ -1,11 +1,11 @@
 function log_y = ApproxStudentTLogCDF( x, nu )
 
     assert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
-    assert( nu >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
+    assert( real( nu ) >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
     
     lognu = log( nu );
-    if lognu <= -Inf
+    if real( lognu ) <= -Inf
         log_y = log( 0.5 ) * ones( size( x ) );
         log_y( x <= -Inf ) = -Inf;
         log_y( x >= Inf ) = 0;
@@ -14,9 +14,9 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     
     log_y = zeros( size( x ) );
     
-    SelInf = x >= Inf;
+    SelInf = real( x ) >= Inf;
     
-    SelNInf = x <= -Inf;
+    SelNInf = real( x ) <= -Inf;
     log_y( SelNInf ) = -Inf;
     
     Done = SelInf | SelNInf;
@@ -26,12 +26,12 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     
     xRemaining = x( Remaining );
     
-    Pos_xRemaining = xRemaining > 0;
+    Pos_xRemaining = real( xRemaining ) > 0;
     xRemaining( Pos_xRemaining ) = -xRemaining( Pos_xRemaining );
     
-    if nu < Inf
+    if real( nu ) < Inf
         
-        SelSmallX = xRemaining .* xRemaining < nu;
+        SelSmallX = real( xRemaining .* xRemaining ) < real( nu );
         IdxSmallX = Remaining( SelSmallX );
         SelBigX = ~SelSmallX;
         IdxBigX = Remaining( SelBigX );
@@ -107,14 +107,14 @@ function log_y = ApproxStudentTLogCDF( x, nu )
         
         log_y( IdxBigX ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - cbetaln_nuO2_1O2 + 0.5 * nu * log( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
         
-        log_y( IdxBigX( ItR12 >= Inf ) ) = logH;
+        log_y( IdxBigX( real( ItR12 ) >= Inf ) ) = logH;
         
-        log_y( IdxBigX( log_y( IdxBigX ) > logH ) ) = logH;
+        log_y( IdxBigX( real( log_y( IdxBigX ) ) > real( logH ) ) ) = logH;
         
     else
         
         yRemaining = normcdf( xRemaining );
-        SelSmallX = yRemaining > 0;
+        SelSmallX = real( yRemaining ) > 0;
         IdxSmallX = Remaining( SelSmallX );
         SelBigX = ~SelSmallX;
         IdxBigX = Remaining( SelBigX );
@@ -133,9 +133,9 @@ function log_y = ApproxStudentTLogCDF( x, nu )
         
         log_y( IdxBigX ) = Shanks( bsxfun( @times, [ 1; -1; 2.5; -12.33333333333333333333; 88.25; -816.2; 9200.833333333333333333 ], [ -.5*tR2-.9189385332046727417802-log(-t); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) );
         
-        log_y( IdxBigX( ItR12 >= Inf ) ) = logH;
+        log_y( IdxBigX( real( ItR12 ) >= Inf ) ) = logH;
         
-        log_y( IdxBigX( log_y( IdxBigX ) > logH ) ) = logH;
+        log_y( IdxBigX( real( log_y( IdxBigX ) ) > real( logH ) ) ) = logH;
         
     end
     

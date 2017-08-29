@@ -5,18 +5,18 @@ function log_y = AltApproxStudentTLogCDF( x, nu )
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
     
     lognu = log( nu );
-    if lognu <= -Inf
+    if real( lognu ) <= -Inf
         log_y = log( 0.5 ) * ones( size( x ) );
-        log_y( x <= -Inf ) = -Inf;
-        log_y( x >= Inf ) = 0;
+        log_y( real( x ) <= -Inf ) = -Inf;
+        log_y( real( x ) >= Inf ) = 0;
         return
     end
     
     log_y = zeros( size( x ) );
     
-    SelInf = x >= Inf;
+    SelInf = real( x ) >= Inf;
     
-    SelNInf = x <= -Inf;
+    SelNInf = real( x ) <= -Inf;
     log_y( SelNInf ) = -Inf;
     
     Done = SelInf | SelNInf;
@@ -26,13 +26,13 @@ function log_y = AltApproxStudentTLogCDF( x, nu )
     
     xRemaining = x( Remaining );
     
-    Pos_xRemaining = xRemaining > 0;
+    Pos_xRemaining = real( xRemaining ) > 0;
     xRemaining( Pos_xRemaining ) = -xRemaining( Pos_xRemaining );
     
-    if nu < Inf
+    if real( nu ) < Inf
         
         yRemaining = cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5;
-        SelGood = yRemaining > 0;
+        SelGood = real( yRemaining ) > 0;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
         IdxBad = Remaining( SelBad );
@@ -77,14 +77,14 @@ function log_y = AltApproxStudentTLogCDF( x, nu )
         
         log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - cbetaln( nu * 0.5, 0.5 ) + 0.5 * nu * log( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
         
-        log_y( IdxBad( ItR12 >= Inf ) ) = logH;
+        log_y( IdxBad( real( ItR12 ) >= Inf ) ) = logH;
         
-        log_y( IdxBad( log_y( IdxBad ) > logH ) ) = logH;
+        log_y( IdxBad( real( log_y( IdxBad ) ) > real( logH ) ) ) = logH;
         
     else
         
         yRemaining = 0.5 + 0.5 * erfz( xRemaining * 0.7071067811865475244008 ); % 0.7071067811865475244008 = 1 / sqrt( 2 )
-        SelGood = yRemaining > 0;
+        SelGood = real( yRemaining ) > 0;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
         IdxBad = Remaining( SelBad );
@@ -103,9 +103,9 @@ function log_y = AltApproxStudentTLogCDF( x, nu )
         
         log_y( IdxBad ) = Shanks( bsxfun( @times, [ 1; -1; 2.5; -12.33333333333333333333; 88.25; -816.2; 9200.833333333333333333 ], [ -.5*tR2-.9189385332046727417802-log(-t); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) );
         
-        log_y( IdxBad( ItR12 >= Inf ) ) = logH;
+        log_y( IdxBad( real( ItR12 ) >= Inf ) ) = logH;
         
-        log_y( IdxBad( log_y( IdxBad ) > logH ) ) = logH;
+        log_y( IdxBad( real( log_y( IdxBad ) ) > real( logH ) ) ) = logH;
         
     end
     
