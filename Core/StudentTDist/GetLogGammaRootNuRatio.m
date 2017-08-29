@@ -1,9 +1,9 @@
 function logGammaRootNuRatio = GetLogGammaRootNuRatio( nu )
 
     assert( numel( nu ) == 1, 'ESTNLSS:GetLogGammaRootNuRatio:NuSize', 'GetLogGammaRootNuRatio only supports univariate nu.' );
-    assert( nu >= 0, 'ESTNLSS:GetLogGammaRootNuRatio:NuSign', 'GetLogGammaRootNuRatio requires nu to be weakly positive.' );
+    assert( real( nu ) >= 0, 'ESTNLSS:GetLogGammaRootNuRatio:NuSign', 'GetLogGammaRootNuRatio requires nu to be weakly positive.' );
 
-    if nu >= 10.0522850359735 % fzero(@(nu) eps(cgammaln( 0.5 * ( nu + 1 )))-7e-16,[8,12]) = 10.0522850359735
+    if real( nu ) >= 10.0522850359735 % fzero(@(nu) eps(cgammaln( 0.5 * ( nu + 1 )))-7e-16,[8,12]) = 10.0522850359735
         inu = 1 ./ nu;
         inu2 = inu .* inu;
         inu4 = inu2 .* inu2;

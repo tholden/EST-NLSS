@@ -11,7 +11,7 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     % figure( 2 ); surf( xr, xi, z2 );
 
     assert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
-    assert( nu >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
+    assert( real( nu ) >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
     
     lognu = log( nu );
