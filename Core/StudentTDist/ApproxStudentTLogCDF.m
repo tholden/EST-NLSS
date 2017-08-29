@@ -1,5 +1,15 @@
 function log_y = ApproxStudentTLogCDF( x, nu )
 
+    % Test with:
+    % [ xr, xi ] = meshgrid( -100:1:100, -0.5:0.01:0.5 );
+    % x = xr + xi .* 1i;
+    % z1 = abs( ApproxStudentTLogCDF( x, 1 ) - log( 0.5 + 1 ./ pi .* atan( x ) ) );
+    % z2 = abs( ApproxStudentTLogCDF( x, 2 ) - log( 0.5 + 0.5 .* x ./ sqrt( 2 + x .* x ) ) ) ;
+    % disp( max( z1(:) ) );
+    % disp( max( z2(:) ) );
+    % figure( 1 ); surf( xr, xi, z1 );
+    % figure( 2 ); surf( xr, xi, z2 );
+
     assert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
     assert( nu >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
