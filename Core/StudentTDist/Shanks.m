@@ -2,26 +2,37 @@ function Seq = Shanks( DSeq )
 
     Seq = cumsum( DSeq );
     
-    if size( Seq, 1 ) >= 3
+    N = size( Seq, 1 );
+    e = eps;
+    se = sqrt( eps );
+    
+    if N >= 3
     
         DSeq = DSeq( 2:end, : );
 
         if mod( size( Seq, 1 ), 2 ) == 0
             Seq = Seq( 2:end, : );
             DSeq = DSeq( 2:end, : );
+            N = N - 1;
         end
 
         Seq = Seq( 3:end, : );
         LDSeq = DSeq( 1:(end-1), : );
         DSeq = DSeq( 2:end, : );
+        N = N - 2;
 
-        Adj = DSeq .* DSeq ./ ( DSeq - LDSeq );
-        FiniteAdj = isfinite( Adj );
+        Top = DSeq .* DSeq;
+        Bottom = DSeq - LDSeq;
+        
+        aTop = abs( Top );
+        aBottom = abs( Bottom );
+        
+        GoodAdj = ( aBottom > e ) & ( max( aTop, aBottom ) > se );
 
-        Seq( FiniteAdj ) = Seq( FiniteAdj ) - Adj( FiniteAdj );
+        Seq( GoodAdj ) = Seq( GoodAdj ) - Top( GoodAdj ) ./ Bottom( GoodAdj );
 
         coder.unroll( );
-        for Idx = 1 : ( 0.5 * ( size( Seq, 1 ) - 1 ) )
+        for Idx = 1 : ( 0.5 * ( N - 1 ) )
 
             DSeq = diff( Seq );
 
@@ -29,10 +40,15 @@ function Seq = Shanks( DSeq )
             LDSeq = DSeq( 1:(end-1), : );
             DSeq = DSeq( 2:end, : );
 
-            Adj = DSeq .* DSeq ./ ( DSeq - LDSeq );
-            FiniteAdj = isfinite( Adj );
+            Top = DSeq .* DSeq;
+            Bottom = DSeq - LDSeq;
 
-            Seq( FiniteAdj ) = Seq( FiniteAdj ) - Adj( FiniteAdj );
+            aTop = abs( Top );
+            aBottom = abs( Bottom );
+
+            GoodAdj = ( aBottom > e ) & ( max( aTop, aBottom ) > se );
+
+            Seq( GoodAdj ) = Seq( GoodAdj ) - Top( GoodAdj ) ./ Bottom( GoodAdj );
 
         end
     
