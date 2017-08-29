@@ -1,4 +1,4 @@
-function [ xi, InvCholOmega, delta, tau, nu, LogDetInvCholOmega ] = GetESTParametersFromVector( p )
+function [ xi, InvCholOmega, delta, tau, nu, LogDetInvCholOmega ] = GetESTParametersFromVector( p, n )
 
     tau = p( 1 );
     nu = exp( p( 2 ) );
