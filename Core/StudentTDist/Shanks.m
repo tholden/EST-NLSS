@@ -31,8 +31,7 @@ function Seq = Shanks( DSeq )
 
         Seq( GoodAdj ) = Seq( GoodAdj ) - Top( GoodAdj ) ./ Bottom( GoodAdj );
 
-        coder.unroll( );
-        for Idx = 1 : ( 0.5 * ( N - 1 ) )
+        for Idx = coder.unroll( 1 : ( 0.5 * ( N - 1 ) ) )
 
             DSeq = diff( Seq );
 
