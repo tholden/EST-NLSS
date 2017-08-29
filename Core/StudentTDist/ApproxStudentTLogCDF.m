@@ -1,4 +1,4 @@
-function log_y = AltApproxStudentTLogCDF( x, nu )
+function log_y = ApproxStudentTLogCDF( x, nu )
 
     assert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
     assert( nu >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
