@@ -1,7 +1,7 @@
 function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck_delta, scaleOmegaNew, scaledeltaNew, tauNew, nuNew ] = ESTLogPDF( x, xi, Omega, delta, tau, nu )
 
     assert( numel( nu ) == 1, 'ESTNLSS:ESTLogPDF:NuSize', 'ESTLogPDF only supports univariate nu.' );
-    assert( nu > 0, 'ESTNLSS:ESTLogPDF:NuSign', 'ESTLogPDF requires nu to be strictly positive.' );
+    assert( real( nu ) > 0, 'ESTNLSS:ESTLogPDF:NuSign', 'ESTLogPDF requires nu to be strictly positive.' );
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ESTLogPDF:NaNInputX', 'ESTLogPDF was passed a NaN input x.' );
 
     [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta' );
@@ -11,7 +11,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
 
     nx = numel( xi );
     
-    if isfinite( nu )
+    if isfinite( real( nu ) )
         scaleOmegaNew = ( nu + sum( TIcholOmegaCheck_mInnovation .* TIcholOmegaCheck_mInnovation, 1 ) ) / ( nu + nx );
     else
         scaleOmegaNew = 1;
@@ -28,7 +28,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
 
     log_y = - sum( reallog( abs( diag( cholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
 
-    FiniteCDFDifferenceSelect = isfinite( log_tcdf_tau_nu ) | isfinite( log_tcdf_tauNew_nuNew );
+    FiniteCDFDifferenceSelect = isfinite( real( log_tcdf_tau_nu ) ) | isfinite( real( log_tcdf_tauNew_nuNew ) );
     
     log_y( FiniteCDFDifferenceSelect ) = log_y( FiniteCDFDifferenceSelect ) + tcdfDifference( FiniteCDFDifferenceSelect );
         
