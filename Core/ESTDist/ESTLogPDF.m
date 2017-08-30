@@ -18,15 +18,15 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     end
     
     scaledeltaNew = 1 / ( 1 - TIcholOmegaCheck_delta' * TIcholOmegaCheck_delta );
-    tauNew = realsqrt( scaledeltaNew ./ scaleOmegaNew ) .* ( sum( bsxfun( @times, TIcholOmegaCheck_delta, TIcholOmegaCheck_mInnovation ), 1 ) + tau );
+    tauNew = sqrt( scaledeltaNew ./ scaleOmegaNew ) .* ( sum( bsxfun( @times, TIcholOmegaCheck_delta, TIcholOmegaCheck_mInnovation ), 1 ) + tau );
     nuNew = nu + nx;
 
     MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu = MVTStudentTLogPDF( TIcholOmegaCheck_mInnovation, nu );
-    log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
-    log_tcdf_tauNew_nuNew = StudentTLogCDF( tauNew, nuNew );
+    log_tcdf_tau_nu = ApproxStudentTLogCDF( tau, nu );
+    log_tcdf_tauNew_nuNew = ApproxStudentTLogCDF( tauNew, nuNew );
     tcdfDifference = log_tcdf_tauNew_nuNew - log_tcdf_tau_nu;
 
-    log_y = - sum( reallog( abs( diag( cholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
+    log_y = - sum( log( abs( diag( cholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
 
     FiniteCDFDifferenceSelect = isfinite( real( log_tcdf_tau_nu ) ) | isfinite( real( log_tcdf_tauNew_nuNew ) );
     
