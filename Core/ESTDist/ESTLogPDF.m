@@ -1,13 +1,21 @@
-function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck_delta, scaleOmegaNew, scaledeltaNew, tauNew, nuNew ] = ESTLogPDF( x, xi, Omega, delta, tau, nu )
+function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck_delta, scaleOmegaNew, scaledeltaNew, tauNew, nuNew ] = ESTLogPDF( x, xi, Omega, delta, tau, nu, OmegaIsCholesky )
 
     assert( numel( nu ) == 1, 'ESTNLSS:ESTLogPDF:NuSize', 'ESTLogPDF only supports univariate nu.' );
     assert( real( nu ) > 0, 'ESTNLSS:ESTLogPDF:NuSign', 'ESTLogPDF requires nu to be strictly positive.' );
     assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ESTLogPDF:NaNInputX', 'ESTLogPDF was passed a NaN input x.' );
+    
+    if nargin < 7
+        OmegaIsCholesky = false;
+    end
 
-    [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta' );
+    if OmegaIsCholesky
+        cholOmegaCheck = CholeskyUpdate( Omega, delta, '+' );
+    else
+        [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
+    end
 
-    TIcholOmegaCheck_mInnovation = cholOmegaCheck' \ bsxfun( @minus, x, xi );
-    TIcholOmegaCheck_delta = cholOmegaCheck' \ delta;
+    TIcholOmegaCheck_mInnovation = cholOmegaCheck.' \ bsxfun( @minus, x, xi );
+    TIcholOmegaCheck_delta = cholOmegaCheck.' \ delta;
 
     nx = numel( xi );
     
@@ -17,7 +25,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
         scaleOmegaNew = 1;
     end
     
-    scaledeltaNew = 1 / ( 1 - TIcholOmegaCheck_delta' * TIcholOmegaCheck_delta );
+    scaledeltaNew = 1 / ( 1 - TIcholOmegaCheck_delta.' * TIcholOmegaCheck_delta );
     tauNew = sqrt( scaledeltaNew ./ scaleOmegaNew ) .* ( sum( bsxfun( @times, TIcholOmegaCheck_delta, TIcholOmegaCheck_mInnovation ), 1 ) + tau );
     nuNew = nu + nx;
 
