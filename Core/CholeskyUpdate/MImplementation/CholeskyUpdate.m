@@ -8,18 +8,21 @@ function [ R, p ] = CholeskyUpdate( R, x, SignString )
     x = x(:);
     n = length( x );
     for k = 1 : n
-        r2 = R( k, k ) .* R( k, k ) + Sign * x( k ) .* x( k );
-        if r2 <= 0 || R( k, k ) == 0
+        Rkk = R( k, k );
+        conjRkk = conj( Rkk );
+        xk = x( k );
+        r2 = conjRkk .* Rkk + Sign * conj( xk ) .* xk;
+        if real( r2 ) <= 0 || R( k, k ) == 0
             if nargout < 2
                 error( 'ESTNLSS:NonPDFollowingCholeskyUpdate', 'CholeskyUpdate produced a non-positive-definite matrix.' );
             else
                 p = k;
-                return;
+                return
             end
         end
         r = realsqrt( r2 );
-        c = r / R( k, k );
-        s = x( k ) / R( k, k );
+        c = r / conjRkk;
+        s = xk / conjRkk;
         R( k, k ) = r;
         Indices = ( ( k + 1 ) : n )';
         R( k, Indices ) = ( R( k, Indices ) + Sign * s * x( Indices )' ) / c;
@@ -28,5 +31,5 @@ function [ R, p ] = CholeskyUpdate( R, x, SignString )
     p = 0;
 end
 
-% while true; R = randn( 10 ); A = R' * R; R = chol( A ); x = randn( 10, 1 ); [ R1, p ] = CholeskyUpdate( R, x, '+' ); if p == 0; disp( max( max( abs( R1' * R1 - A - x * x' ) ) ) ); end; end;
-% while true; R = randn( 10 ); A = R' * R; R = chol( A ); x = randn( 10, 1 ); [ R1, p ] = CholeskyUpdate( R, x, '-' ); if p == 0; disp( max( max( abs( R1' * R1 - A + x * x' ) ) ) ); end; end;
+% while true; R = randn( 10 ) + randn( 10 ) .* 1i; A = R' * R; R = chol( A ); R = R + diag( randn( 10, 1 ) .* 1i ); A = R' * R; x = randn( 10, 1 ) + randn( 10, 1 ) .* 1i; [ R1, p ] = CholeskyUpdate( R, x, '+' ); if p == 0; disp( max( max( abs( R1' * R1 - A - x * x' ) ) ) ); end; end;
+% while true; R = randn( 10 ) + randn( 10 ) .* 1i; A = R' * R; R = chol( A ); R = R + diag( randn( 10, 1 ) .* 1i ); A = R' * R; x = randn( 10, 1 ) + randn( 10, 1 ) .* 1i; [ R1, p ] = CholeskyUpdate( R, x, '-' ); if p == 0; disp( max( max( abs( R1' * R1 - A + x * x' ) ) ) ); end; end;
