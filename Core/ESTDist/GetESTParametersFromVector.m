@@ -14,4 +14,3 @@ function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n )
     CholOmega = CholOmega + diag( DiagCholOmega );
 
 end
-
