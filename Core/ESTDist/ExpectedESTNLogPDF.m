@@ -1,10 +1,10 @@
-function [ log_y, Dlog_y ] = ExpectedESTLogPDF( p, X, W )
+function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W )
 
     n = size( X, 1 );
     
     [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n );
     
-    log_y_Points = ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
+    log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
     
     log_y = log_y_Points * W(:);
     
@@ -17,7 +17,7 @@ function [ log_y, Dlog_y ] = ExpectedESTLogPDF( p, X, W )
         for i = 1 : k
             pTmp = p( i );
             p( i ) = pTmp + sei;
-            Dlog_y( i ) = imag( ExpectedESTLogPDF( p, X, W ) ) / se;
+            Dlog_y( i ) = imag( ExpectedESTNLogPDF( p, X, W ) ) / se;
             p( i ) = pTmp;
         end
     end
