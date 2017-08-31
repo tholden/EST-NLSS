@@ -1,12 +1,19 @@
-function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W )
+function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W, fInf )
 
     n = size( X, 1 );
     
     [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n );
     
-    log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
+    try
+        log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
+        log_y = min( fInf, log_y_Points * W(:) );
+        if ~isfinite( log_y )
+            log_y = fInf;
+        end
+    catch
+        log_y = fInf;
+    end
     
-    log_y = log_y_Points * W(:);
     
     if nargout > 1
         k = length( p );
@@ -17,7 +24,7 @@ function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W )
         for i = 1 : k
             pTmp = p( i );
             p( i ) = pTmp + sei;
-            Dlog_y( i ) = imag( ExpectedESTNLogPDF( p, X, W ) ) / se;
+            Dlog_y( i ) = imag( ExpectedESTNLogPDF( p, X, W, fInf ) ) / se;
             p( i ) = pTmp;
         end
     end
