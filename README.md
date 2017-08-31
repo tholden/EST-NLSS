@@ -38,6 +38,8 @@ Basic Usage
   A column vector of initial parameters.
 * `Options`
   A struct including some or all of the following fields:
+    * `AllowTailEvaluations` (default: `false`)
+      Determines whether it is safe to use a potentially more efficient integration method which evaluates further into the tails of the distribution.
     * `CompileLikelihood` (default: `false`)
       Specifies whether to attempt to compile the likelihood. If true, this requires MATLAB version R2017a or later and MATLAB Coder.
     * `Data` (default: `[]`)

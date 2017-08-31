@@ -1,4 +1,5 @@
 function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
+    Options = SetDefaultOption( Options, 'AllowTailEvaluations', false );
     Options = SetDefaultOption( Options, 'CompileLikelihood', false );
     Options = SetDefaultOption( Options, 'Data', [] );
     Options = SetDefaultOption( Options, 'DynamicNu', false );
