@@ -5,22 +5,36 @@ addpath ../../Core/StudentTDist
 addpath ../../Core/ESTDist
 addpath ../../Core/Utils
 
-N = 1;
+N = 4;
 FilterCubatureDegree = 20;
 AllowTailEvaluations = true;
 
-xi = 0; % 10 * randn( N, 1 );
-RootOmega = 10; % 0.1 * randn( N, N );
+rng( 'default' );
+
+xi = 10 * randn( N, 1 );
+RootOmega = 0.1 * randn( N, N );
 Omega = RootOmega * RootOmega';
-[ Omega, cholOmega ] = NearestSPD( Omega );
-delta = 1; % randn( N, 1 );
-tau = 1; % 10 * randn;
-nu = 10; % 4.5 + 4 * randn ^ 2;
+[ Omega, CholOmega ] = NearestSPD( Omega );
+delta = randn( N, 1 );
+tau = 10 * randn;
+nu = 4.5 + 4 * randn ^ 2;
 
 disp( 'tau, nu:' );
 disp( [ tau, nu ] );
 
 [ Weights, ESTPoints, NCubaturePoints, ET1, MedT ] = GetESTCubaturePoints( xi, Omega, delta, tau, nu, FilterCubatureDegree, eps ^ 0.375, AllowTailEvaluations );
+
+p0 = InvGetESTParametersFromVector( xi, CholOmega, delta, tau, nu );
+f0 = ExpectedESTNLogPDF( p0, ESTPoints, Weights, Inf );
+
+fminlbfgsOptions = struct( 'Display', 'iter', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', false, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf );
+pOpt = fminlbfgs( @( p ) ExpectedESTNLogPDF( p, ESTPoints, Weights, f0 + 1 ), p0, fminlbfgsOptions );
+
+% FMinUncOptions = optimoptions( @fminunc, 'Display', 'iter-detailed', 'Algorithm', 'trust-region', 'SubproblemAlgorithm', 'factorization', 'CheckGradients', false, 'SpecifyObjectiveGradient', true, 'OptimalityTolerance', 1e-12, 'StepTolerance', 1e-12, 'FunctionTolerance', 1e-12, 'MaxFunctionEvaluations', Inf, 'MaxIterations', Inf );
+% pOpt = fminunc( @( p ) ExpectedESTNLogPDF( p, ESTPoints, Weights, f0 + 1 ), p0, FMinUncOptions );
+
+disp( 'p0 pOpt error:' );
+disp( [ p0, pOpt, pOpt - p0 ] );
 
 disp( 'ET1, MedT:' );
 disp( [ ET1, MedT ] );
@@ -81,10 +95,10 @@ disp( [ Estim4( 1 ), Estim3, tau; Estim4( 2 ), nu, nu ] );
 fprintf( '\n' );
 
 disp( 'at truth:' );
-DisplayResults( tau, nu, mu, lambda, cholSigma, sZ3, sZ4, xi, delta, cholOmega );
+DisplayResults( tau, nu, mu, lambda, cholSigma, sZ3, sZ4, xi, delta, CholOmega );
 
 disp( 'at Estim4:' );
-DisplayResults( Estim4( 1 ), Estim4( 2 ), mu, lambda, cholSigma, sZ3, sZ4, xi, delta, cholOmega );
+DisplayResults( Estim4( 1 ), Estim4( 2 ), mu, lambda, cholSigma, sZ3, sZ4, xi, delta, CholOmega );
 
 disp( 'at Estim3:' );
-DisplayResults( Estim3( 1 ), nu, mu, lambda, cholSigma, sZ3, sZ4, xi, delta, cholOmega );
+DisplayResults( Estim3( 1 ), nu, mu, lambda, cholSigma, sZ3, sZ4, xi, delta, CholOmega );
