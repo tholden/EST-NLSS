@@ -133,7 +133,8 @@ EST-NLSS incorporates code:
 * for evolutionary optimisation with covariance matrix adaptation, that is copyright Hansen, 2012,
 * for the implementation of special functions over a complex domain, that is copyright Godfrey, Acklam, 2004,
 * for the implementation of the incomplete Beta function, that is copyright McElwaine, 2010,
-* for non-linear least squares optimisation, that is copyright Balda, 2013.
+* for non-linear least squares optimisation, that is copyright Balda, 2013,
+* for unconstrained optimisation, that is copyright Kroon, 2009.
 
 The original portions of EST-NLSS are copyright (c) Tom Holden, 2016-2017.
 
