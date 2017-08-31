@@ -106,7 +106,7 @@ if (~exist('optim','var'))
     optim=defaultopt;
 else
     f = fieldnames(defaultopt);
-    for i=1:length(f),
+    for i=1:length(f)
         if (~isfield(optim,f{i})||(isempty(optim.(f{i})))), optim.(f{i})=defaultopt.(f{i}); end
     end
 end
@@ -129,7 +129,7 @@ data.timeTotal=tic;
 data.timeExtern=0;
 % Switch to L-BFGS in case of more than 3000 unknown variables
 if(optim.HessUpdate(1)=='b') 
-    if(data.numberOfVariables<3000), 
+    if(data.numberOfVariables<3000)
         optim.HessUpdate='bfgs';
     else
         optim.HessUpdate='lbfgs';
@@ -180,7 +180,7 @@ data.initialStepLength = min(1/gNorm,5);
 
 % Show the current iteration
 if(strcmp(optim.Display,'iter'))
-        s=sprintf('     %5.0f       %5.0f       %5.0f       %13.6g    ',data.iteration,data.funcCount,data.gradCount,data.fInitial); disp(s);
+        fprintf('     %5.0f       %5.0f       %5.0f       %13.6g    \n',data.iteration,data.funcCount,data.gradCount,data.fInitial);
 end
   
 % Hessian intialization
@@ -214,7 +214,7 @@ while(true)
     end
 	
 	% Make linesearch plot
-	if(optim.Display(1)=='p'); 
+	if(optim.Display(1)=='p')
 		plot(data.storex,data.storefx,'r*');
 		plot(data.storex,data.storefx,'b');
 		
@@ -228,13 +228,13 @@ while(true)
 	end
 	
     % Check if exitflag is set
-    if(~isempty(data.exitflag)),
+    if(~isempty(data.exitflag))
         exitflag=data.exitflag;
         data.xInitial=data.xOld; 
         data.fInitial=data.fOld;
         data.gradient=data.gOld;
         break, 
-    end;
+    end
     
     % Update x with the alpha step
     data.xInitial = data.xInitial + data.alpha*data.dir;
@@ -255,7 +255,9 @@ while(true)
     if(data.iteration>=optim.MaxIter), exitflag=0; end
     
     % Check if exitflag is set
-    if(~isempty(exitflag)), break, end;
+    if(~isempty(exitflag))
+        break
+    end
 
     % Update the inverse Hessian matrix
     if(optim.HessUpdate(1)~='s')
@@ -273,7 +275,7 @@ while(true)
     
     % Show the current iteration
     if(strcmp(optim.Display(1),'i')||strcmp(optim.Display(1),'p'))
-        s=sprintf('     %5.0f       %5.0f       %5.0f       %13.6g   %13.6g',data.iteration,data.funcCount,data.gradCount,data.fInitial,data.alpha); disp(s);
+        fprintf('     %5.0f       %5.0f       %5.0f       %13.6g   %13.6g\n',data.iteration,data.funcCount,data.gradCount,data.fInitial,data.alpha);
     end
     
     % Keep the variables for next iteration
@@ -293,9 +295,12 @@ x=reshape(x,data.xsizes);
 if(call_output_function(data,optim,'done')), exitflag=-1; end
 
 % Make exist output structure
-if(optim.HessUpdate(1)=='b'), output.algorithm='Broyden–Fletcher–Goldfarb–Shanno (BFGS)';
-elseif(optim.HessUpdate(1)=='l'), output.algorithm='limited memory BFGS (L-BFGS)';
-else output.algorithm='Steepest Gradient Descent'; 
+if(optim.HessUpdate(1)=='b')
+    output.algorithm='Broyden–Fletcher–Goldfarb–Shanno (BFGS)';
+elseif(optim.HessUpdate(1)=='l')
+    output.algorithm='limited memory BFGS (L-BFGS)';
+else
+    output.algorithm='Steepest Gradient Descent';
 end
 output.message=getexitmessage(exitflag);
 output.iteration = data.iteration;
@@ -395,7 +400,7 @@ while(true)
 	data.storegx=[data.storegx grad(:)];
     
     % Update step value
-    if(data.f_beta<f_alpha), 
+    if(data.f_beta<f_alpha)
         % Go to smaller stepsize
         alpha=alpha*optim.tau3;
         
@@ -412,7 +417,7 @@ while(true)
     % Update number of loop iterations
     itw=itw+1; 
 		
-    if(itw>(log(optim.TolFun)/log(optim.tau3))),
+    if(itw>(log(optim.TolFun)/log(optim.tau3)))
       % No new optium found, linesearch failed.
       data.bracket_exitflag=-2; break; 
     end
@@ -420,17 +425,17 @@ while(true)
     if(data.beta>0&&hill)
             % Get the brackets around minimum point
             % Pick bracket A from stored trials
-            [t,i]=sort(data.storex,'ascend');
+            [~,i]=sort(data.storex,'ascend');
             storefx=data.storefx(i);storepx=data.storepx(i); storex=data.storex(i);
-            [t,i]=find(storex>data.beta,1);
-            if(isempty(i)), [t,i]=find(storex==data.beta,1); end
+            [~,i]=find(storex>data.beta,1);
+            if(isempty(i)), [~,i]=find(storex==data.beta,1); end
             alpha=storex(i); f_alpha=storefx(i); fPrime_alpha=storepx(i);
             
             % Pick bracket B from stored trials
-            [t,i]=sort(data.storex,'descend');
+            [~,i]=sort(data.storex,'descend');
             storefx=data.storefx(i);storepx=data.storepx(i); storex=data.storex(i);
-            [t,i]=find(storex<data.beta,1);
-            if(isempty(i)), [t,i]=find(storex==data.beta,1); end
+            [~,i]=find(storex<data.beta,1);
+            if(isempty(i)), [~,i]=find(storex==data.beta,1); end
             beta=storex(i); f_beta=storefx(i); fPrime_beta=storepx(i);
             
             % Calculate derivatives if not already calculated
@@ -466,13 +471,13 @@ brcktEndpntA=data.a; brcktEndpntB=data.b;
 if(isfield(data,'beta')&&(data.f_beta<f_alpha_estimated)), alpha=data.beta; end
 
 
-[t,i]=find(data.storex==alpha,1);
+[~,i]=find(data.storex==alpha,1);
 if((~isempty(i))&&(~isnan(data.storegx(i))))
     f_alpha=data.storefx(i); grad=data.storegx(:,i);
 else
     % Calculate the error and gradient for the next minimizer itteration
     [data,f_alpha, grad]=gradient_function(data.xInitial(:)+alpha*data.dir(:),funfcn, data,optim);
-    if(isfield(data,'beta')&&(data.f_beta<f_alpha)), 
+    if(isfield(data,'beta')&&(data.f_beta<f_alpha)) 
         alpha=data.beta; 
         if((~isempty(i))&&(~isnan(data.storegx(i))))
             f_alpha=data.storefx(i); grad=data.storegx(:,i);
@@ -556,7 +561,7 @@ while(true)
         data.b = alpha; data.f_b = f_alpha; data.fPrime_b = fPrime_alpha;
     else
         % Wolfe conditions, if true then acceptable point found 
-        if (abs(fPrime_alpha) <= -optim.sigma*data.fPrimeInitial), 
+        if (abs(fPrime_alpha) <= -optim.sigma*data.fPrimeInitial) 
             if(optim.GradConstr)
                 % Gradient was not yet calculated because of time costs
                 [data,f_alpha, grad]=gradient_function(data.xInitial(:)+alpha*data.dir(:),funfcn, data, optim);
@@ -647,7 +652,7 @@ while(true)
   end
 
   % Acceptable steplength found
-  if (abs(fPrime_alpha) <= -optim.sigma*data.fPrimeInitial), 
+  if (abs(fPrime_alpha) <= -optim.sigma*data.fPrimeInitial) 
       if(optim.GradConstr)
           % Gradient was not yet calculated because of time costs
           [data,f_alpha, grad]=gradient_function(data.xInitial(:)+alpha*data.dir(:),funfcn, data, optim);
@@ -705,7 +710,11 @@ upperBound = (brcktEndpntB - alpha1)/(alpha2 - alpha1);
 if (lowerBound  > upperBound), t=upperBound; upperBound=lowerBound; lowerBound=t; end 
 
 % Find minima and maxima from the roots of the derivative of the polynomial.
-sPoints = roots([3*coeff(1) 2*coeff(2) coeff(3)]); 
+if all( isfinite( coeff ) )
+    sPoints = roots([3*coeff(1) 2*coeff(2) coeff(3)]); 
+else
+    sPoints = [];
+end
 
 % Remove imaginaire and points outside range
 
@@ -722,7 +731,7 @@ sPoints=[lowerBound sPoints(:)' upperBound];
 alpha = alpha1 + z*(alpha2 - alpha1);
 
 % Show polynomial search
-if(optim.Display(1)=='p'); 
+if(optim.Display(1)=='p') 
     vPoints=polyval(coeff,sPoints);
     plot(sPoints*(alpha2 - alpha1)+alpha1,vPoints,'co');
     plot([sPoints(1) sPoints(end)]*(alpha2 - alpha1)+alpha1,[vPoints(1) vPoints(end)],'c*');
@@ -753,7 +762,7 @@ function [data,fval,grad]=gradient_function(x,funfcn, data, optim)
             gstep=data.initialStepLength/1e6; 
             if(gstep>optim.DiffMaxChange), gstep=optim.DiffMaxChange; end
             if(gstep<optim.DiffMinChange), gstep=optim.DiffMinChange; end
-            for i=1:length(x),
+            for i=1:length(x)
                 x_temp=x; x_temp(i)=x_temp(i)+gstep;
                 timem=tic;    
                 [fval_g]=feval(funfcn,reshape(x_temp,data.xsizes)); data.funcCount=data.funcCount+1;
@@ -780,7 +789,7 @@ if ((deltaX'*deltaG) >= sqrt(eps)*max( eps,norm(deltaX)*norm(deltaG) ))
         p_k = 1 / (deltaG'*deltaX);
         Vk = eye(data.numberOfVariables) - p_k*deltaG*deltaX';
         % Set Hessian
-        data.Hessian = Vk'*data.Hessian *Vk + p_k * deltaX*deltaX';
+        data.Hessian = Vk'*data.Hessian *Vk + p_k * (deltaX*deltaX');
         % Set new Direction
         data.dir = -data.Hessian*data.gradient;
     else
@@ -807,7 +816,7 @@ if ((deltaX'*deltaG) >= sqrt(eps)*max( eps,norm(deltaX)*norm(deltaG) ))
         
         % Make r = - Hessian * gradient
         r = p_k * q;
-        for i=data.nStored:-1:1,
+        for i=data.nStored:-1:1
             b = p(i) * data.deltaG(:,i)' * r;
             r = r + data.deltaX(:,i)*(a(i)-b);
         end
