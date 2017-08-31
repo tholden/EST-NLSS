@@ -870,7 +870,7 @@ while isempty(stopflag)
       % (columns of) arxvalid(:,k) only for the evaluation of the
       % fitness function. arx and arxvalid should not be changed.
       
-      [ fitness.raw, tmpPersistentState ] = feval(fitfun, arxvalid, PersistentState, mu, varargin{:});
+      [ fitness.raw, tmpPersistentState ] = feval(fitfun, arxvalid, PersistentState, lambda, varargin{:});
       
       [ ~, FitnessIndices ] = sort( fitness.raw );
       FitnessIndices = FitnessIndices( 1 : lambda );
