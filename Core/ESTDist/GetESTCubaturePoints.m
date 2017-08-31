@@ -65,7 +65,7 @@ function [ CubatureWeights, CubaturePoints, NCubaturePoints, ET1, MedT ] = GetES
     
     CubaturePoints = bsxfun( @plus, lambda, RootSamplingCov * UncorrelatedCubaturePoints );
     
-    CubatureWeights = CubatureWeights .* exp( ESTLogPDF( CubaturePoints, xi, Omega, delta, tau, nu ) - StudentTLogPDF( UncorrelatedCubaturePoints, SamplingNu ) ); % no need to include the term in the determinant of RootSamplingCov as it washes out in the next line
+    CubatureWeights = CubatureWeights .* exp( ESTLogPDF( CubaturePoints, xi, Omega, delta, tau, nu ) - sum( StudentTLogPDF( UncorrelatedCubaturePoints, SamplingNu ) ) ); % no need to include the term in the determinant of RootSamplingCov as it washes out in the next line
     CubatureWeights = CubatureWeights ./ sum( CubatureWeights );
     
 end
