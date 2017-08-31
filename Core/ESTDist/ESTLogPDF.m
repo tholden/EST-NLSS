@@ -9,7 +9,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     end
 
     if OmegaIsCholesky
-        cholOmegaCheck = CholeskyUpdate( Omega, delta, '+' );
+        cholOmegaCheck = RealCholeskyUpdate( Omega, delta, '+' );
     else
         [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
     end
@@ -34,7 +34,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     log_tcdf_tauNew_nuNew = ApproxStudentTLogCDF( tauNew, nuNew );
     tcdfDifference = log_tcdf_tauNew_nuNew - log_tcdf_tau_nu;
 
-    log_y = - sum( log( abs( diag( cholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
+    log_y = - sum( log( realabs( diag( cholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
 
     FiniteCDFDifferenceSelect = isfinite( real( log_tcdf_tau_nu ) ) | isfinite( real( log_tcdf_tauNew_nuNew ) );
     
@@ -42,4 +42,9 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
         
     assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ESTLogPDF:NaNOutputLogY', 'ESTLogPDF returned a NaN output log_y.' );    
     
+end
+
+function x = realabs( x )
+    SelectNegative = real( x ) < 0;
+    x( SelectNegative ) = -x( SelectNegative );
 end
