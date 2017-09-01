@@ -27,10 +27,18 @@ function log_y = MVTStudentTLogPDF( x, nu )
                     .250000000000000000 + 0.416666666666666667e-1.*ifnu2 - 0.500000000000000000e-1.*ifnu4 + .151785714285714286.*ifnu6 - .861111111111111111.*ifnu8 + 7.85227272727272727.*ifnu10 - 105.019230769230769.*ifnu12 + 1936.60208333333333.*ifnu14 - 47092.5147058823529.*ifnu16 ...
                 );
             else
-                logGammaRatio = logGammaRatio + cgammaln( nuPDO2 ) - cgammaln( 0.5 * fnu );
+                if isreal( nu )
+                    logGammaRatio = logGammaRatio + gammaln( nuPDO2 ) - gammaln( 0.5 * fnu );
+                else
+                    logGammaRatio = logGammaRatio + cgammaln( nuPDO2 ) - cgammaln( 0.5 * fnu );
+                end
             end
         end
-        log_y = logGammaRatio - HD * log( nu ) - HD * 1.14472988584940017 - nuPDO2 .* log1p( sum( x .* x, 1 ) ./ nu ); % log( pi ) = 1.14472988584940017
+        if isreal( nu )
+            log_y = logGammaRatio - HD * reallog( nu ) - HD * 1.14472988584940017 - nuPDO2 .* log1p( sum( x .* x, 1 ) ./ nu ); % log( pi ) = 1.14472988584940017
+        else
+            log_y = logGammaRatio - HD * log( nu ) - HD * 1.14472988584940017 - nuPDO2 .* log1p( sum( x .* x, 1 ) ./ nu ); % log( pi ) = 1.14472988584940017
+        end
     else
         log_y = - 0.5 * sum( x .* x, 1 ) - D * 0.91893853320467274; % 0.5 * log( 2 * pi ) = 0.91893853320467274
     end

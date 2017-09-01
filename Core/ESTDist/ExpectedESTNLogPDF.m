@@ -4,16 +4,11 @@ function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewL
     
     [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu );
     
-    try
-        log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
-        log_y = min( fInf, log_y_Points * W(:) );
-        if ~isfinite( log_y )
-            log_y = fInf;
-        end
-    catch
+    log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
+    log_y = min( fInf, log_y_Points * W(:) );
+    if ~isfinite( log_y )
         log_y = fInf;
     end
-    
     
     if nargout > 1
         k = length( p );

@@ -2,50 +2,52 @@ function Seq = Shanks( DSeq )
 
     Seq = cumsum( DSeq );
     
-    N = size( Seq, 1 );
+    [ N, D ] = size( Seq );
     e = eps;
     se = sqrt( eps );
     
     if N >= 3
     
-        DSeq = DSeq( 2:end, : );
-
         if mod( size( Seq, 1 ), 2 ) == 0
-            Seq = Seq( 2:end, : );
-            DSeq = DSeq( 2:end, : );
+            SeqIdx = 2;
+            DSeqIdx = 3;
             N = N - 1;
+        else
+            SeqIdx = 1;
+            DSeqIdx = 2;
         end
 
-        Seq = Seq( 3:end, : );
-        LDSeq = DSeq( 1:(end-1), : );
-        DSeq = DSeq( 2:end, : );
+        SeqIdx = SeqIdx + 2;
+        DSeqIdx = DSeqIdx + 1;
         N = N - 2;
 
-        Top = DSeq .* DSeq;
-        Bottom = DSeq - LDSeq;
+        if isreal( DSeq )
+            Top = coder.nullcopy( zeros( size( Seq ) ) );
+            Bottom = coder.nullcopy( zeros( size( Seq ) ) );
+        else
+            Top = coder.nullcopy( complex( zeros( size( Seq ) ) ) );
+            Bottom = coder.nullcopy( complex( zeros( size( Seq ) ) ) );
+        end
         
-        aTop = abs( Top );
-        aBottom = abs( Bottom );
+        Top( SeqIdx : end, : ) = DSeq( DSeqIdx : end, : ) .* DSeq( DSeqIdx : end, : );
+        Bottom( SeqIdx : end, : ) = DSeq( DSeqIdx : end, : ) - DSeq( ( DSeqIdx - 1 ) : ( end - 1 ), : );
         
-        GoodAdj = ( aBottom > e ) & ( max( aTop, aBottom ) > se );
+        GoodAdj = [ false( SeqIdx - 1, D ); ( abs( Bottom( SeqIdx : end, : ) ) > e ) & ( max( abs( Top( SeqIdx : end, : ) ), abs( Bottom( SeqIdx : end, : ) ) ) > se ) ];
 
         Seq( GoodAdj ) = Seq( GoodAdj ) - Top( GoodAdj ) ./ Bottom( GoodAdj );
 
         for Idx = coder.unroll( 1 : ( 0.5 * ( N - 1 ) ) )
 
-            DSeq = diff( Seq );
+            DSeqIdx = DSeqIdx + 1;
+            DSeq( DSeqIdx : end, : ) = Seq( ( SeqIdx + 1 ) : end, : ) - Seq( SeqIdx : ( end - 1 ), : );
 
-            Seq = Seq( 3:end, : );
-            LDSeq = DSeq( 1:(end-1), : );
-            DSeq = DSeq( 2:end, : );
+            SeqIdx = SeqIdx + 2;
+            DSeqIdx = DSeqIdx + 1;
 
-            Top = DSeq .* DSeq;
-            Bottom = DSeq - LDSeq;
+            Top( SeqIdx : end, : ) = DSeq( DSeqIdx : end, : ) .* DSeq( DSeqIdx : end, : );
+            Bottom( SeqIdx : end, : ) = DSeq( DSeqIdx : end, : ) - DSeq( ( DSeqIdx - 1 ) : ( end - 1 ), : );
 
-            aTop = abs( Top );
-            aBottom = abs( Bottom );
-
-            GoodAdj = ( aBottom > e ) & ( max( aTop, aBottom ) > se );
+            GoodAdj = [ false( SeqIdx - 1, D ); ( abs( Bottom( SeqIdx : end, : ) ) > e ) & ( max( abs( Top( SeqIdx : end, : ) ), abs( Bottom( SeqIdx : end, : ) ) ) > se ) ];
 
             Seq( GoodAdj ) = Seq( GoodAdj ) - Top( GoodAdj ) ./ Bottom( GoodAdj );
 

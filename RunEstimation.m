@@ -233,7 +233,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     try
 
         NumParameters = size( Parameters, 1 );
-        NumObservables = size( Options.Data, 1 );
+        [ NumObservables, T ] = size( Data );
 
         Options = ESTNLSSSetDefaultOptions( Options, false );
 
@@ -241,13 +241,17 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
 
         EstimatedNu = ~Options.NoTLikelihood && ~Options.DynamicNu;
         if EstimatedNu
-            EstimatedParameters( end + 1 ) = log( Options.InitialNu );
+            EstimatedParameters( end + 1 ) = log( Options.InitialNu - 2 );
         end
 
         WarningState = warning( 'off', 'MATLAB:rmpath:DirNotFound' );
         rmpath( [ CorePath 'CholeskyUpdate/MImplementation/' ] );
         rmpath( [ CorePath 'CholeskyUpdate/InbuiltImplementation/' ] );
         warning( WarningState );
+        
+        PersistentState = struct( 'Internal0', NaN, 'Internal', NaN( 1, T ), 'External', PersistentState );
+        PersistentStateInternal0Type = coder.typeof( 0, [ Inf, 1 ] );
+        PersistentStateInternalType = coder.typeof( 0, [ Inf, T ] );
 
         if Options.CompileLikelihood
             cfg = coder.config( 'mex' );
@@ -275,10 +279,14 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             TmpOptions = rmfield( TmpOptions, 'MeasurementVariableNames' );
             TmpOptions = rmfield( TmpOptions, 'VariableNames' );
 
+            PersistentStateType = coder.typeof( PersistentState );
+            PersistentStateType.Internal0 = PersistentStateInternal0Type;
+            PersistentStateType.Internal = PersistentStateInternalType;
+            
             ARGS = cell( 4, 1 );
             ARGS{1} = coder.typeof( EstimatedParameters );
             ARGS{2} = coder.Constant( TmpOptions );
-            ARGS{3} = coder.typeof( PersistentState );
+            ARGS{3} = PersistentStateType;
             ARGS{4} = coder.Constant( false ); %#ok<NASGU>
 
             EstimationObjectiveText = fileread( 'EstimationObjective.m' );
@@ -289,6 +297,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             EstimationObjectiveText = strrep( EstimationObjectiveText, 'Solve', Options.Solve );
             EstimationObjectiveText = strrep( EstimationObjectiveText, 'Simulate', Options.Simulate );
             EstimationObjectiveText = strrep( EstimationObjectiveText, 'EstimationObjective', 'ESTNLSSTempEstimationObjective' );
+            EstimationObjectiveText = strrep( EstimationObjectiveText, 'ESTNLSSTempEstimationObjectiveInternal_mex', 'EstimationObjectiveInternal' );
             EstimationObjectiveText = strrep( EstimationObjectiveText, 'KalmanStep', 'ESTNLSSTempKalmanStep' );
 
             TempEstimationObjectiveFID = fopen( 'ESTNLSSTempEstimationObjective.m', 'w' );
@@ -301,6 +310,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             KalmanStepText = strjoin( KalmanStepLines, '\n' );
             KalmanStepText = strrep( KalmanStepText, 'Simulate', Options.Simulate );
             KalmanStepText = strrep( KalmanStepText, 'KalmanStep', 'ESTNLSSTempKalmanStep' );
+            KalmanStepText = strrep( KalmanStepText, 'ESTNLSSTempKalmanStepInternal_mex', 'KalmanStepInternal' );
 
             TempKalmanStepFID = fopen( 'ESTNLSSTempKalmanStep.m', 'w' );
             fprintf( TempKalmanStepFID, '%s', KalmanStepText );
@@ -376,8 +386,6 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
         disp( 'Paranoid verification of final log-likelihood:' );
         disp( LogLikelihood );
 
-        Options.PersistentState = PersistentState;
-
         if Options.SkipStandardErrors
             disp( 'Final parameter estimates:' );
             for i = 1 : NumParameters
@@ -447,6 +455,8 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
                 fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', 'nu', 2 + TmpEstimatedParameter, TmpEstimatedParameter * EstimatedParameterStandardErrors( end ) ); % delta method
             end
         end
+        
+        PersistentState = PersistentState.External;
         
         Error = [];
     

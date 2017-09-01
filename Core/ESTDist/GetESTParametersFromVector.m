@@ -19,7 +19,11 @@ function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, D
 
     DiagCholOmega = exp( LogDiagCholOmega );
     
-    CholOmega = triu( ones( n ), 1 );
+    if isreal( p )
+        CholOmega = triu( ones( n ), 1 );
+    else
+        CholOmega = complex( triu( ones( n ), 1 ) );
+    end
     CholOmega( CholOmega == 1 ) = UpperCholOmega;
     CholOmega = CholOmega + diag( DiagCholOmega );
 

@@ -16,10 +16,10 @@ function x = StudentTInvLogCDF( log_y, nu )
         end
     end
     if ~isfinite( betalnTmp )
-        log_Mx_SelBad = 0;
         log_y_SelBad = log_y( SelBad );
+        log_Mx_SelBad = zeros( size( log_y_SelBad ) );
         NormConst = 0.918938533204672741780329736407;
-        for norm_iter = 1 : 5
+        for norm_iter = coder.unroll( 1 : 5 )
             Mx_SelBad = realsqrt( -2 * min( 0, log_y_SelBad + NormConst + log_Mx_SelBad ) );
             log_Mx_SelBad = log( Mx_SelBad );
         end
@@ -32,7 +32,7 @@ function x = StudentTInvLogCDF( log_y, nu )
     if ~all( Converged(:) )
     
         odx = Inf( size( x ) );
-        for iter = 1 : 20
+        for iter = coder.unroll( 1 : 20 )
             
             log_y_x = StudentTLogCDF( x, nu );
             log_dy_x = StudentTLogPDF( x, nu );

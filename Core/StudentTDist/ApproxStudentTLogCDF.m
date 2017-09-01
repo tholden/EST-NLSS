@@ -16,13 +16,21 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     
     lognu = log( nu );
     if real( lognu ) <= -Inf
-        log_y = log( 0.5 ) * ones( size( x ) );
+        if isreal( x ) && isreal( nu )
+            log_y = log( 0.5 ) * ones( size( x ) );
+        else
+            log_y = complex( log( 0.5 ) * ones( size( x ) ) );
+        end
         log_y( real( x ) <= -Inf ) = -Inf;
         log_y( real( x ) >= Inf ) = 0;
         return
     end
     
-    log_y = zeros( size( x ) );
+    if isreal( x ) && isreal( nu )
+        log_y = zeros( size( x ) );
+    else
+        log_y = complex( zeros( size( x ) ) );
+    end
     
     SelInf = real( x ) >= Inf;
     
@@ -41,7 +49,11 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     
     if real( nu ) < Inf
         
-        yRemaining = cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5;
+        if isreal( x ) && isreal( nu )
+            yRemaining = real( betainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5 );
+        else
+            yRemaining = cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5;
+        end
         SelGood = real( yRemaining ) > realmin;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
@@ -85,7 +97,11 @@ function log_y = ApproxStudentTLogCDF( x, nu )
         
         nuOtR2Pnu = nu ./ ( tR2 + nu );
         
-        log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - cbetaln( nu * 0.5, 0.5 ) + 0.5 * nu * log( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
+        if isreal( nu )
+            log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - betaln( nu * 0.5, 0.5 ) + 0.5 * nu * reallog( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
+        else
+            log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - cbetaln( nu * 0.5, 0.5 ) + 0.5 * nu * log( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
+        end
         
         log_y( IdxBad( real( ItR12 ) >= Inf ) ) = logH;
         
@@ -93,7 +109,11 @@ function log_y = ApproxStudentTLogCDF( x, nu )
         
     else
         
-        yRemaining = 0.5 + 0.5 * erfz( xRemaining * 0.7071067811865475244008 ); % 0.7071067811865475244008 = 1 / sqrt( 2 )
+        if isreal( x )
+            yRemaining = 0.5 + 0.5 * erf( xRemaining * 0.7071067811865475244008 ); % 0.7071067811865475244008 = 1 / sqrt( 2 )
+        else
+            yRemaining = 0.5 + 0.5 * erfz( xRemaining * 0.7071067811865475244008 ); % 0.7071067811865475244008 = 1 / sqrt( 2 )
+        end
         SelGood = real( yRemaining ) > 0;
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;

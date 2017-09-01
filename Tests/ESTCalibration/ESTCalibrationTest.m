@@ -27,7 +27,8 @@ disp( [ tau, nu ] );
 p0 = InvGetESTParametersFromVector( xi, CholOmega, delta, tau, nu, true, true );
 f0 = ExpectedESTNLogPDF( p0, ESTPoints, Weights, Inf, true, true, 5 );
 
-fminlbfgsOptions = struct( 'Display', 'iter', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', false, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf );
+fminlbfgsOptions = struct( 'Display', 'iter', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', false, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf, ...
+    'HessUpdate', 'bfgs ', 'DiffMaxChange', 1e-1, 'DiffMinChange', 1e-8, 'OutputFcn', [], 'rho', 0.0100, 'sigma', 0.900, 'tau1', 3, 'tau2', 0.1, 'tau3', 0.5, 'StoreN', 20 );
 pOpt = fminlbfgs( @( p ) ExpectedESTNLogPDF( p, ESTPoints, Weights, f0 + 1, true, true, 5 ), p0, fminlbfgsOptions );
 
 % FMinUncOptions = optimoptions( @fminunc, 'Display', 'iter-detailed', 'Algorithm', 'trust-region', 'SubproblemAlgorithm', 'factorization', 'CheckGradients', false, 'SpecifyObjectiveGradient', true, 'OptimalityTolerance', 1e-12, 'StepTolerance', 1e-12, 'FunctionTolerance', 1e-12, 'MaxFunctionEvaluations', Inf, 'MaxIterations', Inf );

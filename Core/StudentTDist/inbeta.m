@@ -39,7 +39,7 @@ function [f, B]=inbeta(z,a,b,N)
     f2 = find(real(z)>s0  & az<zmax);
     f3 = find(az>=zmax);
 
-    f = NaN(size(z));
+    f = complex(NaN(size(z)));
     f(f1) = inbeta3(z(f1),a(f1),b(f1),N);
     f(f2) = B(f2)-inbeta3(1-z(f2),b(f2),a(f2),N);
     f(f3) = inbeta2(z(f3),a(f3),b(f3),B(f3),N);
@@ -51,8 +51,7 @@ end
 function f=inbeta1(z,a,b,N) %#ok<DEFNU>
     C=z.^a./a;
     f=C;
-    coder.unroll( );
-    for n=1:N
+    for n=coder.unroll(1:N)
         C = z.*(C.*(n-b).*(n+a-1)./(n.*(n+a)));
         f = f+C;
         if max(abs(C))<tol
@@ -68,8 +67,7 @@ function f=inbeta2(z,a,b,B,N)
     C = -z.^(a+b-1)./(a+b-1).*exp(-1i.*b.*pi.*sz);
     z = 1./z;
     f = C;
-    coder.unroll( );
-    for n=1:N
+    for n=coder.unroll(1:N)
         C = z.*C.*((n-b).*(n-a-b)./(n.*(n+1-a-b)));
         f = f+C;
     end
@@ -78,9 +76,8 @@ end
 
 % Continued fraction expansion about z=0
 function f=inbeta3(z,a,b,N)
-    f=0;
-    coder.unroll( );
-    for k=N:-1:1
+    f=complex(zeros(size(z)));
+    for k=coder.unroll(N:-1:1)
         f = k.*(b-k).*z./((a+2.*k-1).*(a+2.*k).*(1+f));
         j=k-1;
         f = -(a+j).*(a+b+j).*z./((a+2.*j).*(a+2.*j+1).*(1+f));

@@ -244,7 +244,7 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 
         EstimatedNu = ~Options.NoTLikelihood && ~Options.DynamicNu;
         if EstimatedNu
-            EstimatedParameters( end + 1 ) = log( Options.InitialNu );
+            EstimatedParameters( end + 1 ) = log( Options.InitialNu - 2 );
         end
 
         error( 'Not yet implemented.' );

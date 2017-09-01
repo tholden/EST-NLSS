@@ -25,7 +25,7 @@ function f = erfz(zz)
 
     sqrtpi = 1.772453850905516027298;
 
-    f = zeros(size(zz));
+    f = complex(zeros(size(zz)));
     ff=f;
 
     az=abs(zz);
@@ -44,7 +44,7 @@ function f = erfz(zz)
 
         s1 = erf(x);
 
-        s2 = zeros(size(x));
+        s2 = complex(zeros(size(x)));
         k = x ~= 0;          % when x is non-zero
         s2(k) = k1(k) ./ (4*x(k)) .* (1 - k2(k));
         k = ~k;              % when x is zero
@@ -56,9 +56,8 @@ function f = erfz(zz)
         xk = x(k);
         yk = y(k);
 
-        s5 = 0;
-        coder.unroll( );
-        for n = 1 : nn
+        s5 = complex(zeros(size(xk)));
+        for n = coder.unroll( 1 : nn )
             s3 = exp(-n*n/4) ./ (n*n + 4*xk.*xk);
             s4 = 2*xk - k2(k).*(2*xk.*cosh(n*yk) - 1i*n*sinh(n*yk));
             s5 = s5 + s3.*s4;
@@ -77,10 +76,10 @@ function f = erfz(zz)
         end
 
         nmax=193;
-        s=1;
+        s=complex(ones(size(z)));
         y=2*z.*z;
-        coder.unroll( );
-        for n=nmax:-2:1
+        
+        for n=coder.unroll(nmax:-2:1)
             s=1-n.*(s./y);
         end
 

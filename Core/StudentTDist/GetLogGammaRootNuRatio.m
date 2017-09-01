@@ -27,7 +27,11 @@ function logGammaRootNuRatio = GetLogGammaRootNuRatio( nu )
         
         logGammaRootNuRatio = -0.2257913526447274323631 + inu .* Shanks( DSeq );
     else
-        logGammaRootNuRatio = cgammaln( 0.5 * ( nu + 1 ) ) - cgammaln( 1 + 0.5 * nu ) + 0.5 * log( nu ) - 0.5723649429247000870717; % 0.5723649429247000870717 = log(Pi)/2
+        if isreal( nu )
+            logGammaRootNuRatio = gammaln( 0.5 * ( nu + 1 ) ) - gammaln( 1 + 0.5 * nu ) + 0.5 * reallog( nu ) - 0.5723649429247000870717; % 0.5723649429247000870717 = log(Pi)/2
+        else
+            logGammaRootNuRatio = cgammaln( 0.5 * ( nu + 1 ) ) - cgammaln( 1 + 0.5 * nu ) + 0.5 * log( nu ) - 0.5723649429247000870717; % 0.5723649429247000870717 = log(Pi)/2
+        end
     end
     
     assert( all( ~isnan( logGammaRootNuRatio(:) ) ), 'ESTNLSS:GetLogGammaRootNuRatio:NaNOutputLogGammaRootNuRatio', 'GetLogGammaRootNuRatio returned a NaN output log_y.' );    

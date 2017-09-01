@@ -56,16 +56,16 @@ function f = cgammaln(z)
            -.26190838401581408670e-4;
             .36899182659531622704e-5];
 
-    s=0;
-    coder.unroll( );
-    for k=size(c,1):-1:2
+    s=complex(zeros(size(z)));
+    
+    for k=coder.unroll(size(c,1):-1:2)
         s=s+c(k)./(z+(k-2));
     end
 
     zg=z+g-0.5;
     s2pi= 0.9189385332046727417803297;
 
-    f=(s2pi + log(c(1)+s)) - zg + (z-0.5).*log(zg);
+    f=complex( (s2pi + log(c(1)+s)) - zg + (z-0.5).*log(zg) );
 
     f(z==1 | z==2) = 0.0;
 
