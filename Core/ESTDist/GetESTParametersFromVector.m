@@ -1,11 +1,21 @@
-function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n )
+function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu )
 
-    nu = 2 + exp( p( 1 ) );
-    tau = p( 2 );
-    xi = p( 3 : ( n + 2 ) );
-    delta = p( ( n + 3 ) : ( 2 * n + 2 ) );
-    LogDiagCholOmega = p( ( 2 * n + 3 ) : ( 3 * n + 2 ) );
-    UpperCholOmega = p( ( 3 * n + 3 ) : ( 3 * n + 2 + 0.5 * n * ( n - 1 ) ) );
+    l = 2 * n + 0.5 * n * ( n - 1 );
+
+    xi = p( 1 : n );
+    LogDiagCholOmega = p( ( n + 1 ) : ( 2 * n ) );
+    UpperCholOmega = p( ( 2 * n + 1 ) : l );
+
+    if SkewLikelihood
+        delta = p( ( l + 1 ) : ( l + n ) );
+        tau = p( l + n + 1 );
+    else
+        delta = zeros( n, 1 );
+        tau = Inf;
+    end
+    if DynamicNu
+        nu = 2 + exp( p( end ) );
+    end
 
     DiagCholOmega = exp( LogDiagCholOmega );
     
