@@ -6,6 +6,10 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     assert( isempty( sZ3 ) || isfinite( sZ3 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputThirdMoment', 'CalibrateMomentsEST was invoked with a non-finite input third moment.' );
     assert( isempty( sZ4 ) || isfinite( sZ4 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputFourthMoment', 'CalibrateMomentsEST was invoked with a non-finite input fourth moment.' );
     
+    if isfinite( tau )
+        tau = max( -100, min( 100, tau ) );
+    end
+    
     log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
     
     resid = zeros( 0, 1 );
