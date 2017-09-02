@@ -52,10 +52,6 @@ function [ log_y, CholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
         
     ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ESTLogPDF:NaNOutputLogY', 'ESTLogPDF returned a NaN output log_y.' );
     
-    if any( log_y > 200 )
-        keyboard
-    end
-    
 end
 
 function x = realabs( x )
