@@ -115,7 +115,7 @@ function X = HigherOrderSobol( Size, Dimension, Smoothness, AddZeroPoint )
         X = [ zeros( Dimension, 1 ), X ];
     end
 
-    assert( all( abs( mean( X, 2 ) ) < sqrt( eps ) ), 'ESTNLSS:HigherOrderSobol:Uncentered', 'Result was not centred.' );
+    ESTNLSSassert( all( abs( mean( X, 2 ) ) < sqrt( eps ) ), 'ESTNLSS:HigherOrderSobol:Uncentered', 'Result was not centred.' );
     
     ToCache = struct( 'InputParameters', InputParameters, 'X', X );
 
@@ -167,7 +167,7 @@ function [ BestXCandidate, BestMinPenalty, BestLocation ] = PerformSearch( Xi, S
 
         ui = uiMax .* vi;
 
-        assert( all( isfinite( ui ) ), 'ESTNLSS:HigherOrderSobol:SolutionFailure', 'Failed to solve for a rotation.' );
+        ESTNLSSassert( all( isfinite( ui ) ), 'ESTNLSS:HigherOrderSobol:SolutionFailure', 'Failed to solve for a rotation.' );
 
         NewXCandidates = norminv( bsxfun( @plus, XiMat, ui ) );
 

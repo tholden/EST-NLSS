@@ -1,10 +1,10 @@
 function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu, mu, lambda, cholSigma, sZ3, sZ4 )
 
-    assert( all( isfinite( mu(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputMu', 'CalibrateMomentsEST was invoked with a non-finite input mu.' );
-    assert( all( isfinite( lambda(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputLambda', 'CalibrateMomentsEST was invoked with a non-finite input lambda.' );
-    assert( all( isfinite( cholSigma(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputCholSigma', 'CalibrateMomentsEST was invoked with a non-finite input cholSigma.' );
-    assert( isempty( sZ3 ) || isfinite( sZ3 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputThirdMoment', 'CalibrateMomentsEST was invoked with a non-finite input third moment.' );
-    assert( isempty( sZ4 ) || isfinite( sZ4 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputFourthMoment', 'CalibrateMomentsEST was invoked with a non-finite input fourth moment.' );
+    ESTNLSSassert( all( isfinite( mu(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputMu', 'CalibrateMomentsEST was invoked with a non-finite input mu.' );
+    ESTNLSSassert( all( isfinite( lambda(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputLambda', 'CalibrateMomentsEST was invoked with a non-finite input lambda.' );
+    ESTNLSSassert( all( isfinite( cholSigma(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputCholSigma', 'CalibrateMomentsEST was invoked with a non-finite input cholSigma.' );
+    ESTNLSSassert( isempty( sZ3 ) || isfinite( sZ3 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputThirdMoment', 'CalibrateMomentsEST was invoked with a non-finite input third moment.' );
+    ESTNLSSassert( isempty( sZ4 ) || isfinite( sZ4 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputFourthMoment', 'CalibrateMomentsEST was invoked with a non-finite input fourth moment.' );
     
     if isfinite( tau )
         tau = max( -100, min( 100, tau ) );
@@ -14,12 +14,12 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     
     resid = zeros( 0, 1 );
     
-    assert( nu > 2 );
+    ESTNLSSassert( nu > 2, 'ESTNLSS:CalibrateMomentsEST:nuTooSmall', 'nu was too small.' );
     if ~isempty( sZ3 )
-        assert( nu > 3 );
+        ESTNLSSassert( nu > 3, 'ESTNLSS:CalibrateMomentsEST:nuTooSmall', 'nu was too small.' );
     end
     if ~isempty( sZ4 )
-        assert( nu > 4 );
+        ESTNLSSassert( nu > 4, 'ESTNLSS:CalibrateMomentsEST:nuTooSmall', 'nu was too small.' );
     end
     
     if log_tcdf_tau_nu == 0
@@ -44,12 +44,12 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
             cholOmega = cholOmega * realsqrt( ( nu - 2 ) / nu );
         end
         
-        assert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
-        assert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
-        assert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
-        assert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
+        ESTNLSSassert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
+        ESTNLSSassert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
+        ESTNLSSassert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
+        ESTNLSSassert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
         
-        return;
+        return
         
     end
 
@@ -102,12 +102,12 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     
     if isempty( sZ3 ) && isempty( sZ4 )
         
-        assert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
-        assert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
-        assert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
-        assert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
+        ESTNLSSassert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
+        ESTNLSSassert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
+        ESTNLSSassert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
+        ESTNLSSassert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
         
-        return;
+        return
         
     end
     
@@ -151,9 +151,9 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
         resid = [ resid; sZ4 - Z4 ];
     end
     
-    assert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
-    assert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
-    assert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
-    assert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
+    ESTNLSSassert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
+    ESTNLSSassert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
+    ESTNLSSassert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
+    ESTNLSSassert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
     
 end

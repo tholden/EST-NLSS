@@ -42,19 +42,19 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     %  Ahat - The matrix chosen as the nearest SPD matrix to A.
     %  cholAhat - The cholesky root of Ahat
 
-    assert( nargin == 1, 'ESTNLSS:NearestSPD:Arguments', 'Exactly one argument must be provided to NearestSPD.' );
-    assert( all( isfinite( A(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteInput', 'The input to NearestSPD must be finite.' );
+    ESTNLSSassert( nargin == 1, 'ESTNLSS:NearestSPD:Arguments', 'Exactly one argument must be provided to NearestSPD.' );
+    ESTNLSSassert( all( isfinite( A(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteInput', 'The input to NearestSPD must be finite.' );
 
     % test for a square matrix A
     [ r, c ] = size( A );
-    assert( r == c, 'ESTNLSS:NearestSPD:NonSquare', 'The input to NearestSPD must be a square matrix.' );
+    ESTNLSSassert( r == c, 'ESTNLSS:NearestSPD:NonSquare', 'The input to NearestSPD must be a square matrix.' );
     
     if r == 1
         % A was scalar
         Ahat = max( real( A ), eps );
         cholAhat = realsqrt( Ahat );
-        assert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
-        assert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
+        ESTNLSSassert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
+        ESTNLSSassert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
         return
     end
 
@@ -92,11 +92,11 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
             IScale = max( IScale, eps( max( EigAhat ) ) );
             Ahat = Ahat + ( IScale * ( k .* k ) ) * eye( size( A ) );
         end
-        assert( p == 0, 'ESTNLSS:NearestSPD:Failure', 'Failed to find the nearest semi-positive definite matrix.' );
+        ESTNLSSassert( p == 0, 'ESTNLSS:NearestSPD:Failure', 'Failed to find the nearest semi-positive definite matrix.' );
 
     end
     
-    assert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
-    assert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
+    ESTNLSSassert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
+    ESTNLSSassert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
         
 end

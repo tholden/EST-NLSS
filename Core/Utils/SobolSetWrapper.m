@@ -1,5 +1,5 @@
 function x = SobolSetWrapper( Dim, n )
-    assert( n >= 1 + Dim );
+    ESTNLSSassert( n >= 1 + Dim, 'ESTNLSS:SobolSetWrapper:Dimensions', 'Input dimensions did not make sense.' );
     persistent p d
     if isempty( p ) || length( p ) < Dim || isempty( p{ Dim } )
         p{ Dim } = sobolset( Dim, 'Skip', 1 );

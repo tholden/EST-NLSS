@@ -1,8 +1,8 @@
 function log_y = MVTStudentTLogPDF( x, nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:MVTStudentTLogPDF:NuSize', 'MVTStudentTLogPDF only supports univariate nu.' );
-    assert( real( nu ) > 0, 'ESTNLSS:MVTStudentTLogPDF:NuSign', 'MVTStudentTLogPDF requires nu to be strictly positive.' );
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:MVTStudentTLogPDF:NaNInputX', 'MVTStudentTLogPDF was passed a NaN input x.' );
+    ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:MVTStudentTLogPDF:NuSize', 'MVTStudentTLogPDF only supports univariate nu.' );
+    ESTNLSSassert( real( nu ) > 0, 'ESTNLSS:MVTStudentTLogPDF:NuSign', 'MVTStudentTLogPDF requires nu to be strictly positive.' );
+    ESTNLSSassert( all( ~isnan( x(:) ) ), 'ESTNLSS:MVTStudentTLogPDF:NaNInputX', 'MVTStudentTLogPDF was passed a NaN input x.' );
     
     D = size( x, 1 );
     HD = 0.5 * D;
@@ -43,6 +43,6 @@ function log_y = MVTStudentTLogPDF( x, nu )
         log_y = - 0.5 * sum( x .* x, 1 ) - D * 0.91893853320467274; % 0.5 * log( 2 * pi ) = 0.91893853320467274
     end
     
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:MVTStudentTLogPDF:NaNOutputLogY', 'MVTStudentTLogPDF returned a NaN output log_y.' );    
+    ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:MVTStudentTLogPDF:NaNOutputLogY', 'MVTStudentTLogPDF returned a NaN output log_y.' );    
     
 end

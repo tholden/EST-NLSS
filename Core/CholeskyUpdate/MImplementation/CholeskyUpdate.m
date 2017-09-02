@@ -14,7 +14,7 @@ function [ R, p ] = CholeskyUpdate( R, x, SignString )
         r2 = conjRkk .* Rkk + Sign * conj( xk ) .* xk;
         if real( r2 ) <= 0 || R( k, k ) == 0
             if nargout < 2
-                error( 'ESTNLSS:NonPDFollowingCholeskyUpdate', 'CholeskyUpdate produced a non-positive-definite matrix.' );
+                ESTNLSSerror( 'ESTNLSS:NonPDFollowingCholeskyUpdate', 'CholeskyUpdate produced a non-positive-definite matrix.' );
             else
                 p = k;
                 return

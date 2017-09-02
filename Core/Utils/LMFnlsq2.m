@@ -230,13 +230,13 @@ if nargin==0 || (nargin==1 && strcmpi('default',varargin{1}))
 %       Updating Options
 elseif isstruct(varargin{1}) % Options=LMFnlsq2(Options,'Name','Value',...)
     if ~isfield(varargin{1},'Jacobian')
-        error('Options Structure not Correct for LMFnlsq2.')
+        ESTNLSSerror( 'LMFnlsq2:Options', 'Options Structure not Correct for LMFnlsq2.')
     end
     xf=varargin{1};          %   Options
     for i=2:2:nargin-1
         name=varargin{i};    %   option to be updated
         if ~ischar(name)
-            error('Parameter Names Must be Strings.')
+            ESTNLSSerror( 'LMFnlsq2:ParameterNames', 'Parameter Names Must be Strings.')
         end
         name=lower(name(isletter(name)));
         value=varargin{i+1}; %   value of the option
@@ -276,7 +276,7 @@ end
 %               *******
 FUN=varargin{1};            %   function handle
 if ((~coder.target('MATLAB'))||(~isvarname(FUN))) && (~isa(FUN,'function_handle'))
-   error('FUN Must be a Function Handle or M-file Name.')
+   ESTNLSSerror( 'LMFnlsq2:FUN', 'FUN Must be a Function Handle or M-file Name.')
 end
 xc = varargin{2};           %   Xo
 xc = xc(:);                 %   Xo is a column vector
@@ -312,7 +312,7 @@ lb  = length(tbdx);
 if lb==1
     bdx = tbdx*ones(n,1);
 elseif lb~=n
-    error(['Dimensions of vector dx ',num2str(lb),'~=',num2str(n)]);
+    ESTNLSSerror( 'LMFnlsq2:Dimensions', ['Dimensions of vector dx ',num2str(lb),'~=',num2str(n)]);
 else
     bdx = tbdx;
 end
@@ -356,7 +356,7 @@ else
     if ld==1
         D = abs(tD)*ones(n,1); %   scalar of unique scaling
     elseif ld~=n
-        error(['wrong number of scales D, lD = ',num2str(ld)])
+        ESTNLSSerror( 'LMFnlsq2:Scales', ['wrong number of scales D, lD = ',num2str(ld)])
     else
         D = tD;
     end
@@ -512,7 +512,7 @@ function [A,v] = getAv(FUN,JAC,x,r,bdx,ipr)
 if isa(JAC,'function_handle')
     J = JAC(x);
 else
-    assert( strcmp( JAC, 'finjac' ) );
+    ESTNLSSassert( strcmp( JAC, 'finjac' ), 'LMFnlsq2:finjac', 'JAC was unexpected.' );
     J = finjac(FUN,r,x,bdx,ipr);
 end
 A = J'*J;

@@ -1,7 +1,7 @@
 function logGammaRootNuRatio = GetLogGammaRootNuRatio( nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:GetLogGammaRootNuRatio:NuSize', 'GetLogGammaRootNuRatio only supports univariate nu.' );
-    assert( real( nu ) >= 0, 'ESTNLSS:GetLogGammaRootNuRatio:NuSign', 'GetLogGammaRootNuRatio requires nu to be weakly positive.' );
+    ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:GetLogGammaRootNuRatio:NuSize', 'GetLogGammaRootNuRatio only supports univariate nu.' );
+    ESTNLSSassert( real( nu ) >= 0, 'ESTNLSS:GetLogGammaRootNuRatio:NuSign', 'GetLogGammaRootNuRatio requires nu to be weakly positive.' );
 
     if real( nu ) >= 10.0522850359735 % fzero(@(nu) eps(cgammaln( 0.5 * ( nu + 1 )))-7e-16,[8,12]) = 10.0522850359735
         inu = 1 ./ nu;
@@ -34,6 +34,6 @@ function logGammaRootNuRatio = GetLogGammaRootNuRatio( nu )
         end
     end
     
-    assert( all( ~isnan( logGammaRootNuRatio(:) ) ), 'ESTNLSS:GetLogGammaRootNuRatio:NaNOutputLogGammaRootNuRatio', 'GetLogGammaRootNuRatio returned a NaN output log_y.' );    
+    ESTNLSSassert( all( ~isnan( logGammaRootNuRatio(:) ) ), 'ESTNLSS:GetLogGammaRootNuRatio:NaNOutputLogGammaRootNuRatio', 'GetLogGammaRootNuRatio returned a NaN output log_y.' );    
     
 end

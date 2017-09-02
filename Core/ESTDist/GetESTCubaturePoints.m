@@ -54,7 +54,7 @@ function [ CubatureWeights, CubaturePoints, NCubaturePoints, ET1, MedT ] = GetES
         SamplingNu = Inf;
     end
     
-    assert( SamplingNu > 2, 'ESTNLSS:GetESTCubaturePoints:SamplingNuTooSmall', 'GetESTCubaturePoints requires that nu + IntDim - 1 is greater than 2.' );
+    ESTNLSSassert( SamplingNu > 2, 'ESTNLSS:GetESTCubaturePoints:SamplingNuTooSmall', 'GetESTCubaturePoints requires that nu + IntDim - 1 is greater than 2.' );
     
     if isfinite( SamplingNu )
         RootSamplingCov = RootSamplingCov * sqrt( ( SamplingNu - 2 ) / SamplingNu );

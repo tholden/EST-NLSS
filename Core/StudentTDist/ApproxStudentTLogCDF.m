@@ -10,9 +10,9 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     % figure( 1 ); surf( xr, xi, z1 );
     % figure( 2 ); surf( xr, xi, z2 );
 
-    assert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
-    assert( real( nu ) >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
+    ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:ApproxStudentTLogCDF:NuSize', 'ApproxStudentTLogCDF only supports univariate nu.' );
+    ESTNLSSassert( real( nu ) >= 0, 'ESTNLSS:ApproxStudentTLogCDF:NuSign', 'ApproxStudentTLogCDF requires nu to be weakly positive.' );
+    ESTNLSSassert( all( ~isnan( x(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNInputX', 'ApproxStudentTLogCDF was passed a NaN input x.' );
     
     lognu = log( nu );
     if real( lognu ) <= -Inf
@@ -142,6 +142,6 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     IdxPos = Remaining( Pos_xRemaining );
     log_y( IdxPos ) = log1p( -exp( log_y( IdxPos ) ) );
     
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNOutputLogY', 'ApproxStudentTLogCDF returned a NaN output log_y.' );    
+    ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ApproxStudentTLogCDF:NaNOutputLogY', 'ApproxStudentTLogCDF returned a NaN output log_y.' );    
     
 end

@@ -1,8 +1,8 @@
 function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck_delta, scaleOmegaNew, scaledeltaNew, tauNew, nuNew ] = ESTLogPDF( x, xi, Omega, delta, tau, nu, OmegaIsCholesky )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:ESTLogPDF:NuSize', 'ESTLogPDF only supports univariate nu.' );
-    assert( real( nu ) > 0, 'ESTNLSS:ESTLogPDF:NuSign', 'ESTLogPDF requires nu to be strictly positive.' );
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:ESTLogPDF:NaNInputX', 'ESTLogPDF was passed a NaN input x.' );
+    ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:ESTLogPDF:NuSize', 'ESTLogPDF only supports univariate nu.' );
+    ESTNLSSassert( real( nu ) > 0, 'ESTNLSS:ESTLogPDF:NuSign', 'ESTLogPDF requires nu to be strictly positive.' );
+    ESTNLSSassert( all( ~isnan( x(:) ) ), 'ESTNLSS:ESTLogPDF:NaNInputX', 'ESTLogPDF was passed a NaN input x.' );
     
     if nargin < 7
         OmegaIsCholesky = false;
@@ -40,7 +40,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     
     log_y( FiniteCDFDifferenceSelect ) = log_y( FiniteCDFDifferenceSelect ) + tcdfDifference( FiniteCDFDifferenceSelect );
         
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ESTLogPDF:NaNOutputLogY', 'ESTLogPDF returned a NaN output log_y.' );    
+    ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ESTLogPDF:NaNOutputLogY', 'ESTLogPDF returned a NaN output log_y.' );    
     
 end
 

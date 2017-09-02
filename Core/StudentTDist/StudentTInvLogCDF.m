@@ -1,8 +1,8 @@
 function x = StudentTInvLogCDF( log_y, nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:StudentTInvLogCDF:NuSize', 'StudentTInvLogCDF only supports univariate nu.' );
-    assert( nu > 0, 'ESTNLSS:StudentTInvLogCDF:NuSign', 'StudentTInvLogCDF requires nu to be strictly positive.' );
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTInvLogCDF:NaNInputY', 'StudentTInvLogCDF was passed a NaN input log_y.' );
+    ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:StudentTInvLogCDF:NuSize', 'StudentTInvLogCDF only supports univariate nu.' );
+    ESTNLSSassert( nu > 0, 'ESTNLSS:StudentTInvLogCDF:NuSign', 'StudentTInvLogCDF requires nu to be strictly positive.' );
+    ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTInvLogCDF:NaNInputY', 'StudentTInvLogCDF was passed a NaN input log_y.' );
     
     x = tinv( exp( log_y ), nu );
     
@@ -55,6 +55,6 @@ function x = StudentTInvLogCDF( log_y, nu )
     
     end
     
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvLogCDF:NaNOutputX', 'StudentTInvLogCDF returned a NaN output x.' );
+    ESTNLSSassert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTInvLogCDF:NaNOutputX', 'StudentTInvLogCDF returned a NaN output x.' );
     
 end

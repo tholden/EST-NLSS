@@ -1,6 +1,6 @@
 function [ RootCovariance, InvRootCovariance, LogDetCovariance ] = ObtainEstimateRootCovariance( Covariance, StdDevThreshold )
 
-    assert( all( isfinite( Covariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteInputCovariance', 'ObtainEstimateRootCovariance was called on a non-finite input covariance.' );
+    ESTNLSSassert( all( isfinite( Covariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteInputCovariance', 'ObtainEstimateRootCovariance was called on a non-finite input covariance.' );
 
     Covariance = full( 0.5 * ( Covariance + Covariance' ) );
     [ U, D ] = schur( Covariance, 'complex' );
@@ -10,19 +10,19 @@ function [ RootCovariance, InvRootCovariance, LogDetCovariance ] = ObtainEstimat
     Usub = real( U( :, IDv ) );
     RootCovariance = Usub * diag( RootD( IDv ) );
     
-    assert( all( isfinite( RootCovariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteOutputRootCovariance', 'ObtainEstimateRootCovariance returned a non-finite output root covariance.' );
+    ESTNLSSassert( all( isfinite( RootCovariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteOutputRootCovariance', 'ObtainEstimateRootCovariance returned a non-finite output root covariance.' );
 
     if nargout > 1
 
         InvRootCovariance = diag( 1 ./ RootD( IDv ) ) * Usub';
         
-        assert( all( isfinite( InvRootCovariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteOutputInvRootCovariance', 'ObtainEstimateRootCovariance returned a non-finite output inverse root covariance.' );
+        ESTNLSSassert( all( isfinite( InvRootCovariance(:) ) ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteOutputInvRootCovariance', 'ObtainEstimateRootCovariance returned a non-finite output inverse root covariance.' );
         
         if nargout > 2
 
             LogDetCovariance = sum( reallog( RootD ) );
 
-            assert( isfinite( LogDetCovariance ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteLogDetCovariance', 'ObtainEstimateRootCovariance returned a non-finite output log det covariance.' );
+            ESTNLSSassert( isfinite( LogDetCovariance ), 'ESTNLSS:ObtainEstimateRootCovariance:NonFiniteLogDetCovariance', 'ObtainEstimateRootCovariance returned a non-finite output log det covariance.' );
         
         end
         

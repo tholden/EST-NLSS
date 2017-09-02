@@ -1,8 +1,8 @@
 function log_y = StudentTLogCDF( x, nu )
 
-    assert( numel( nu ) == 1, 'ESTNLSS:StudentTLogCDF:NuSize', 'StudentTLogCDF only supports univariate nu.' );
-    assert( nu >= 0, 'ESTNLSS:StudentTLogCDF:NuSign', 'StudentTLogCDF requires nu to be weakly positive.' );
-    assert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNInputX', 'StudentTLogCDF was passed a NaN input x.' );
+    ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:StudentTLogCDF:NuSize', 'StudentTLogCDF only supports univariate nu.' );
+    ESTNLSSassert( nu >= 0, 'ESTNLSS:StudentTLogCDF:NuSign', 'StudentTLogCDF requires nu to be weakly positive.' );
+    ESTNLSSassert( all( ~isnan( x(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNInputX', 'StudentTLogCDF was passed a NaN input x.' );
     
     lognu = log( nu );
     if lognu <= -Inf
@@ -112,6 +112,6 @@ function log_y = StudentTLogCDF( x, nu )
     IdxPos = Remaining( Pos_xRemaining );
     log_y( IdxPos ) = log1p( -exp( log_y( IdxPos ) ) );
     
-    assert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNOutputLogY', 'StudentTLogCDF returned a NaN output log_y.' );    
+    ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:StudentTLogCDF:NaNOutputLogY', 'StudentTLogCDF returned a NaN output log_y.' );    
     
 end
