@@ -8,10 +8,10 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
     rho = ( 1 - rho ) / ( 1 + rho );
     
     if isempty( InitialStates )
-        if isempty( PersistentState.FinalEndo )
-            CEndo = [ log_mu; 0 ];
-        else
+        if isstruct( PersistentState ) && isfield( PersistentState, 'FinalEndo' ) && ( ~isempty( PersistentState.FinalEndo ) )
             CEndo = PersistentState.FinalEndo;
+        else
+            CEndo = [ log_mu; 0 ];
         end
         T = size( ShockSequence, 2 );
         EndoSimulation = zeros( 2, T );
