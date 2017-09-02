@@ -76,7 +76,7 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     delta = ( mu - lambda ) / ( ET1 - MedT );
     
     xi = mu - delta * ET1;
-    delta_deltaT = delta * delta';
+    delta_deltaT = delta * delta.';
     ET12 = ET1 * ET1;
     
     if isfinite( nu )
@@ -92,7 +92,7 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
         if p == 0
             cholOmega = realsqrt( OmegaScaleRatio ) * cholOmega;
         else
-            [ ~, cholOmega ] = NearestSPD( OmegaScaleRatio * ( cholSigma' * cholSigma - ( ET2 - ET12 ) * delta_deltaT ) );
+            [ ~, cholOmega ] = NearestSPD( OmegaScaleRatio * ( cholSigma.' * cholSigma - ( ET2 - ET12 ) * delta_deltaT ) );
         end
     end
     
@@ -109,7 +109,7 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     
     cholOmegaCheck = CholeskyUpdate( cholOmega, delta );
     
-    deltaT_delta = delta' * delta;
+    deltaT_delta = delta.' * delta;
     deltaT_delta2 = deltaT_delta * deltaT_delta;
     cholOmegaHat_delta = cholOmegaCheck * delta;
     deltaT_OmegaHat_delta = cholOmegaHat_delta' * cholOmegaHat_delta;
