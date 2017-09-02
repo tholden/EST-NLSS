@@ -56,7 +56,6 @@
 *.mexw64    binary
 *.pdf       binary
 *.png       binary
-*.prj       binary
 *.ps        binary
 *.xlsx      binary
 *.zip       binary
