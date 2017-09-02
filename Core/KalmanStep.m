@@ -93,9 +93,9 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     
     MECholPRRQnoComponent = sqrt( GetOmegaScaleRatio( tauno, nuno ) ) * diag( diagRootLambda( Observed ) );
     
-    wmno = [ wmno( FirstBlock ), zeros( nm, 1 ), wmno( SecondBlock ) ];
+    wmno = [ wmno( FirstBlock ); zeros( nm, 1 ); wmno( SecondBlock ) ];
     CholPRRQno = [ CholPRRQno( FirstBlock, FirstBlock ), zeros( lFirstBlock, nm ), CholPRRQno( FirstBlock, SecondBlock ); zeros( nm, lFirstBlock ), MECholPRRQnoComponent, MECholPRRQnoComponent; zeros( nm, nwmRed ), CholPRRQno( SecondBlock, SecondBlock ) ];
-    deltaetano = [ deltaetano( FirstBlock ), zeros( nm, 1 ), deltaetano( SecondBlock ) ];  
+    deltaetano = [ deltaetano( FirstBlock ); zeros( nm, 1 ); deltaetano( SecondBlock ) ];  
 
     nwm = lFirstBlock + 2 * nm;
     
