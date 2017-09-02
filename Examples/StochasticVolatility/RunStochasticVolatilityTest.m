@@ -18,6 +18,7 @@ Data = Data( :, ( Drop + 1 ) : end );
 
 EstimationOptions = struct;
 
+EstimationOptions.AllowTailEvaluations = false;
 EstimationOptions.CompileLikelihood = false;
 EstimationOptions.Debug = false;
 EstimationOptions.DynamicNu = true;
