@@ -147,8 +147,6 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     deltasnn = deltann( StateVariableIndices );
     Psnn = Pnn( StateVariableIndices, StateVariableIndices );
     
-    Psnn = ObtainEstimateRootCovariance( Psnn, Options.StdDevThreshold );
-       
     % [ PersistentState, LogObservationLikelihood, xnn, Ssnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
 
     assert( isfinite( LogObservationLikelihood ), 'ESTNLSS:KalmanStep:NonFiniteOutputLogObservationLikelihood', 'KalmanStep returned a non-finite output log observation likelihood.' );
