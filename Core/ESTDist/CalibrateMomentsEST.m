@@ -1,8 +1,8 @@
-function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu, mu, lambda, cholSigma, sZ3, sZ4 )
+function [ resid, xi, delta, CholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu, mu, lambda, CholSigma, sZ3, sZ4 )
 
     ESTNLSSassert( all( isfinite( mu(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputMu', 'CalibrateMomentsEST was invoked with a non-finite input mu.' );
     ESTNLSSassert( all( isfinite( lambda(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputLambda', 'CalibrateMomentsEST was invoked with a non-finite input lambda.' );
-    ESTNLSSassert( all( isfinite( cholSigma(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputCholSigma', 'CalibrateMomentsEST was invoked with a non-finite input cholSigma.' );
+    ESTNLSSassert( all( isfinite( CholSigma(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputCholSigma', 'CalibrateMomentsEST was invoked with a non-finite input CholSigma.' );
     ESTNLSSassert( isempty( sZ3 ) || isfinite( sZ3 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputThirdMoment', 'CalibrateMomentsEST was invoked with a non-finite input third moment.' );
     ESTNLSSassert( isempty( sZ4 ) || isfinite( sZ4 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputFourthMoment', 'CalibrateMomentsEST was invoked with a non-finite input fourth moment.' );
     
@@ -39,15 +39,15 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
         
         xi = mu;
         delta = zeros( size( mu ) );
-        cholOmega = cholSigma;
+        CholOmega = CholSigma;
         if isfinite( nu )
-            cholOmega = cholOmega * realsqrt( ( nu - 2 ) / nu );
+            CholOmega = CholOmega * realsqrt( ( nu - 2 ) / nu );
         end
         
         ESTNLSSassert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
         ESTNLSSassert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
         ESTNLSSassert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
-        ESTNLSSassert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
+        ESTNLSSassert( all( isfinite( CholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output CholOmega.' );
         
         return
         
@@ -90,13 +90,13 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     end
     
     if ET2 < ET12
-        cholOmega = realsqrt( OmegaScaleRatio ) * CholeskyUpdate( cholSigma, realsqrt( ET12 - ET2 ) * delta );
+        CholOmega = realsqrt( OmegaScaleRatio ) * CholeskyUpdate( CholSigma, realsqrt( ET12 - ET2 ) * delta );
     else
-        [ cholOmega, p ] = CholeskyUpdate( cholSigma, realsqrt( ET2 - ET12 ) * delta, '-' );
+        [ CholOmega, p ] = CholeskyUpdate( CholSigma, realsqrt( ET2 - ET12 ) * delta, '-' );
         if p == 0
-            cholOmega = realsqrt( OmegaScaleRatio ) * cholOmega;
+            CholOmega = realsqrt( OmegaScaleRatio ) * CholOmega;
         else
-            [ ~, cholOmega ] = NearestSPD( OmegaScaleRatio * ( cholSigma.' * cholSigma - ( ET2 - ET12 ) * delta_deltaT ) );
+            [ ~, CholOmega ] = NearestSPD( OmegaScaleRatio * ( CholSigma.' * CholSigma - ( ET2 - ET12 ) * delta_deltaT ) );
         end
     end
     
@@ -105,19 +105,19 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
         ESTNLSSassert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
         ESTNLSSassert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
         ESTNLSSassert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
-        ESTNLSSassert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
+        ESTNLSSassert( all( isfinite( CholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output CholOmega.' );
         
         return
         
     end
     
-    cholOmegaCheck = CholeskyUpdate( cholOmega, delta );
+    cholOmegaCheck = CholeskyUpdate( CholOmega, delta );
     
     deltaT_delta = delta.' * delta;
     deltaT_delta2 = deltaT_delta * deltaT_delta;
     cholOmegaHat_delta = cholOmegaCheck * delta;
     deltaT_OmegaHat_delta = cholOmegaHat_delta' * cholOmegaHat_delta;
-    cholSigma_delta = cholSigma * delta;
+    cholSigma_delta = CholSigma * delta;
     deltaT_Sigma_delta = cholSigma_delta' * cholSigma_delta;
     sqrt_deltaT_OmegaHat_delta = realsqrt( deltaT_OmegaHat_delta );
     OmegaHatSigmaRatio = deltaT_OmegaHat_delta / deltaT_Sigma_delta;
@@ -154,6 +154,6 @@ function [ resid, xi, delta, cholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     ESTNLSSassert( all( isfinite( resid(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output resid.' );
     ESTNLSSassert( all( isfinite( xi(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputXi', 'CalibrateMomentsEST returned a non-finite output xi.' );
     ESTNLSSassert( all( isfinite( delta(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputDelta', 'CalibrateMomentsEST returned a non-finite output delta.' );
-    ESTNLSSassert( all( isfinite( cholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output cholOmega.' );
+    ESTNLSSassert( all( isfinite( CholOmega(:) ) ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteOutputResid', 'CalibrateMomentsEST returned a non-finite output CholOmega.' );
     
 end
