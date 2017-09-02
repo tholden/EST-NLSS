@@ -29,7 +29,7 @@
       <param.MergeInstrumentationResults>false</param.MergeInstrumentationResults>
       <param.VerificationMode>option.VerificationMode.None</param.VerificationMode>
       <param.VerificationStatus>option.VerificationStatus.Inactive</param.VerificationStatus>
-      <param.CustomSourceCode>#define muDoubleScalarIsNaN( x ) 0</param.CustomSourceCode>
+      <param.CustomSourceCode />
       <param.CustomHeaderCode />
       <param.CustomInitializer />
       <param.CustomTerminator />
@@ -153,8 +153,8 @@
       <param.CustomLibrary />
       <param.PostCodeGenCommand />
       <param.TargetLangStandard>C99 (ISO)</param.TargetLangStandard>
-      <param.CodeReplacementLibrary />
-      <param.DeprecatedCRLFlag />
+      <param.CodeReplacementLibrary>None</param.CodeReplacementLibrary>
+      <param.DeprecatedCRLFlag>false</param.DeprecatedCRLFlag>
       <param.SameHardware>true</param.SameHardware>
       <param.Toolchain>Automatically locate an installed toolchain</param.Toolchain>
       <param.BuildConfiguration>Faster Runs</param.BuildConfiguration>
@@ -232,7 +232,7 @@
       <param.InitFltsAndDblsToZero>false</param.InitFltsAndDblsToZero>
       <param.PassStructByReference />
       <param.CustomLAPACKCallback />
-      <param.UseECoderFeatures />
+      <param.UseECoderFeatures>true</param.UseECoderFeatures>
       <unset>
         <param.WorkingFolder />
         <param.SpecifiedWorkingFolder />
@@ -740,7 +740,6 @@
     <param.FixedPointSourceCodeChecksum />
     <param.FixedPointFunctionReplacements>
       <FunctionReplacements>
-        <Replacement />
         <Replacement />
         <Replacement />
         <Replacement />

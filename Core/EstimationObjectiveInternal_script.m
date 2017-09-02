@@ -11,7 +11,6 @@ cfg = coder.config('mex');
 cfg.EnableMemcpy = false;
 cfg.InitFltsAndDblsToZero = false;
 cfg.EnableOpenMP = false;
-cfg.CustomSourceCode = '#define muDoubleScalarIsNaN( x ) 0';
 cfg.MATLABSourceComments = true;
 cfg.GenerateReport = true;
 cfg.ReportPotentialDifferences = false;
