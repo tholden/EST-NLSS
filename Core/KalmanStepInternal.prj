@@ -739,7 +739,12 @@
     <param.FixedPointValidationChecksum />
     <param.FixedPointSourceCodeChecksum />
     <param.FixedPointFunctionReplacements>
-      <FunctionReplacements />
+      <FunctionReplacements>
+        <Replacement />
+        <Replacement />
+        <Replacement />
+        <Replacement />
+      </FunctionReplacements>
     </param.FixedPointFunctionReplacements>
     <param.OptimizeWholeNumbers>true</param.OptimizeWholeNumbers>
     <param.ContainerTypes>false</param.ContainerTypes>
