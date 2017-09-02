@@ -98,7 +98,7 @@ function log_y = ApproxStudentTLogCDF( x, nu )
         nuOtR2Pnu = nu ./ ( tR2 + nu );
         
         if isreal( nu )
-            log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - betaln( nu * 0.5, 0.5 ) + 0.5 * nu * reallog( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
+            log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - betaln( nu * 0.5, 0.5 ) + 0.5 * nu * log( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
         else
             log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - cbetaln( nu * 0.5, 0.5 ) + 0.5 * nu * log( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
         end
