@@ -56,7 +56,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     
     nuno = nuoo;
 
-    Psoo = CholPsoo * CholPsoo';
+    Psoo = CholPsoo * CholPsoo.';
 
     PriorValue = Prior( EstimatedParameters );
     ScaledPriorValue = PriorValue / T;
