@@ -75,7 +75,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     
     PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal_mex( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno );
     
-    [ wmno, CholPRRQno, deltaetano, tauno, nuno ] = GetESTParametersFromVector( pOpt, nwmRed, DynamicNu, SkewLikelihood, nuno );
+    [ wmno, CholPRRQno, deltaetano, tauno, nuno ] = GetESTParametersFromVector( PersistentState.Internal( 1 : ParamDim, t ), nwmRed, DynamicNu, SkewLikelihood, nuno );
     
     NEndo = size( EndoSimulation, 1 );
     
