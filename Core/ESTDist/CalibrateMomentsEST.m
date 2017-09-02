@@ -7,7 +7,10 @@ function [ resid, xi, delta, CholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
     ESTNLSSassert( isempty( sZ4 ) || isfinite( sZ4 ), 'ESTNLSS:CalibrateMomentsEST:NonFiniteInputFourthMoment', 'CalibrateMomentsEST was invoked with a non-finite input fourth moment.' );
     
     if isfinite( tau )
-        tau = max( -100, min( 100, tau ) );
+        tau = max( -10, min( 10, tau ) );
+    end
+    if isfinite( nu )
+        nu = min( 1000, nu );
     end
     
     log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
