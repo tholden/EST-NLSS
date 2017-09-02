@@ -9,7 +9,11 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     end
 
     if OmegaIsCholesky
-        cholOmegaCheck = RealCholeskyUpdate( Omega, delta, '+' );
+        [ cholOmegaCheck, cholError ] = RealCholeskyUpdate( Omega, delta, '+' );
+        if cholError
+            Omega = Omega.' * Omega;
+            [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
+        end
     else
         [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
     end
