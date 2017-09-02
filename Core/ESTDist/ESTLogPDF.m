@@ -18,8 +18,10 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
         [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
     end
 
+    WarningState = warning( 'off', 'MATLAB:nearlySingularMatrix' );
     TIcholOmegaCheck_mInnovation = cholOmegaCheck.' \ bsxfun( @minus, x, xi );
     TIcholOmegaCheck_delta = cholOmegaCheck.' \ delta;
+    warning( WarningState );
 
     nx = numel( xi );
     
@@ -29,7 +31,7 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
         scaleOmegaNew = 1;
     end
     
-    scaledeltaNew = 1 / ( 1 - TIcholOmegaCheck_delta.' * TIcholOmegaCheck_delta );
+    scaledeltaNew = 1 / max( 0, 1 - TIcholOmegaCheck_delta.' * TIcholOmegaCheck_delta );
     tauNew = sqrt( scaledeltaNew ./ scaleOmegaNew ) .* ( sum( bsxfun( @times, TIcholOmegaCheck_delta, TIcholOmegaCheck_mInnovation ), 1 ) + tau );
     nuNew = nu + nx;
 
