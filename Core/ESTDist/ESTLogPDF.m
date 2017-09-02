@@ -18,10 +18,14 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
         [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
     end
 
-    WarningState = warning( 'off', 'MATLAB:nearlySingularMatrix' );
+    if coder.target( 'MATLAB' )
+        WarningState = warning( 'off', 'MATLAB:nearlySingularMatrix' );
+    end
     TIcholOmegaCheck_mInnovation = cholOmegaCheck.' \ bsxfun( @minus, x, xi );
     TIcholOmegaCheck_delta = cholOmegaCheck.' \ delta;
-    warning( WarningState );
+    if coder.target( 'MATLAB' )
+        warning( WarningState );
+    end
 
     nx = numel( xi );
     
