@@ -31,7 +31,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     NExo2 = size( ExoVar, 2 );
     
     ZerosNExo1 = zeros( NExo1, 1 );
-    [ CubatureWeights, StateExoPoints, NCubaturePoints ] = GetESTCubaturePoints( [ xoo; ZerosNExo1 ], [ Psoo, zeros( NAugState1, NExo2 ); zeros( NExo1, NAugState2 ), ExoVar ], [ deltasoo; ZerosNExo1 ], tauoo, nuoo, Options.FilterCubatureDegree, Options.AllowTailEvaluations );
+    [ CubatureWeights, StateExoPoints, NCubaturePoints ] = GetESTCubaturePoints( [ xoo; ZerosNExo1 ], [ Psoo, zeros( NAugState1, NExo2 ); zeros( NExo1, NAugState2 ), ExoVar ], [ deltasoo; ZerosNExo1 ], tauoo, nuoo, Options.FilterCubatureDegree, Options.StdDevThreshold, Options.AllowTailEvaluations );
     
     StatePoints = StateExoPoints( 1:NAugState1, : );
     ExoPoints = StateExoPoints( (NAugState1+1):(NAugState1+NExo1), : );
