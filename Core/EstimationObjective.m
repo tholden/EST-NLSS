@@ -33,7 +33,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     else
         Parameters = EstimatedParameters( 1 : ( end - N - 1 ) );
         diagRootLambda = exp( 2 * EstimatedParameters( ( end - N ) : ( end - 1 ) ) );
-        nuoo = exp( 2 + EstimatedParameters( end ) );
+        nuoo = exp( 3 + EstimatedParameters( end ) );
     end
     
     [ PersistentState.External, StateSteadyState, StateVariableIndices ] = Solve( Parameters, PersistentState.External );

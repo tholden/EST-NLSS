@@ -14,9 +14,9 @@ function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints,
             sZ4 = max( 3, kurtosis( ZcheckStatDist, 0 ) );
 
             if DynamicNu
-                tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, sZ3, sZ4 ), [ 2; 2 ] );
+                tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 5 + exp( in( 2 ) ), muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, sZ3, sZ4 ), [ 2; 2 ] );
                 tauoo = tauoo_nuoo( 1 );
-                nuoo = 4 + eps( 4 ) + exp( tauoo_nuoo( 2 ) );
+                nuoo = 5 + exp( tauoo_nuoo( 2 ) );
             else
                 tauoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nuoo, muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, sZ3, [] ), 2 );
             end

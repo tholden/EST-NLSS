@@ -8,7 +8,7 @@ function p = InvGetESTParametersFromVector( delta, tau, nu, DynamicNu, SkewLikel
         p( n + 1 ) = tau;
     end
     if DynamicNu
-        p( end ) = log( nu - ( 2 + eps( 2 ) ) );
+        p( end ) = log( nu - 3 );
     end
 
 end

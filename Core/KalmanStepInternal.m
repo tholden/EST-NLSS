@@ -23,9 +23,9 @@ function PersistentStateInternal_t = KalmanStepInternal( wmRed, CubatureWeights,
             sZ4 = max( 3, realpow( Zcheck_wmRed, 4 ) * CubatureWeights.' );
 
             if DynamicNu
-                tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), mu_wmRed, Median_wmRed, CholSigma_wmRed, sZ3, sZ4 ), [ 2; 0 ] );
+                tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 5 + exp( in( 2 ) ), mu_wmRed, Median_wmRed, CholSigma_wmRed, sZ3, sZ4 ), [ 2; 0 ] );
                 tauno = tauno_nuno( 1 );
-                nuno = 4 + eps( 4 ) + exp( tauno_nuno( 2 ) );
+                nuno = 5 + exp( tauno_nuno( 2 ) );
             else
                 tauno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nuno, mu_wmRed, Median_wmRed, CholSigma_wmRed, sZ3, [] ), 2 );
             end

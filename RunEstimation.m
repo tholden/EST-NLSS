@@ -265,7 +265,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
 
     EstimatedNu = ~Options.NoTLikelihood && ~Options.DynamicNu;
     if EstimatedNu
-        EstimatedParameters( end + 1 ) = log( Options.InitialNu - 2 );
+        EstimatedParameters( end + 1 ) = log( Options.InitialNu - 3 );
     end
 
     WarningState = warning( 'off', 'MATLAB:rmpath:DirNotFound' );
