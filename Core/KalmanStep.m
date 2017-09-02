@@ -31,6 +31,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     NExo2 = size( ExoVar, 2 );
     
     ZerosNExo1 = zeros( NExo1, 1 );
+    
     [ CubatureWeights, StateExoPoints, NCubaturePoints ] = GetESTCubaturePoints( [ xoo; ZerosNExo1 ], [ Psoo, zeros( NAugState1, NExo2 ); zeros( NExo1, NAugState2 ), ExoVar ], [ deltasoo; ZerosNExo1 ], tauoo, nuoo, Options.FilterCubatureDegree, Options.StdDevThreshold, Options.AllowTailEvaluations );
     
     StatePoints = StateExoPoints( 1:NAugState1, : );
@@ -136,12 +137,12 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
         
         [ LogObservationLikelihood, CholQnoCheck, TICholQnoCheck_mInnovation, TICholQnoCheck_eta, scalePnn, scaledeltann, taunn, nunn ] = ESTLogPDF( m, mno, Qno, etano, tauno, nuno );
 
-        RCheck_IcholQnoCheck = RnoCheck / CholQnoCheck;
+        RCheck_ICholQnoCheck = RnoCheck / CholQnoCheck;
         
-        PTildeno = CholPnoCheck * CholPnoCheck.' - RCheck_IcholQnoCheck * RCheck_IcholQnoCheck.';
-        deltaTildeno = deltano - RCheck_IcholQnoCheck * TICholQnoCheck_eta;
+        PTildeno = CholPnoCheck.' * CholPnoCheck - RCheck_ICholQnoCheck * RCheck_ICholQnoCheck.';
+        deltaTildeno = deltano - RCheck_ICholQnoCheck * TICholQnoCheck_eta;
         
-        wnn = RCheck_IcholQnoCheck * TICholQnoCheck_mInnovation;
+        wnn = RCheck_ICholQnoCheck * TICholQnoCheck_mInnovation;
 
         Pnn = scalePnn * NearestSPD( PTildeno - ( deltaTildeno * deltaTildeno.' ) * scaledeltann );
         deltann = realsqrt( scalePnn * scaledeltann ) * deltaTildeno;        
