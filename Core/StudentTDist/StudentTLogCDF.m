@@ -32,6 +32,34 @@ function log_y = StudentTLogCDF( x, nu )
     Pos_xRemaining = xRemaining > 0;
     xRemaining( Pos_xRemaining ) = -xRemaining( Pos_xRemaining );
     
+    % start with a normal cdf which provides a lower bound in the t case
+    
+    yRemaining = normcdf( xRemaining );
+    SelGood = yRemaining > 0;
+    IdxGood = Remaining( SelGood );
+    SelBad = ~SelGood;
+    IdxBad = Remaining( SelBad );
+    log_y( IdxGood ) = log( yRemaining( SelGood ) );
+
+    t = xRemaining( SelBad );
+    t = t(:).';
+
+    tR2 = t .* t;
+    ItR2 = 1 ./ tR2;
+    ItR4 = ItR2 .* ItR2;
+    ItR6 = ItR4 .* ItR2;
+    ItR8 = ItR4 .* ItR4;
+    ItR10 = ItR6 .* ItR4;
+    ItR12 = ItR6 .* ItR6;
+
+    log_y( IdxBad ) = Shanks( bsxfun( @times, [ 1; -1; 2.5; -12.33333333333333333333; 88.25; -816.2; 9200.833333333333333333 ], [ -.5*tR2-.9189385332046727417802-log(-t); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) );
+
+    log_y( IdxBad( ItR12 >= Inf ) ) = logH;
+
+    log_y( IdxBad( log_y( IdxBad ) > logH ) ) = logH;
+    
+    % now adjust the t-elements
+        
     if nu < Inf
         
         yRemaining = tcdf( xRemaining, nu );
@@ -39,7 +67,9 @@ function log_y = StudentTLogCDF( x, nu )
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
         IdxBad = Remaining( SelBad );
-        log_y( IdxGood ) = log( yRemaining( SelGood ) );
+        log_y_IdxGood_tmp = log( yRemaining( SelGood ) );
+        SubSelGood = log_y_IdxGood_tmp > log_y( IdxGood );
+        log_y( IdxGood( SubSelGood ) ) = log_y_IdxGood_tmp( SubSelGood );
 
         InuP2 = 1 / ( 2 + nu );
         InuP2R2 = InuP2 * InuP2;
@@ -78,34 +108,10 @@ function log_y = StudentTLogCDF( x, nu )
         
         nuOtR2Pnu = nu ./ ( tR2 + nu );
         
-        log_y( IdxBad ) = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - betaln( nu * 0.5, 0.5 ) + 0.5 * nu * reallog( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
+        log_y_IdxBad_tmp = Shanks( bsxfun( @times, Cnu, [ ones( size( t ) ); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) ) - betaln( nu * 0.5, 0.5 ) + 0.5 * nu * reallog( nuOtR2Pnu ) - 0.5 * log1p( - nuOtR2Pnu );
+        SubSelBad = log_y_IdxBad_tmp > log_y( IdxBad );
+        log_y( IdxBad( SubSelBad ) ) = log_y_IdxBad_tmp( SubSelBad );
 
-        log_y( IdxBad( ItR12 >= Inf ) ) = logH;
-        
-        log_y( IdxBad( log_y( IdxBad ) > logH ) ) = logH;
-        
-    else
-        
-        yRemaining = normcdf( xRemaining );
-        SelGood = yRemaining > 0;
-        IdxGood = Remaining( SelGood );
-        SelBad = ~SelGood;
-        IdxBad = Remaining( SelBad );
-        log_y( IdxGood ) = log( yRemaining( SelGood ) );
-        
-        t = xRemaining( SelBad );
-        t = t(:).';
-        
-        tR2 = t .* t;
-        ItR2 = 1 ./ tR2;
-        ItR4 = ItR2 .* ItR2;
-        ItR6 = ItR4 .* ItR2;
-        ItR8 = ItR4 .* ItR4;
-        ItR10 = ItR6 .* ItR4;
-        ItR12 = ItR6 .* ItR6;
-        
-        log_y( IdxBad ) = Shanks( bsxfun( @times, [ 1; -1; 2.5; -12.33333333333333333333; 88.25; -816.2; 9200.833333333333333333 ], [ -.5*tR2-.9189385332046727417802-log(-t); ItR2; ItR4; ItR6; ItR8; ItR10; ItR12 ] ) );
-        
         log_y( IdxBad( ItR12 >= Inf ) ) = logH;
         
         log_y( IdxBad( log_y( IdxBad ) > logH ) ) = logH;
