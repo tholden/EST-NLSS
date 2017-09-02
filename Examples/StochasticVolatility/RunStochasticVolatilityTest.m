@@ -8,6 +8,9 @@ Parameters( 4 ) =  1; % log( ( 1 + rho ) / ( 1 - rho ) )
 T = 1000;
 Drop = 100;
 PersistentState = [];
+
+rng( 'default' );
+
 [ PersistentState, TrueEndoSimulation, Data ] = StochasticVolatilitySimulation( Parameters, PersistentState, [], randn( 2, T + Drop ), 0 );
 
 TrueEndoSimulation = TrueEndoSimulation( :, ( Drop + 1 ) : end );
@@ -16,6 +19,7 @@ Data = Data( :, ( Drop + 1 ) : end );
 EstimationOptions = struct;
 
 EstimationOptions.CompileLikelihood = false;
+EstimationOptions.Debug = false;
 EstimationOptions.DynamicNu = true;
 EstimationOptions.FilterCubatureDegree = 19;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';
