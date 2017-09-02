@@ -111,7 +111,6 @@ function [x,fval,exitflag,output,grad]=fminlbfgs(funfcn,x_init,optim)
 data.fval=0;
 data.gradient=0;
 data.fOld=NaN; 
-data.xsizes=size(x_init);
 numVarTmp = numel(x_init);
 data.numberOfVariables = numVarTmp;
 data.xInitial = x_init(:);
@@ -286,9 +285,6 @@ fval=data.fInitial;
 grad=data.gradient;
 x = data.xInitial;
 
-% Reshape x to original shape
-% x=reshape(x,data.xsizes);
-
 % Call output function
 if(call_output_function(data,optim,'done')), exitflag=-1; end
 
@@ -306,7 +302,7 @@ output.funccount = data.funcCount;
 output.fval = data.fInitial;
 output.stepsize = data.alpha;
 output.directionalderivative = data.fPrimeInitial;
-output.gradient = reshape(data.gradient, data.xsizes);
+output.gradient = (data.gradient);
 output.searchdirection = data.dir;
 output.timeTotal=0;    
 output.timeExtern=data.timeExtern;
@@ -344,9 +340,9 @@ if(~isempty(optim.OutputFcn))
     output.fval = data.fInitial;
     output.stepsize = data.alpha;
     output.directionalderivative = data.fPrimeInitial;
-    output.gradient = reshape(data.gradient, data.xsizes);
+    output.gradient = (data.gradient);
     output.searchdirection = data.dir;
-    stopt=feval(optim.OutputFcn,reshape(data.xInitial,data.xsizes),output,where); 
+    stopt=feval(optim.OutputFcn,(data.xInitial),output,where); 
 end
         
 	
@@ -734,13 +730,13 @@ alpha = alpha1 + z*(alpha2 - alpha1);
 function [data,fval,grad]=gradient_function(x,funfcn, data, optim)
     % Call the error function for error (and gradient)
     if ( nargout <3 )
-        fval=funfcn(reshape(x,data.xsizes));
+        fval=funfcn((x));
         fval = fval( 1 );
         data.timeExtern=data.timeExtern;
         data.funcCount=data.funcCount+1;
     else
         if(strcmp(optim.GradObj,'on'))
-            [fval, grad]=funfcn(reshape(x,data.xsizes));
+            [fval, grad]=funfcn((x));
             fval = fval( 1 );
             data.timeExtern=data.timeExtern;
             data.funcCount=data.funcCount+1;
@@ -748,14 +744,14 @@ function [data,fval,grad]=gradient_function(x,funfcn, data, optim)
         else
             % Calculate gradient with forward difference if not provided by the function
             grad=zeros(length(x),1);
-            fval=funfcn(reshape(x,data.xsizes));
+            fval=funfcn((x));
             fval = fval( 1 );
             gstep=data.initialStepLength/1e6; 
             if(gstep>optim.DiffMaxChange), gstep=optim.DiffMaxChange; end
             if(gstep<optim.DiffMinChange), gstep=optim.DiffMinChange; end
             for i=1:length(x)
                 x_temp=x; x_temp(i)=x_temp(i)+gstep;
-                [fval_g]=funfcn(reshape(x_temp,data.xsizes));
+                [fval_g]=funfcn((x_temp));
                 fval_g = fval_g( 1 );
                 data.funcCount=data.funcCount+1;
                 data.timeExtern=data.timeExtern;
