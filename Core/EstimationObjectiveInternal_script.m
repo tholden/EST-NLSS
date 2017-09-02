@@ -2,7 +2,7 @@
 %  EstimationObjectiveInternal_mex from EstimationObjectiveInternal.
 % 
 % Script generated from project 'EstimationObjectiveInternal.prj' on
-%  01-Sep-2017.
+%  02-Sep-2017.
 % 
 % See also CODER, CODER.CONFIG, CODER.TYPEOF, CODEGEN.
 
@@ -32,13 +32,15 @@ cfg.GlobalDataSyncMethod = 'NoSync';
 
 %% Define argument types for entry-point 'EstimationObjectiveInternal'.
 ARGS = cell(1,1);
-ARGS{1} = cell(6,1);
+ARGS{1} = cell(8,1);
 ARGS{1}{1} = coder.typeof(0,[Inf Inf],[1 1]);
 ARGS{1}{2} = coder.typeof(0,[Inf Inf],[1 1]);
 ARGS{1}{3} = coder.typeof(0,[Inf  1],[1 0]);
 ARGS{1}{4} = coder.typeof(false);
 ARGS{1}{5} = coder.typeof(false);
 ARGS{1}{6} = coder.typeof(0);
+ARGS{1}{7} = coder.typeof(0,[Inf  1],[1 0]);
+ARGS{1}{8} = coder.typeof(0,[Inf Inf],[1 1]);
 
 %% Invoke MATLAB Coder.
 codegen -config cfg EstimationObjectiveInternal -args ARGS{1}

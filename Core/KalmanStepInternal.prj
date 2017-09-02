@@ -1,7 +1,7 @@
 <deployment-project plugin="plugin.coder" plugin-version="R2016a">
   <configuration build-checksum="3106576908" file="C:\dynare\dynareOBC\Extern\EST-NLSS\Core\KalmanStepInternal.prj" location="C:\dynare\dynareOBC\Extern\EST-NLSS\Core" name="KalmanStepInternal" target="target.unifiedcoder" target-name="MATLAB Coder">
     <profile key="profile.mex">
-      <param.BuiltInstrumentedMex>false</param.BuiltInstrumentedMex>
+      <param.BuiltInstrumentedMex />
       <param.RanInstrumentedMex>false</param.RanInstrumentedMex>
       <param.WorkingFolder>option.WorkingFolder.Project</param.WorkingFolder>
       <param.SpecifiedWorkingFolder />
@@ -54,7 +54,7 @@
       <param.ConstantInputs>option.ConstantInputs.CheckValues</param.ConstantInputs>
       <param.EnableCRICodeCoverage>true</param.EnableCRICodeCoverage>
       <param.EnableJIT>false</param.EnableJIT>
-      <param.EnableJITSilentBailOut>false</param.EnableJITSilentBailOut>
+      <param.EnableJITSilentBailOut />
       <param.CheckForIssuesJIT>true</param.CheckForIssuesJIT>
       <unset>
         <param.BuiltInstrumentedMex />
@@ -120,13 +120,13 @@
       <param.EnableSignedRightShifts />
       <param.ParenthesesLevel />
       <param.MaxIdLength />
-      <param.CustomSymbolStrGlobalVar>$M$N</param.CustomSymbolStrGlobalVar>
-      <param.CustomSymbolStrType>$M$N</param.CustomSymbolStrType>
-      <param.CustomSymbolStrField>$M$N</param.CustomSymbolStrField>
-      <param.CustomSymbolStrFcn>$M$N</param.CustomSymbolStrFcn>
-      <param.CustomSymbolStrTmpVar>$M$N</param.CustomSymbolStrTmpVar>
-      <param.CustomSymbolStrMacro>$M$N</param.CustomSymbolStrMacro>
-      <param.CustomSymbolStrEMXArray>emxArray_$M$N</param.CustomSymbolStrEMXArray>
+      <param.CustomSymbolStrGlobalVar />
+      <param.CustomSymbolStrType />
+      <param.CustomSymbolStrField />
+      <param.CustomSymbolStrFcn />
+      <param.CustomSymbolStrTmpVar />
+      <param.CustomSymbolStrMacro />
+      <param.CustomSymbolStrEMXArray />
       <param.CustomSymbolStrEMXArrayFcn />
       <param.ReservedNameArray />
       <param.RuntimeChecks>false</param.RuntimeChecks>
@@ -218,7 +218,7 @@
       <param.CCompilerOptimization />
       <param.CCompilerCustomOptimizations />
       <param.GenerateMakefile />
-      <param.BuildToolEnable>false</param.BuildToolEnable>
+      <param.BuildToolEnable />
       <param.MakeCommand />
       <param.TemplateMakefile />
       <param.BuildToolConfiguration />
@@ -668,24 +668,24 @@
     <param.objective>option.objective.c</param.objective>
     <param.WorkflowStep>generateCode</param.WorkflowStep>
     <param.TestSnippets />
-    <param.DefaultImportExportVariable>config</param.DefaultImportExportVariable>
+    <param.DefaultImportExportVariable />
     <param.RowMajor>false</param.RowMajor>
     <param.HighlightPotentialRowMajorIssues>false</param.HighlightPotentialRowMajorIssues>
     <param.ExternalFcnMajority>column</param.ExternalFcnMajority>
     <param.UseGlobals>option.UseGlobals.No</param.UseGlobals>
     <param.outputfile>${PROJECT_ROOT}\KalmanStepInternal_mex.mexw64</param.outputfile>
-    <param.version>R2012a</param.version>
+    <param.version />
     <param.HasECoderFeatures>true</param.HasECoderFeatures>
-    <param.HasGpuCoder>true</param.HasGpuCoder>
+    <param.HasGpuCoder />
     <param.mex.mainhtml />
     <param.grt.mainhtml />
     <param.CallGeneratedCodeFromTest>true</param.CallGeneratedCodeFromTest>
     <param.AutoInferDefaultFile />
-    <param.AutoInferUseVariableSize>false</param.AutoInferUseVariableSize>
-    <param.AutoInferUseUnboundedSize>false</param.AutoInferUseUnboundedSize>
-    <param.AutoInferVariableSizeThreshold>1024</param.AutoInferVariableSizeThreshold>
-    <param.AutoInferUnboundedSizeThreshold>2048</param.AutoInferUnboundedSizeThreshold>
-    <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
+    <param.AutoInferUseVariableSize />
+    <param.AutoInferUseUnboundedSize />
+    <param.AutoInferVariableSizeThreshold />
+    <param.AutoInferUnboundedSizeThreshold />
+    <param.EnableFixedPointStep />
     <param.EnableScreener>true</param.EnableScreener>
     <param.AnnotationChecksum>2557666253</param.AnnotationChecksum>
     <var.LegacyTarget />
@@ -699,9 +699,9 @@
     <var.gc.preBuildChecksum>3106576908</var.gc.preBuildChecksum>
     <var.cfi.lastOutputRoot />
     <var.cfi.preBuildChecksum />
-    <var.outdatedOnRestore>false</var.outdatedOnRestore>
+    <var.outdatedOnRestore />
     <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\CholeskyUpdate\InbuiltImplementation\CholeskyUpdate.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\CalibrateMomentsEST.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\ESTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\ExpectedESTNLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\GetESTParametersFromVector.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\InvGetESTParametersFromVector.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\KalmanStepInternal.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\ApproxStudentTLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cbetainc.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cbetaln.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cgammaln.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\erfz.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\GetLogGammaRootNuRatio.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\inbeta.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\MVTStudentTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\Shanks.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTInvLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\fminlbfgs.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\LMFnlsq2.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\NearestSPD.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\RealCholeskyUpdate.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;430036685&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
-    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\CholeskyUpdate\InbuiltImplementation\CholeskyUpdate.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\CalibrateMomentsEST.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\ESTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\ExpectedESTNLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\GetESTParametersFromVector.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\InvGetESTParametersFromVector.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\KalmanStepInternal.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\ApproxStudentTLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cbetainc.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cbetaln.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cgammaln.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\erfz.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\GetLogGammaRootNuRatio.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\inbeta.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\MVTStudentTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\Shanks.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTInvLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\fminlbfgs.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\LMFnlsq2.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\NearestSPD.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\RealCholeskyUpdate.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
+    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\CholeskyUpdate\InbuiltImplementation\CholeskyUpdate.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\CalibrateMomentsEST.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\ESTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\ExpectedESTNLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\GetESTParametersFromVector.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\ESTDist\InvGetESTParametersFromVector.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\KalmanStepInternal.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\ApproxStudentTLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cbetainc.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cbetaln.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\cgammaln.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\erfz.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\GetLogGammaRootNuRatio.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\inbeta.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\MVTStudentTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\Shanks.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTInvLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTLogCDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\StudentTDist\StudentTLogPDF.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\ESTNLSSassert.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\ESTNLSSerror.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\fminlbfgs.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\LMFnlsq2.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\NearestSPD.m&lt;/file&gt;&lt;file&gt;C:\dynare\dynareOBC\Extern\EST-NLSS\Core\Utils\RealCholeskyUpdate.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
     <param.forceMexBuild>false</param.forceMexBuild>
     <param.configImportActive>false</param.configImportActive>
     <var.boundToGui>true</var.boundToGui>
@@ -713,7 +713,7 @@
     <param.UsePreconditions>false</param.UsePreconditions>
     <param.FeatureFlags />
     <param.FixedPointMode>option.FixedPointMode.None</param.FixedPointMode>
-    <param.AutoScaleLoopIndexVariables>false</param.AutoScaleLoopIndexVariables>
+    <param.AutoScaleLoopIndexVariables />
     <param.ComputedFixedPointData>
       <ComputedEntities />
     </param.ComputedFixedPointData>
@@ -744,6 +744,7 @@
         <Replacement />
         <Replacement />
         <Replacement />
+        <Replacement />
       </FunctionReplacements>
     </param.FixedPointFunctionReplacements>
     <param.OptimizeWholeNumbers>true</param.OptimizeWholeNumbers>
@@ -754,8 +755,8 @@
     <param.EnableCodeEfficiencyChecks>false</param.EnableCodeEfficiencyChecks>
     <param.DefaultFixedPointSignedness>option.DefaultFixedPointSignedness.Automatic</param.DefaultFixedPointSignedness>
     <param.FixedPointTypeProposalMode>option.FixedPointTypeProposalMode.ProposeFractionLengths</param.FixedPointTypeProposalMode>
-    <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
-    <var.lastFixedPointAction>option.fixedPointAction.none</var.lastFixedPointAction>
+    <param.EnableFixedPointStep />
+    <var.lastFixedPointAction />
     <var.lastSimContext />
     <var.lastVerifyContext />
     <param.fpDataRoot />
@@ -763,7 +764,7 @@
     <var.snapshotChecksum />
     <param.fpLastConvertChecksum />
     <var.functionBlockSid />
-    <param.fptSignedness>false</param.fptSignedness>
+    <param.fptSignedness />
     <var.FixedPointAnalysisMode>option.FixedPointAnalysisMode.Sim</var.FixedPointAnalysisMode>
     <param.FixedPointUseDesignRanges>false</param.FixedPointUseDesignRanges>
     <unset>
@@ -845,7 +846,7 @@
     </unset>
     <fileset.entrypoints>
       <file custom-data-expanded="false" value="${PROJECT_ROOT}\KalmanStepInternal.m">
-        <Marker>1504294780592</Marker>
+        <Marker>1504363442854</Marker>
       </file>
     </fileset.entrypoints>
     <fileset.testbench />
@@ -858,6 +859,8 @@
           <Input Name="DynamicNu" typeId="3" />
           <Input Name="SkewLikelihood" typeId="3" />
           <Input Name="nuno" typeId="4" />
+          <Input Name="mu_wmRed" typeId="2" />
+          <Input Name="CholSigma_wmRed" typeId="0" />
           <idpTable>
             <type typeId="0">
               <Class>double</Class>

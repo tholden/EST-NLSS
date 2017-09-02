@@ -1,7 +1,7 @@
 % KALMANSTEPINTERNAL_SCRIPT   Generate MEX-function KalmanStepInternal_mex from
 %  KalmanStepInternal.
 % 
-% Script generated from project 'KalmanStepInternal.prj' on 01-Sep-2017.
+% Script generated from project 'KalmanStepInternal.prj' on 02-Sep-2017.
 % 
 % See also CODER, CODER.CONFIG, CODER.TYPEOF, CODEGEN.
 
@@ -31,13 +31,15 @@ cfg.GlobalDataSyncMethod = 'NoSync';
 
 %% Define argument types for entry-point 'KalmanStepInternal'.
 ARGS = cell(1,1);
-ARGS{1} = cell(6,1);
+ARGS{1} = cell(8,1);
 ARGS{1}{1} = coder.typeof(0,[Inf Inf],[1 1]);
 ARGS{1}{2} = coder.typeof(0,[1 Inf],[0 1]);
 ARGS{1}{3} = coder.typeof(0,[Inf  1],[1 0]);
 ARGS{1}{4} = coder.typeof(false);
 ARGS{1}{5} = coder.typeof(false);
 ARGS{1}{6} = coder.typeof(0);
+ARGS{1}{7} = coder.typeof(0,[Inf  1],[1 0]);
+ARGS{1}{8} = coder.typeof(0,[Inf Inf],[1 1]);
 
 %% Invoke MATLAB Coder.
 codegen -config cfg KalmanStepInternal -args ARGS{1}
