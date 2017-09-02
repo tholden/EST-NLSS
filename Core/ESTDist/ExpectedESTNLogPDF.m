@@ -5,7 +5,7 @@ function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewL
     [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu );
     
     log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
-    log_y = min( fInf, log_y_Points * W(:) );
+    log_y = min( fInf, sum( log_y_Points * W(:) ) );
     if ~isfinite( log_y )
         log_y = fInf;
     end
