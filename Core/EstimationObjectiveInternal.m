@@ -50,10 +50,6 @@ function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints,
     
         PersistentStateInternal0 = InvGetESTParametersFromVector( deltasoo, tauoo, nuoo, DynamicNu, SkewLikelihood );
         
-        fprintf( '\n' );
-        disp( PersistentStateInternal0( ( end - 1 ) : end ) );
-        fprintf( '\n' );
-        
     end
     
     W = 1 ./ size( StatDistPoints, 2 );
@@ -75,8 +71,4 @@ function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints,
     else
         PersistentStateInternal0 = p0;
     end
-    
-    fprintf( '\n' );
-    disp( PersistentStateInternal0( ( end - 1 ) : end ) );
-    fprintf( '\n' );
 end

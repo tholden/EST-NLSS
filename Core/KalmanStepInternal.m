@@ -68,10 +68,6 @@ function PersistentStateInternal_t = KalmanStepInternal( wmRed, CubatureWeights,
         [ ~, ~, deltaetano ] = CalibrateMomentsEST( tauno, nuno, mu_wmRed, Median_wmRed, CholSigma_wmRed, [], [] );
         
         PersistentStateInternal_t = InvGetESTParametersFromVector( deltaetano, tauno, nuno, DynamicNu, SkewLikelihood );
-        
-        fprintf( '\n' );
-        disp( PersistentStateInternal_t( ( end - 1 ) : end ) );
-        fprintf( '\n' );
     end
     
     p0 = PersistentStateInternal_t;
@@ -90,8 +86,4 @@ function PersistentStateInternal_t = KalmanStepInternal( wmRed, CubatureWeights,
     else
         PersistentStateInternal_t = p0;
     end
-    
-    fprintf( '\n' );
-    disp( PersistentStateInternal_t( ( end - 1 ) : end ) );
-    fprintf( '\n' );
 end
