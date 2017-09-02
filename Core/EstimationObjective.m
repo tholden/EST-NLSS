@@ -81,10 +81,10 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     LogLikelihood = 0;   
     
     for t = 1:T
+        if DynamicNu
+            nuno = 0;
+        end
         if Smoothing
-            if DynamicNu
-                nuno = 0;
-            end
             [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn, nunn, wnn, Pnn, deltann, xno, Psno, deltasno, tauno, nuno ] = ...
                 KalmanStep( Data( :, t ), xoo, Psoo, deltasoo, tauoo, nuoo, ExoCovariance, diagRootLambda, nuno, Parameters, Options, PersistentState, StateVariableIndices, t );
             wnn_{ t } = wnn;
