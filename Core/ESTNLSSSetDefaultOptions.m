@@ -17,17 +17,20 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     Options = SetDefaultOption( Options, 'Solve', @( Parameters, PersistentState ) [] );
     Options = SetDefaultOption( Options, 'SkipStandardErrors', false );
     Options = SetDefaultOption( Options, 'StationaryDistAccuracy', 10 );
+    Options = SetDefaultOption( Options, 'StationaryDistDrop', 0 );
     Options = SetDefaultOption( Options, 'StdDevThreshold', eps ^ 0.375 );    
     Options = SetDefaultOption( Options, 'UB', [] );
     Options = SetDefaultOption( Options, 'MeasurementVariableNames', {} );
     
-    Options = SetDefaultOption( Options, 'RootExoCovariance', ObtainEstimateRootCovariance( Options.ExoCovariance, StdDevThreshold ) );
-    StationaryDistSimulationLength = 2 .^ StationaryDistAccuracy - 1;
+    Options = SetDefaultOption( Options, 'RootExoCovariance', ObtainEstimateRootCovariance( Options.ExoCovariance, Options.StdDevThreshold ) );
+    StationaryDistSimulationLength = 2 .^ Options.StationaryDistAccuracy - 1;
     QMCPoints = SobolSetWrapper( size( Options.RootExoCovariance, 2 ), StationaryDistSimulationLength );
     OldRNGState = rng( 'default' );
     QMCPointsIndices = randperm( StationaryDistSimulationLength );
     rng( OldRNGState );
     Options = SetDefaultOption( Options, 'StationaryDistDraws', QMCPoints( :, QMCPointsIndices ) ); % This procedure is justified by https://arxiv.org/pdf/0807.4858.pdf
+    
+    assert( Options.StationaryDistDrop < size( Options.StationaryDistDraws, 2 ), 'ESTNLSS:TooHighStationaryDistDrop', 'Options.StationaryDistDrop needs to be lower than the number of points in Options.StationaryDistDraws.' );
     
     Options = orderfields( Options );
     

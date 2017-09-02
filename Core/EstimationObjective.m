@@ -46,7 +46,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     
     StatDistPoints = EndoSimulation( StateVariableIndices, : );
 
-    StatDistPoints = StatDistPoints( :, ( StationaryDistDrop + 1 ):end );
+    StatDistPoints = StatDistPoints( :, ( Options.StationaryDistDrop + 1 ):end );
 
     assert( all( isfinite( StatDistPoints(:) ) ), 'ESTNLSS:EstimationObjective:NonFiniteStationaryDistSimultation', 'Non-finite values were encountered during the simulation of the stationary distribution.' );
 

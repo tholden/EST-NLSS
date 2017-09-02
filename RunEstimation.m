@@ -233,7 +233,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     try
 
         NumParameters = size( Parameters, 1 );
-        [ NumObservables, T ] = size( Data );
+        [ NumObservables, T ] = size( Options.Data );
 
         Options = ESTNLSSSetDefaultOptions( Options, false );
 

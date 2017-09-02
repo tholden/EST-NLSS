@@ -111,6 +111,8 @@ Basic Usage
       Makes EST-NLSS skip calculation of standard errors for the estimated parameters.
     * `StationaryDistAccuracy` (default: `10`)
       `2 ^ StationaryDistAccuracy - 1` periods will be used to evaluate the stationary distribution of the model.
+    * `StationaryDisDrop` (default: `0`)
+      Specifies the number of points dropped from the start of the simulation in computing the stationary distribution of the model.
     * `StdDevThreshold` (default: `1e-6`)
       Specifies the threshold below which the standard deviation of the state is set to zero, for dimension reduction.
 * `PersistentState`
