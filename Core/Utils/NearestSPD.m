@@ -24,7 +24,7 @@
 % POSSIBILITY OF SUCH DAMAGE.
 % 
 
-function [ Ahat, cholAhat ] = NearestSPD( A )
+function [ Ahat, CholAhat ] = NearestSPD( A )
     % nearestSPD - the nearest (in Frobenius norm) Symmetric Positive Definite matrix to A
     % usage: Ahat = nearestSPD(A)
     %
@@ -40,7 +40,26 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     %
     % Arguments: (output)
     %  Ahat - The matrix chosen as the nearest SPD matrix to A.
-    %  cholAhat - The cholesky root of Ahat
+    %  CholAhat - The real cholesky root of Ahat
+
+    if isreal( A )
+        [ Ahat, CholAhat ] = NearestSPDInternal( A );
+    else
+        Areal = real( A );
+        [ ~, CholArealhat ] = NearestSPDInternal( Areal );
+        Aimag = imag( A );
+        Aimag = 0.5 * ( Aimag + Aimag.' );
+        [ U, D ] = schur( Aimag, 'real' );
+        d = diag( D );
+        CholAhat = complex( CholArealhat );
+            end
+        end
+        Ahat = CholAhat.' * CholAhat;
+    end
+        
+end
+
+function [ Ahat, CholAhat ] = NearestSPDInternal( A )
 
     ESTNLSSassert( nargin == 1, 'ESTNLSS:NearestSPD:Arguments', 'Exactly one argument must be provided to NearestSPD.' );
     ESTNLSSassert( all( isfinite( A(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteInput', 'The input to NearestSPD must be finite.' );
@@ -52,16 +71,16 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     if r == 1
         % A was scalar
         Ahat = max( real( A ), eps );
-        cholAhat = realsqrt( Ahat );
+        CholAhat = realsqrt( Ahat );
         ESTNLSSassert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
-        ESTNLSSassert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
+        ESTNLSSassert( all( isfinite( CholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
         return
     end
 
     % symmetrize A into B
     Ahat = 0.5 * ( A + A' );
 
-    [ cholAhat, p ] = chol( Ahat );
+    [ CholAhat, p ] = chol( Ahat );
 
     if p ~= 0
 
@@ -79,7 +98,7 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
         % test that Ahat is in fact PD. if it is not so, then tweak it just a bit.
         p = 1;
         for k = 0:100
-            [ cholAhat, p ] = chol( Ahat );
+            [ CholAhat, p ] = chol( Ahat );
             if p == 0
                 break;
             end
@@ -97,6 +116,6 @@ function [ Ahat, cholAhat ] = NearestSPD( A )
     end
     
     ESTNLSSassert( all( isfinite( Ahat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The Ahat output from NearestSPD was non-finite.' );
-    ESTNLSSassert( all( isfinite( cholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
-        
+    ESTNLSSassert( all( isfinite( CholAhat(:) ) ), 'ESTNLSS:NearestSPD:NonFiniteOutputAhat', 'The cholAhat output from NearestSPD was non-finite.' );
+
 end
