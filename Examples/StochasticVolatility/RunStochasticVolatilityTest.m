@@ -5,7 +5,7 @@ Parameters( 2 ) =  3; % log( ( 1 + phi ) / ( 1 - phi ) )
 Parameters( 3 ) = -2; % log( omega )
 Parameters( 4 ) =  1; % log( ( 1 + rho ) / ( 1 - rho ) )
 
-T = 1000;
+T = 200;
 Drop = 100;
 PersistentState = [];
 
