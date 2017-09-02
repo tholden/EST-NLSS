@@ -209,7 +209,11 @@ if nargin==0 && nargout==0, help LMFnlsq2, return, end     %   Display help
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %       Default Options
 if nargin==0 || (nargin==1 && strcmpi('default',varargin{1}))
-   xf.Display  = [0,0];     %   no print of iterations
+   if coder.target('MATLAB')
+      xf.Display  = [1,0];
+   else
+      xf.Display  = [0,0];     %   no print of iterations
+   end
    xf.Jacobian = 'finjac';  %   finite difference Jacobian approximation
    xf.MaxIter  = 0;         %   maximum number of iterations allowed
    xf.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))

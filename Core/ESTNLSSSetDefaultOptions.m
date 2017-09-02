@@ -33,6 +33,10 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     
     assert( Options.StationaryDistDrop < size( Options.StationaryDistDraws, 2 ), 'ESTNLSS:TooHighStationaryDistDrop', 'Options.StationaryDistDrop needs to be lower than the number of points in Options.StationaryDistDraws.' );
     
+    if Options.Debug
+        Options.CompileLikelihood = false;
+    end
+    
     Options = orderfields( Options );
     
     if ~Smoothing && Options.CompileLikelihood
