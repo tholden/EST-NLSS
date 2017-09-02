@@ -20,7 +20,7 @@ function [ R, p ] = CholeskyUpdate( R, x, SignString )
                 return
             end
         end
-        r = realsqrt( r2 );
+        r = sqrt( r2 );
         c = r / conjRkk;
         s = xk / conjRkk;
         R( k, k ) = r;
