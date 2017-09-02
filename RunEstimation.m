@@ -347,6 +347,14 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             ObjectiveFunction = @ESTNLSSTempEstimationObjectiveMex;
         else
             ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
+            if isempty( which( [ 'EstimationObjectiveInternal_mex.' mexext ] ) ) || isempty( which( [ 'KalmanStepInternal_mex.' mexext ] ) )
+                if ~ESTNLSSSetup
+                    error( 'ESTNLSS:CompilationFailure', 'Required MEX were missing, and building them failed.' );
+                end
+            else
+                disp( 'Using found MEX versions of EstimationObjectiveInternal and KalmanStepInternal.' );
+                disp( 'If these have not been re-compiled since the last update, please manually run ESTNLSSSetup.' );
+            end
         end
 
         [ LogLikelihood, PersistentState ] = ObjectiveFunction( EstimatedParameters, PersistentState );
