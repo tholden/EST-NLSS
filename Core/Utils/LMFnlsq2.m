@@ -210,7 +210,7 @@ if nargin==0 && nargout==0, help LMFnlsq2, return, end     %   Display help
 %       Default Options
 if nargin==0 || (nargin==1 && strcmpi('default',varargin{1}))
    if coder.target('MATLAB')
-      xf.Display  = [1,0];
+      xf.Display  = [100,0];
    else
       xf.Display  = [0,0];     %   no print of iterations
    end
