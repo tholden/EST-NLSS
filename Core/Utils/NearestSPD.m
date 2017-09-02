@@ -52,6 +52,9 @@ function [ Ahat, CholAhat ] = NearestSPD( A )
         [ U, D ] = schur( Aimag, 'real' );
         d = diag( D );
         CholAhat = complex( CholArealhat );
+        for j = 1 : length( d )
+            if d( j ) ~= 0
+                CholAhat = RealCholeskyUpdate( CholAhat, sqrt( d( j ) * 1i ) * U( :, j ), '+' );
             end
         end
         Ahat = CholAhat.' * CholAhat;
