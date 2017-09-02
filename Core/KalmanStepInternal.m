@@ -9,24 +9,24 @@ function PersistentStateInternal_t = KalmanStepInternal( wmRed, CubatureWeights,
         ano = bsxfun( @minus, wmRed, Mean_wmRed );
         Weighted_ano = bsxfun( @times, ano, CubatureWeights );
 
-        Variance_wmRed = NearestSPD( ano * Weighted_ano' );
-        Variance_wmRed = 0.5 * ( Variance_wmRed + Variance_wmRed' );
+        Variance_wmRed = NearestSPD( ano * Weighted_ano.' );
+        Variance_wmRed = 0.5 * ( Variance_wmRed + Variance_wmRed.' );
         [ ~, cholVariance_wmRed ] = NearestSPD( Variance_wmRed );
 
         Mean_wmRedMMedian_wmRed = Mean_wmRed - Median_wmRed;
         CholVariance_wmRed_Mean_wmRedMMedian_wmRed = cholVariance_wmRed * Mean_wmRedMMedian_wmRed;
-        CholVariance_wmRed_Mean_wmRedMMedian_wmRed2 = CholVariance_wmRed_Mean_wmRedMMedian_wmRed' * CholVariance_wmRed_Mean_wmRedMMedian_wmRed;
+        CholVariance_wmRed_Mean_wmRedMMedian_wmRed2 = CholVariance_wmRed_Mean_wmRedMMedian_wmRed.' * CholVariance_wmRed_Mean_wmRedMMedian_wmRed;
 
         if CholVariance_wmRed_Mean_wmRedMMedian_wmRed2 > eps && SkewLikelihood
             Zcheck_wmRed = ( Mean_wmRedMMedian_wmRed' * ano ) / realsqrt( CholVariance_wmRed_Mean_wmRedMMedian_wmRed2 );
 
-            meanZcheck_wmRed = Zcheck_wmRed * CubatureWeights';
+            meanZcheck_wmRed = Zcheck_wmRed * CubatureWeights.';
             Zcheck_wmRed = Zcheck_wmRed - meanZcheck_wmRed;
-            meanZcheck_wmRed2 = ( Zcheck_wmRed .* Zcheck_wmRed ) * CubatureWeights';
+            meanZcheck_wmRed2 = ( Zcheck_wmRed .* Zcheck_wmRed ) * CubatureWeights.';
             Zcheck_wmRed = Zcheck_wmRed / realsqrt( meanZcheck_wmRed2 );
 
-            sZ3 = realpow( Zcheck_wmRed, 3 ) * CubatureWeights';
-            sZ4 = max( 3, realpow( Zcheck_wmRed, 4 ) * CubatureWeights' );
+            sZ3 = realpow( Zcheck_wmRed, 3 ) * CubatureWeights.';
+            sZ4 = max( 3, realpow( Zcheck_wmRed, 4 ) * CubatureWeights.' );
 
             if DynamicNu
                 tauno_nuno = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), Mean_wmRed, Median_wmRed, cholVariance_wmRed, sZ3, sZ4 ), [ 2; 0 ] );
@@ -41,25 +41,25 @@ function PersistentStateInternal_t = KalmanStepInternal( wmRed, CubatureWeights,
             if DynamicNu
                 Zcheck_wmRed = ano;
 
-                meanZcheck_wmRed2 = ( Zcheck_wmRed .* Zcheck_wmRed ) * CubatureWeights';
+                meanZcheck_wmRed2 = ( Zcheck_wmRed .* Zcheck_wmRed ) * CubatureWeights.';
                 Zcheck_wmRed = bsxfun( @times, Zcheck_wmRed, 1 ./ realsqrt( meanZcheck_wmRed2 ) );
 
-                kurtDir = max( 0, realpow( Zcheck_wmRed, 4 ) * CubatureWeights' - 3 );
+                kurtDir = max( 0, realpow( Zcheck_wmRed, 4 ) * CubatureWeights.' - 3 );
 
-                if kurtDir' * kurtDir < eps
-                    kurtDir = realpow( Zcheck_wmRed, 4 ) * CubatureWeights';
+                if kurtDir.' * kurtDir < eps
+                    kurtDir = realpow( Zcheck_wmRed, 4 ) * CubatureWeights.';
                 end
 
                 kurtDir = kurtDir / norm( kurtDir );
 
-                Zcheck_wmRed = kurtDir' * Zcheck_wmRed;
+                Zcheck_wmRed = kurtDir.' * Zcheck_wmRed;
 
-                meanZcheck_wmRed = Zcheck_wmRed * CubatureWeights';
+                meanZcheck_wmRed = Zcheck_wmRed * CubatureWeights.';
                 Zcheck_wmRed = Zcheck_wmRed - meanZcheck_wmRed;
-                meanZcheck_wmRed2 = ( Zcheck_wmRed .* Zcheck_wmRed ) * CubatureWeights';
+                meanZcheck_wmRed2 = ( Zcheck_wmRed .* Zcheck_wmRed ) * CubatureWeights.';
                 Zcheck_wmRed = Zcheck_wmRed / realsqrt( meanZcheck_wmRed2 );
 
-                sZ4 = max( 3, realpow( Zcheck_wmRed, 4 ) * CubatureWeights' );
+                sZ4 = max( 3, realpow( Zcheck_wmRed, 4 ) * CubatureWeights.' );
                 nuno = 4 + 6 / ( sZ4( 1 ) - 3 );
             end
         end
