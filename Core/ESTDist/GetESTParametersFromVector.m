@@ -1,30 +1,66 @@
-function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu )
-
-    l = 2 * n + 0.5 * n * ( n - 1 );
-
-    xi = p( 1 : n );
-    LogDiagCholOmega = p( ( n + 1 ) : ( 2 * n ) );
-    UpperCholOmega = p( ( 2 * n + 1 ) : l );
+function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu, mu, CholSigma )
 
     if SkewLikelihood
-        delta = p( ( l + 1 ) : ( l + n ) );
-        tau = p( l + n + 1 );
+        delta = p( 1 : n );
+        tau = p( n + 1 );
     else
         delta = zeros( n, 1 );
         tau = Inf;
     end
     if DynamicNu
-        nu = 2 + exp( p( end ) );
+        nu = ( 2 + eps( 2 ) ) + exp( p( end ) );
     end
 
-    DiagCholOmega = exp( LogDiagCholOmega );
-    
-    if isreal( p )
-        CholOmega = triu( ones( n ), 1 );
+    if isfinite( nu )
+        nuOnuM1 = nu / ( nu - 1 );
+        nuOnuM2 = nu / ( nu - 2 );
     else
-        CholOmega = complex( triu( ones( n ), 1 ) );
+        nuOnuM1 = 1;
+        nuOnuM2 = 1;
     end
-    CholOmega( CholOmega == 1 ) = UpperCholOmega;
-    CholOmega = CholOmega + diag( DiagCholOmega );
+    
+    log_tcdf_tau_nu = ApproxStudentTLogCDF( tau, nu );
+    
+    if log_tcdf_tau_nu == 0
+        
+        ET1 = 0;
+        ET2 = nuOnuM2;
+        
+    else
+        
+        tauTtau = tau * tau;
+        OPtauTtauDnu = 1 + tauTtau / nu;
 
+        tau2 = tau / sqrt( nuOnuM2 );
+
+        tpdfRatio = exp( StudentTLogPDF( tau, nu ) - log_tcdf_tau_nu );
+
+        ET1 = nuOnuM1 * OPtauTtauDnu * tpdfRatio;
+        ET2 = nuOnuM2 * exp( ApproxStudentTLogCDF( tau2, nu - 2 ) - log_tcdf_tau_nu ) - tau * ET1;
+        
+    end
+    
+    xi = mu - delta * ET1;
+    
+    delta_deltaT = delta * delta.';
+    ET12 = ET1 * ET1;
+    
+    if isfinite( nu )
+        OmegaScaleRatio = ( nu - 1 ) / ( nu + ET2 );
+    else
+        OmegaScaleRatio = 1;
+    end
+    
+    if ET2 < ET12
+        [ CholOmega, CholError ] = RealCholeskyUpdate( CholSigma, sqrt( ET12 - ET2 ) * delta, '+' );
+    else
+        [ CholOmega, CholError ] = RealCholeskyUpdate( CholSigma, sqrt( ET2 - ET12 ) * delta, '-' );
+    end
+    
+    if CholError
+        [ ~, CholOmega ] = NearestSPD( OmegaScaleRatio * ( CholSigma.' * CholSigma - ( ET2 - ET12 ) * delta_deltaT ) );
+    else
+        CholOmega = sqrt( OmegaScaleRatio ) * CholOmega;
+    end    
+    
 end

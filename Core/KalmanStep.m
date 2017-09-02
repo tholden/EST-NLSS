@@ -69,17 +69,25 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     
     nwmRed = size( wmRed, 1 );
     
-    ParamDim = 2 * nwmRed + 0.5 * nwmRed * ( nwmRed - 1 ) + ( nwmRed + 1 ) * SkewLikelihood + DynamicNu;
+    ParamDim = ( nwmRed + 1 ) * SkewLikelihood + DynamicNu;
     
     PersistentState.Internal( ( end + 1 ):ParamDim, : ) = NaN;
     
+    mu_wmRed = sum( bsxfun( @times, wmRed, CubatureWeights ), 2 );
+    
+    Demeaned_wmRed = bsxfun( @minus, wmRed, mu_wmRed );
+    Weighted_Demeaned_wmRed = bsxfun( @times, Demeaned_wmRed, CubatureWeights );
+
+    Sigma_wmRed = Demeaned_wmRed * Weighted_Demeaned_wmRed.';
+    [ ~, CholSigma_wmRed ] = NearestSPD( Sigma_wmRed );
+    
     if Options.Debug
-        PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno );
+        PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno, mu_wmRed, CholSigma_wmRed );
     else
-        PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal_mex( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno );
+        PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal_mex( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno, mu_wmRed, CholSigma_wmRed );
     end
     
-    [ wmno, CholPRRQno, deltaetano, tauno, nuno ] = GetESTParametersFromVector( PersistentState.Internal( 1 : ParamDim, t ), nwmRed, DynamicNu, SkewLikelihood, nuno );
+    [ wmno, CholPRRQno, deltaetano, tauno, nuno ] = GetESTParametersFromVector( PersistentState.Internal( 1 : ParamDim, t ), nwmRed, DynamicNu, SkewLikelihood, nuno, mu_wmRed, CholSigma_wmRed );
     
     NEndo = size( EndoSimulation, 1 );
     

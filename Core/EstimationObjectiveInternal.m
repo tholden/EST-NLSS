@@ -1,12 +1,10 @@
-function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints, PersistentStateInternal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo )
+function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints, PersistentStateInternal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo, muStatDistPoints, CholSigmaStatDistPoints )
     if any( isnan( PersistentStateInternal0 ) )
     
-        MeanStatDist = mean( StatDistPoints, 2 );
-        DeMeanedStatDistPoints = bsxfun( @minus, StatDistPoints, MeanStatDist );
-        [ ~, CholVarianceStatDist ] = NearestSPD( cov( StatDistPoints.' ) );
+        DeMeanedStatDistPoints = bsxfun( @minus, StatDistPoints, muStatDistPoints );
 
-        MeanStatDistMMedianStatDist = MeanStatDist - StateSteadyState;
-        CholVarianceStatDist_MeanStatDistMMedianStatDist = CholVarianceStatDist * MeanStatDistMMedianStatDist;
+        MeanStatDistMMedianStatDist = muStatDistPoints - StateSteadyState;
+        CholVarianceStatDist_MeanStatDistMMedianStatDist = CholSigmaStatDistPoints * MeanStatDistMMedianStatDist;
         CholVarianceStatDist_MeanStatDistMMedianStatDist2 = CholVarianceStatDist_MeanStatDistMMedianStatDist.' * CholVarianceStatDist_MeanStatDistMMedianStatDist;
 
         if CholVarianceStatDist_MeanStatDistMMedianStatDist2 > eps && SkewLikelihood
@@ -16,11 +14,11 @@ function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints,
             sZ4 = max( 3, kurtosis( ZcheckStatDist, 0 ) );
 
             if DynamicNu
-                tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), MeanStatDist, StateSteadyState, CholVarianceStatDist, sZ3, sZ4 ), [ 2; 2 ] );
+                tauoo_nuoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), 4 + eps( 4 ) + exp( in( 2 ) ), muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, sZ3, sZ4 ), [ 2; 2 ] );
                 tauoo = tauoo_nuoo( 1 );
                 nuoo = 4 + eps( 4 ) + exp( tauoo_nuoo( 2 ) );
             else
-                tauoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nuoo, MeanStatDist, StateSteadyState, CholVarianceStatDist, sZ3, [] ), 2 );
+                tauoo = LMFnlsq2( @( in ) CalibrateMomentsEST( in( 1 ), nuoo, muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, sZ3, [] ), 2 );
             end
         else
             tauoo = Inf;
@@ -41,29 +39,44 @@ function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints,
             end
         end
 
-        [ ~, xoo, deltasoo, CholPsoo ] = CalibrateMomentsEST( tauoo, nuoo, MeanStatDist, StateSteadyState, CholVarianceStatDist, [], [] );
+        if SkewLikelihood
+            tauoo = max( -10, min( 10, tauoo ) );
+        end
+        if DynamicNu
+            nuoo = min( 1000, nuoo );
+        end
+        
+        [ ~, ~, deltasoo ] = CalibrateMomentsEST( tauoo, nuoo, muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, [], [] );
     
-        PersistentStateInternal0 = InvGetESTParametersFromVector( xoo, CholPsoo, deltasoo, tauoo, nuoo, DynamicNu, SkewLikelihood );
+        PersistentStateInternal0 = InvGetESTParametersFromVector( deltasoo, tauoo, nuoo, DynamicNu, SkewLikelihood );
+        
+        fprintf( '\n' );
+        disp( PersistentStateInternal0( ( end - 1 ) : end ) );
+        fprintf( '\n' );
         
     end
     
     W = 1 ./ size( StatDistPoints, 2 );
     
     p0 = PersistentStateInternal0;
-    f0 = ExpectedESTNLogPDF( p0, StatDistPoints, W, Inf, DynamicNu, SkewLikelihood, nuoo );
+    f0 = ExpectedESTNLogPDF( p0, StatDistPoints, W, Inf, DynamicNu, SkewLikelihood, nuoo, muStatDistPoints, CholSigmaStatDistPoints );
 
     if coder.target( 'MATLAB' )
-        fminlbfgsOptions = struct( 'Display', 'iter', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', false, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf, ...
+        fminlbfgsOptions = struct( 'Display', 'iter', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', true, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf, ...
             'HessUpdate', 'bfgs ', 'DiffMaxChange', 1e-1, 'DiffMinChange', 1e-8, 'OutputFcn', [], 'rho', 0.0100, 'sigma', 0.900, 'tau1', 3, 'tau2', 0.1, 'tau3', 0.5, 'StoreN', 20 );
     else
-        fminlbfgsOptions = struct( 'Display', 'off', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', false, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf, ...
+        fminlbfgsOptions = struct( 'Display', 'off', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', true, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf, ...
             'HessUpdate', 'bfgs ', 'DiffMaxChange', 1e-1, 'DiffMinChange', 1e-8, 'OutputFcn', [], 'rho', 0.0100, 'sigma', 0.900, 'tau1', 3, 'tau2', 0.1, 'tau3', 0.5, 'StoreN', 20 );
     end
-    [ pOpt, fOpt ] = fminlbfgs( @( p ) ExpectedESTNLogPDF( p, StatDistPoints, W, f0 + 1, DynamicNu, SkewLikelihood, nuoo ), p0, fminlbfgsOptions );
+    [ pOpt, fOpt ] = fminlbfgs( @( p ) ExpectedESTNLogPDF( p, StatDistPoints, W, f0 + 1, DynamicNu, SkewLikelihood, nuoo, muStatDistPoints, CholSigmaStatDistPoints ), p0, fminlbfgsOptions );
     
     if fOpt < f0
         PersistentStateInternal0 = pOpt;
     else
         PersistentStateInternal0 = p0;
     end
+    
+    fprintf( '\n' );
+    disp( PersistentStateInternal0( ( end - 1 ) : end ) );
+    fprintf( '\n' );
 end

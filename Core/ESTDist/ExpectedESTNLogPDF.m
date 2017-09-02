@@ -1,12 +1,13 @@
-function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewLikelihood, nu )
+function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewLikelihood, nu, mu, CholSigma )
 
     n = size( X, 1 );
     
-    [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu );
+    [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu, mu, CholSigma );
     
     log_y_Points = -ESTLogPDF( X, xi, CholOmega, delta, tau, nu, true );
-    log_y = min( fInf, sum( log_y_Points * W(:) ) );
-    if ~isfinite( log_y )
+    log_y = sum( log_y_Points * W(:) );
+    
+    if ( ~isfinite( real( log_y ) ) ) || ( real( log_y ) > fInf )
         log_y = fInf;
     end
     
@@ -19,7 +20,7 @@ function [ log_y, Dlog_y ] = ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewL
         for i = 1 : k
             pTmp = p( i );
             p( i ) = pTmp + sei;
-            Dlog_y( i ) = imag( ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewLikelihood, nu ) ) / se;
+            Dlog_y( i ) = imag( ExpectedESTNLogPDF( p, X, W, fInf, DynamicNu, SkewLikelihood, nu, mu, CholSigma ) ) / se;
             p( i ) = pTmp;
         end
     end

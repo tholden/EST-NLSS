@@ -24,7 +24,7 @@ disp( [ tau, nu ] );
 
 [ Weights, ESTPoints, NCubaturePoints, ET1, MedT ] = GetESTCubaturePoints( xi, Omega, delta, tau, nu, FilterCubatureDegree, eps ^ 0.375, AllowTailEvaluations );
 
-p0 = InvGetESTParametersFromVector( xi, CholOmega, delta, tau, nu, true, true );
+p0 = InvGetESTParametersFromVector( delta, tau, nu, true, true );
 f0 = ExpectedESTNLogPDF( p0, ESTPoints, Weights, Inf, true, true, 5 );
 
 fminlbfgsOptions = struct( 'Display', 'iter', 'GradObj', 'on', 'GradConstr', true, 'GoalsExactAchieve', false, 'TolX', 1e-12, 'TolFun', 1e-12, 'MaxIter', Inf, 'MaxFunEvals', Inf, ...
