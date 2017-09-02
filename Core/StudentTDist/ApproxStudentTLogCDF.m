@@ -50,14 +50,13 @@ function log_y = ApproxStudentTLogCDF( x, nu )
     Pos_xRemaining = ( real( xRemaining ) > 0 ) | ( ( real( xRemaining ) == 0 ) & ( imag( xRemaining ) > 0 ) );
     xRemaining( Pos_xRemaining ) = -xRemaining( Pos_xRemaining );
     
-    if real( nu ) < Inf
-        
+    if real( nu ) < 1e9 
         if isreal( x ) && isreal( nu )
-            yRemaining = real( betainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5 );
+            yRemaining = real( cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5 );
         else
             yRemaining = cbetainc( nu ./ ( xRemaining .* xRemaining + nu ), 0.5 * nu, 0.5 ) * 0.5;
         end
-        SelGood = real( yRemaining ) > realmin;
+        SelGood = real( yRemaining ) > sqrt( realmin );
         IdxGood = Remaining( SelGood );
         SelBad = ~SelGood;
         IdxBad = Remaining( SelBad );
