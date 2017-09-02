@@ -52,7 +52,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
 
     PersistentState.Internal0 = EstimationObjectiveInternal_mex( StatDistPoints, PersistentState.Internal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo );
     
-    [ xoo, CholPsoo, deltasoo, tauoo, nuoo ] = GetESTParametersFromVector( pOpt, nwmRed, DynamicNu, SkewLikelihood, nuoo );o
+    [ xoo, CholPsoo, deltasoo, tauoo, nuoo ] = GetESTParametersFromVector( PersistentState.Internal0, nwmRed, DynamicNu, SkewLikelihood, nuoo );o
     
     nuno = nuoo;
 
