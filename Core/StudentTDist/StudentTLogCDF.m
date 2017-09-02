@@ -19,7 +19,10 @@ function log_y = StudentTLogCDF( x, nu )
     SelNInf = x <= -Inf;
     log_y( SelNInf ) = -Inf;
     
-    Done = SelInf | SelNInf;
+    SelNaN = isnan( real( x ) );
+    log_y( SelNaN ) = NaN;
+    
+    Done = SelInf | SelNInf | SelNaN;
     Remaining = find( ~Done );
     
     logH = log( 0.5 );
