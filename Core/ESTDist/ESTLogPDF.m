@@ -1,4 +1,4 @@
-function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck_delta, scaleOmegaNew, scaledeltaNew, tauNew, nuNew ] = ESTLogPDF( x, xi, Omega, delta, tau, nu, OmegaIsCholesky )
+function [ log_y, CholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck_delta, scaleOmegaNew, scaledeltaNew, tauNew, nuNew ] = ESTLogPDF( x, xi, Omega, delta, tau, nu, OmegaIsCholesky )
 
     ESTNLSSassert( numel( nu ) == 1, 'ESTNLSS:ESTLogPDF:NuSize', 'ESTLogPDF only supports univariate nu.' );
     ESTNLSSassert( real( nu ) > 0, 'ESTNLSS:ESTLogPDF:NuSign', 'ESTLogPDF requires nu to be strictly positive.' );
@@ -9,20 +9,20 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     end
 
     if OmegaIsCholesky
-        [ cholOmegaCheck, cholError ] = RealCholeskyUpdate( Omega, delta, '+' );
+        [ CholOmegaCheck, cholError ] = RealCholeskyUpdate( Omega, delta, '+' );
         if cholError
             Omega = Omega.' * Omega;
-            [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
+            [ ~, CholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
         end
     else
-        [ ~, cholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
+        [ ~, CholOmegaCheck ] = NearestSPD( Omega + delta * delta.' );
     end
 
     if coder.target( 'MATLAB' )
         WarningState = warning( 'off', 'MATLAB:nearlySingularMatrix' );
     end
-    TIcholOmegaCheck_mInnovation = cholOmegaCheck.' \ bsxfun( @minus, x, xi );
-    TIcholOmegaCheck_delta = cholOmegaCheck.' \ delta;
+    TIcholOmegaCheck_mInnovation = CholOmegaCheck.' \ bsxfun( @minus, x, xi );
+    TIcholOmegaCheck_delta = CholOmegaCheck.' \ delta;
     if coder.target( 'MATLAB' )
         warning( WarningState );
     end
@@ -44,13 +44,17 @@ function [ log_y, cholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     log_tcdf_tauNew_nuNew = ApproxStudentTLogCDF( tauNew, nuNew );
     tcdfDifference = log_tcdf_tauNew_nuNew - log_tcdf_tau_nu;
 
-    log_y = - sum( log( realabs( diag( cholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
+    log_y = - sum( log( realabs( diag( CholOmegaCheck ) ) ) ) + MVTStudentTLogPDF_TIcholOmegaCheck_mInnovation_nu;
 
     FiniteCDFDifferenceSelect = isfinite( real( log_tcdf_tau_nu ) ) | isfinite( real( log_tcdf_tauNew_nuNew ) );
     
     log_y( FiniteCDFDifferenceSelect ) = log_y( FiniteCDFDifferenceSelect ) + tcdfDifference( FiniteCDFDifferenceSelect );
         
     ESTNLSSassert( all( ~isnan( log_y(:) ) ), 'ESTNLSS:ESTLogPDF:NaNOutputLogY', 'ESTLogPDF returned a NaN output log_y.' );
+    
+    if any( log_y > 200 )
+        keyboard
+    end
     
 end
 
