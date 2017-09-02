@@ -50,7 +50,11 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
 
     assert( all( isfinite( StatDistPoints(:) ) ), 'ESTNLSS:EstimationObjective:NonFiniteStationaryDistSimultation', 'Non-finite values were encountered during the simulation of the stationary distribution.' );
 
-    PersistentState.Internal0 = EstimationObjectiveInternal_mex( StatDistPoints, PersistentState.Internal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo );
+    if Options.Debug
+        PersistentState.Internal0 = EstimationObjectiveInternal( StatDistPoints, PersistentState.Internal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo );
+    else
+        PersistentState.Internal0 = EstimationObjectiveInternal_mex( StatDistPoints, PersistentState.Internal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo );
+    end
     
     [ xoo, CholPsoo, deltasoo, tauoo, nuoo ] = GetESTParametersFromVector( PersistentState.Internal0, size( StatDistPoints, 1 ), DynamicNu, SkewLikelihood, nuoo );
     

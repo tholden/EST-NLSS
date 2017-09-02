@@ -73,7 +73,11 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     
     PersistentState.Internal( ( end + 1 ):ParamDim, : ) = NaN;
     
-    PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal_mex( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno );
+    if Options.Debug
+        PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno );
+    else
+        PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal_mex( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno );
+    end
     
     [ wmno, CholPRRQno, deltaetano, tauno, nuno ] = GetESTParametersFromVector( PersistentState.Internal( 1 : ParamDim, t ), nwmRed, DynamicNu, SkewLikelihood, nuno );
     
