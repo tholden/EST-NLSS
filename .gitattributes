@@ -32,6 +32,7 @@
 *.js        text eol=lf
 *.html      text eol=lf
 *.xml       text eol=lf
+*.prj       text eol=lf
 
 .git*       text eol=lf
 
