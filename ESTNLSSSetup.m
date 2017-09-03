@@ -32,9 +32,9 @@ function Success = ESTNLSSSetup( DebugMode )
 
     try
         if DebugMode
-            KalmanStepInternal_script;
-        else
             KalmanStepInternal_scriptDebug;
+        else
+            KalmanStepInternal_script;
         end
     catch Error
         disp( 'Error building KalmanStepInternal:' );
@@ -46,9 +46,9 @@ function Success = ESTNLSSSetup( DebugMode )
 
     try
         if DebugMode
-            EstimationObjectiveInternal_script;
-        else
             EstimationObjectiveInternal_scriptDebug;
+        else
+            EstimationObjectiveInternal_script;
         end
     catch Error
         disp( 'Error building EstimationObjectiveInternal:' );
