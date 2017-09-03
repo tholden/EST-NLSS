@@ -388,10 +388,10 @@ while(true)
     end
     
 	% Store values linesearch
-	data.storefx(:,end+1)=f_alpha; 
-    data.storepx(:,end+1)=fPrime_alpha; 
-	data.storex(:,end+1)=alpha; 
-	data.storegx(:,end+1)=grad(:);
+    data.storefx = [ data.storefx f_alpha ]; 
+    data.storepx = [ data.storepx fPrime_alpha ];
+    data.storex  = [ data.storex  alpha ];
+    data.storegx = [ data.storegx grad(:) ];
     
     % Update step value
     if(data.f_beta<f_alpha)
