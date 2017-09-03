@@ -1,7 +1,7 @@
 % ESTIMATIONOBJECTIVEINTERNAL_SCRIPT   Generate MEX-function
 %  EstimationObjectiveInternal_mex from EstimationObjectiveInternal.
 % 
-% Script generated from project 'EstimationObjectiveInternal.prj' on 02-Sep-2017.
+% Script generated from project 'EstimationObjectiveInternal.prj' on 03-Sep-2017.
 % 
 % See also CODER, CODER.CONFIG, CODER.TYPEOF, CODEGEN.
 
@@ -35,7 +35,7 @@ cfg.LaunchReport = true;
 ARGS = cell(1,1);
 ARGS{1} = cell(8,1);
 ARGS{1}{1} = coder.typeof(0,[Inf Inf],[1 1]);
-ARGS{1}{2} = coder.typeof(0,[Inf Inf],[1 1]);
+ARGS{1}{2} = coder.typeof(0,[Inf  1],[1 0]);
 ARGS{1}{3} = coder.typeof(0,[Inf  1],[1 0]);
 ARGS{1}{4} = coder.typeof(false);
 ARGS{1}{5} = coder.typeof(false);
