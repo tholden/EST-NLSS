@@ -22,7 +22,7 @@ function Success = ESTNLSSSetup
 
     OldPath = cd( CorePath );
     
-    Success = true;
+    SuccessInternal = true;
     
     disp( 'Building KalmanStepInternal. This may take some time.' );
     
@@ -31,7 +31,7 @@ function Success = ESTNLSSSetup
     catch Error
         disp( 'Error building KalmanStepInternal:' );
         DisplayError( Error );
-        Success = false;
+        SuccessInternal = false;
     end
     
     disp( 'Building EstimationObjectiveInternal. This may take some time.' );
@@ -41,9 +41,12 @@ function Success = ESTNLSSSetup
     catch Error
         disp( 'Error building EstimationObjectiveInternal:' );
         DisplayError( Error );
-        Success = false;
+        SuccessInternal = false;
     end
     
     cd( OldPath );
+    
+        Success = SuccessInternal;
+    end
     
 end
