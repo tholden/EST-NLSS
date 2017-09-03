@@ -1,7 +1,7 @@
 function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, DynamicNu, SkewLikelihood, nu, mu, CholSigma )
 
     if SkewLikelihood
-        delta = p( 1 : n );
+        delta = p( ( 1 : n ).' );
         tau = p( n + 1 );
     else
         delta = zeros( n, 1 );
