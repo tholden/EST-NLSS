@@ -1,8 +1,12 @@
-function Success = ESTNLSSSetup
+function Success = ESTNLSSSetup( DebugMode )
 
     if verLessThan( 'matlab', '9.1' )
         disp( 'EST-NLSS compilation requires MATLAB r2016b or later.' );
         return
+    end
+    
+    if nargin < 1
+        DebugMode = false;
     end
 
     CorePath = [ fileparts( which( 'ESTNLSSSetup' ) ) '/Core/' ];
@@ -23,27 +27,35 @@ function Success = ESTNLSSSetup
     OldPath = cd( CorePath );
     
     SuccessInternal = true;
-    
-    disp( 'Building KalmanStepInternal. This may take some time.' );
-    
+
+    disp( 'Building KalmanStepInternal. This may take several hours.' );
+
     try
-        KalmanStepInternal_script;
+        if DebugMode
+            KalmanStepInternal_script;
+        else
+            KalmanStepInternal_scriptDebug;
+        end
     catch Error
         disp( 'Error building KalmanStepInternal:' );
         DisplayError( Error );
         SuccessInternal = false;
     end
-    
-    disp( 'Building EstimationObjectiveInternal. This may take some time.' );
-    
+
+    disp( 'Building EstimationObjectiveInternal. This may take several hours.' );
+
     try
-        EstimationObjectiveInternal_script;
+        if DebugMode
+            EstimationObjectiveInternal_script;
+        else
+            EstimationObjectiveInternal_scriptDebug;
+        end
     catch Error
         disp( 'Error building EstimationObjectiveInternal:' );
         DisplayError( Error );
         SuccessInternal = false;
     end
-    
+
     cd( OldPath );
     
     if nargout > 0
