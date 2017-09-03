@@ -46,6 +46,7 @@ function Success = ESTNLSSSetup
     
     cd( OldPath );
     
+    if nargout > 0
         Success = SuccessInternal;
     end
     
