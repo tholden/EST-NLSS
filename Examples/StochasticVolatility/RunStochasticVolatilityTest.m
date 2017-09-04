@@ -1,9 +1,10 @@
-Parameters = zeros( 4, 1 );
+Parameters = zeros( 5, 1 );
 
-Parameters( 1 ) = -4; % log( mu )
+Parameters( 1 ) = -4; % logit( mu )
 Parameters( 2 ) =  3; % log( ( 1 + phi ) / ( 1 - phi ) )
 Parameters( 3 ) = -2; % log( omega )
 Parameters( 4 ) =  1; % log( ( 1 + rho ) / ( 1 - rho ) )
+Parameters( 5 ) =  0; % log( max_sigma )
 
 T = 200;
 Drop = 100;
@@ -21,6 +22,7 @@ EstimationOptions = struct;
 EstimationOptions.AllowTailEvaluations = false;
 EstimationOptions.CompileLikelihood = false;
 EstimationOptions.Debug = false;
+EstimationOptions.DebugMex = false;
 EstimationOptions.DynamicNu = true;
 EstimationOptions.FilterCubatureDegree = 19;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';
