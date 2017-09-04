@@ -3,6 +3,7 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     Options = SetDefaultOption( Options, 'CompileLikelihood', false );
     Options = SetDefaultOption( Options, 'Data', [] );
     Options = SetDefaultOption( Options, 'Debug', false );
+    Options = SetDefaultOption( Options, 'DebugMex', false );
     Options = SetDefaultOption( Options, 'DynamicNu', false );
     Options = SetDefaultOption( Options, 'ExoCovariance', [] );
     Options = SetDefaultOption( Options, 'FilterCubatureDegree', 0 );
@@ -33,6 +34,9 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     
     assert( Options.StationaryDistDrop < size( Options.StationaryDistDraws, 2 ), 'ESTNLSS:TooHighStationaryDistDrop', 'Options.StationaryDistDrop needs to be lower than the number of points in Options.StationaryDistDraws.' );
     
+    if Options.DebugMex
+        Options.Debug = true;
+    end
     if Options.Debug
         Options.CompileLikelihood = false;
     end

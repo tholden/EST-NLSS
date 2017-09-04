@@ -373,7 +373,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
         ObjectiveFunction = @ESTNLSSTempEstimationObjectiveMex;
     else
         ObjectiveFunction = @( p, s ) EstimationObjective( p, Options, s, false );
-        if Options.Debug
+        if Options.Debug && ~Options.DebugMex
             disp( 'Debug mode enabled. Not using any MEX.' );
         else
             if isempty( which( [ 'EstimationObjectiveInternal_mex.' mexext ] ) ) || isempty( which( [ 'KalmanStepInternal_mex.' mexext ] ) )
