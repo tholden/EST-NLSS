@@ -32,7 +32,7 @@ function [ log_y, CholOmegaCheck, TIcholOmegaCheck_mInnovation, TIcholOmegaCheck
     if isfinite( real( nu ) )
         scaleOmegaNew = ( nu + sum( TIcholOmegaCheck_mInnovation .* TIcholOmegaCheck_mInnovation, 1 ) ) / ( nu + nx );
     else
-        scaleOmegaNew = 1;
+        scaleOmegaNew = ones( 1, size( x, 2 ) );
     end
     
     scaledeltaNew = 1 / max( 0, 1 - TIcholOmegaCheck_delta.' * TIcholOmegaCheck_delta );
