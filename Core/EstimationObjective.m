@@ -54,7 +54,7 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
     SigmaStatDistPoints = cov( StatDistPoints.' );
     [ ~, CholSigmaStatDistPoints ] = NearestSPD( SigmaStatDistPoints );
 
-    if Options.Debug
+    if Options.Debug && ~Options.DebugMex
         PersistentState.Internal0 = EstimationObjectiveInternal( StatDistPoints, PersistentState.Internal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo, muStatDistPoints, CholSigmaStatDistPoints );
     else
         PersistentState.Internal0 = EstimationObjectiveInternal_mex( StatDistPoints, PersistentState.Internal0, StateSteadyState, DynamicNu, SkewLikelihood, nuoo, muStatDistPoints, CholSigmaStatDistPoints );

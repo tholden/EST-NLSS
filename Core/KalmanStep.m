@@ -82,7 +82,7 @@ function [ PersistentState, LogObservationLikelihood, xnn, Psnn, deltasnn, taunn
     Sigma_wmRed = Demeaned_wmRed * Weighted_Demeaned_wmRed.';
     [ ~, CholSigma_wmRed ] = NearestSPD( Sigma_wmRed );
     
-    if Options.Debug
+    if Options.Debug && ~Options.DebugMex
         PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno, mu_wmRed, CholSigma_wmRed );
     else
         PersistentState.Internal( 1 : ParamDim, t ) = KalmanStepInternal_mex( wmRed, CubatureWeights,  PersistentState.Internal( 1 : ParamDim, t ), DynamicNu, SkewLikelihood, nuno, mu_wmRed, CholSigma_wmRed );
