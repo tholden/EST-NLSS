@@ -232,11 +232,12 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
 
     Options = ESTNLSSSetDefaultOptions( Options, false );
 
+    Error = [];
     if Options.Debug
-        [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState, Error ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath );
+        [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath );
     else
         try
-            [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState, Error ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath );
+            [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath );
         catch Error
         end
     end
@@ -257,7 +258,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
 
 end
 
-function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState, Error ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath )
+function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath )
     NumParameters = size( Parameters, 1 );
     [ NumObservables, T ] = size( Options.Data );
 
@@ -495,8 +496,6 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     end
 
     PersistentState = PersistentState.External;
-
-    Error = [];
 
 end
 
