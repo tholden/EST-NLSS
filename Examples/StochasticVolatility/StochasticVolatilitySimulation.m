@@ -33,7 +33,7 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
     end
     
     if nargout > 2
-        MeasurementSimulation = EndoSimulation( 2, : );
+        MeasurementSimulation = log( EndoSimulation( 2, : ).^ 2 );
     end
 
 end
