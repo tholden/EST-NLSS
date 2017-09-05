@@ -25,8 +25,8 @@ function Options = ESTNLSSSetDefaultOptions( Options, Smoothing )
     Options = SetDefaultOption( Options, 'MeasurementVariableNames', {} );
     
     Options = SetDefaultOption( Options, 'RootExoCovariance', ObtainEstimateRootCovariance( Options.ExoCovariance, Options.StdDevThreshold ) );
-    StationaryDistSimulationLength = 2 .^ Options.StationaryDistAccuracy - 1;
-    QMCPoints = HigherOrderSobol( size( Options.RootExoCovariance, 2 ), StationaryDistSimulationLength );
+    QMCPoints = HigherOrderSobol( size( Options.RootExoCovariance, 2 ), Options.StationaryDistAccuracy );
+    StationaryDistSimulationLength = size( QMCPoints, 2 );
     OldRNGState = rng( 'default' );
     QMCPointsIndices = randperm( StationaryDistSimulationLength );
     rng( OldRNGState );
