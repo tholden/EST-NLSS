@@ -42,8 +42,8 @@ EstimationOptions.Simulate = @StochasticVolatilitySimulation;
 
 EstimationOptions.ExoCovariance = eye( 2 );
 
-EstimationOptions.LB = -Inf( 4, 1 );
-EstimationOptions.UB = Inf( 4, 1 );
+EstimationOptions.LB = -Inf( 5, 1 );
+EstimationOptions.UB = Inf( 5, 1 );
 
 addpath ../..
 
