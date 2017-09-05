@@ -41,6 +41,6 @@ end
 function Endo = SimulationStep( Endo, Shocks, logit_mu, phi, omega, rho, max_sigma )
     L = [ 1, 0; rho, realsqrt( 1 - rho * rho ) ];
     CorrelatedShocks = L * Shocks;
-    NewLogSigma = ( 1 - phi ) * logit_mu + phi * Endo( 1 ) + omega * CorrelatedShocks( 1 );
-    Endo = [ NewLogSigma; ( max_sigma ./ ( 1 + exp( -NewLogSigma ) ) ) * CorrelatedShocks( 2 ) ];
+    NewLogitSigma = ( 1 - phi ) * logit_mu + phi * Endo( 1 ) + omega * CorrelatedShocks( 1 );
+    Endo = [ NewLogitSigma; ( max_sigma ./ ( 1 + exp( -NewLogitSigma ) ) ) * CorrelatedShocks( 2 ) ];
 end
