@@ -1,25 +1,23 @@
 function [ PersistentState, EndoSimulation, MeasurementSimulation ] = StochasticVolatilitySimulation( Parameters, PersistentState, InitialStates, ShockSequence, ~ )
 
-    logit_mu = Parameters( 1 );
+    log_mu = Parameters( 1 );
     phi = exp( -Parameters( 2 ) );
     phi = ( 1 - phi ) / ( 1 + phi );
     omega = exp( Parameters( 3 ) );
     rho = exp( -Parameters( 4 ) );
     rho = ( 1 - rho ) / ( 1 + rho );
     
-    max_sigma = 1;
-    
     if isempty( InitialStates )
         if isstruct( PersistentState ) && isfield( PersistentState, 'FinalEndo' ) && ( ~isempty( PersistentState.FinalEndo ) )
             CEndo = PersistentState.FinalEndo;
         else
-            CEndo = [ logit_mu; 0 ];
+            CEndo = [ log_mu; 0 ];
         end
         T = size( ShockSequence, 2 );
         EndoSimulation = zeros( 2, T );
         
         for t = 1 : T
-            CEndo = SimulationStep( CEndo, ShockSequence( :, t ), logit_mu, phi, omega, rho, max_sigma );
+            CEndo = SimulationStep( CEndo, ShockSequence( :, t ), log_mu, phi, omega, rho );
             EndoSimulation( :, t ) = CEndo;
         end
         
@@ -29,19 +27,19 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
         EndoSimulation = zeros( 2, T );
         
         for t = 1 : T
-            EndoSimulation( :, t ) = SimulationStep( InitialStates( :, t ), ShockSequence( :, t ), logit_mu, phi, omega, rho, max_sigma );
+            EndoSimulation( :, t ) = SimulationStep( InitialStates( :, t ), ShockSequence( :, t ), log_mu, phi, omega, rho );
         end
     end
     
     if nargout > 2
-        MeasurementSimulation = log( .40065867782212247344 + ( EndoSimulation( 2, : ) ./ max_sigma ).^ 2 ); % Maple to generate this number: f:=x->1/sqrt(2*Pi)*exp(-x^2/2); fsolve(int(log(c+x^2)*f(x),x=-infinity..infinity),c=0.5);
+        MeasurementSimulation = log( 0.052329478611145268641 + EndoSimulation( 2, : ).^ 2 ); % 0.052329478611145268641 is the offset at which this has zero skewness if EndoSimulation( 2, : ) is an i.i.d. standard normal
     end
 
 end
 
-function Endo = SimulationStep( Endo, Shocks, logit_mu, phi, omega, rho, max_sigma )
+function Endo = SimulationStep( Endo, Shocks, log_mu, phi, omega, rho )
     L = [ 1, 0; rho, realsqrt( 1 - rho * rho ) ];
     CorrelatedShocks = L * Shocks;
-    NewLogitSigma = ( 1 - phi ) * logit_mu + phi * Endo( 1 ) + omega * CorrelatedShocks( 1 );
-    Endo = [ NewLogitSigma; ( max_sigma ./ ( 1 + exp( -NewLogitSigma ) ) ) * CorrelatedShocks( 2 ) ];
+    NewLogSigma = ( 1 - phi ) * log_mu + phi * Endo( 1 ) + omega * CorrelatedShocks( 1 );
+    Endo = [ NewLogSigma; exp( NewLogSigma ) * CorrelatedShocks( 2 ) ];
 end

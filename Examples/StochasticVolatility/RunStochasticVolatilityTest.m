@@ -1,6 +1,6 @@
 Parameters = zeros( 5, 1 );
 
-Parameters( 1 ) = -4; % logit( mu )
+Parameters( 1 ) = 0;  % log( mu )
 Parameters( 2 ) =  3; % log( ( 1 + phi ) / ( 1 - phi ) )
 Parameters( 3 ) = -2; % log( omega )
 Parameters( 4 ) =  1; % log( ( 1 + rho ) / ( 1 - rho ) )
@@ -11,10 +11,14 @@ PersistentState = [];
 
 rng( 'default' );
 
-[ PersistentState, TrueEndoSimulation, Data ] = StochasticVolatilitySimulation( Parameters, PersistentState, [], randn( 2, T + Drop ), 0 );
+[ PersistentState, TrueEndoSimulation ] = StochasticVolatilitySimulation( Parameters, PersistentState, [], randn( 2, T + Drop ), 0 );
 
 TrueEndoSimulation = TrueEndoSimulation( :, ( Drop + 1 ) : end );
-Data = Data( :, ( Drop + 1 ) : end );
+SampleVar = mean( TrueEndoSimulation( 2, : ).^ 2, 2 );
+TrueEndoSimulation( 1, : ) = TrueEndoSimulation( 1, : ) - 0.5 * log( SampleVar );
+TrueEndoSimulation( 2, : ) = TrueEndoSimulation( 2, : ) ./ SampleVar;
+Parameters( 1 ) = Parameters( 1 ) - 0.5 * log( SampleVar );
+Data = log( 0.052329478611145268641 + TrueEndoSimulation( 2, : ).^ 2 );
 
 EstimationOptions = struct;
 
@@ -23,7 +27,7 @@ EstimationOptions.CompileLikelihood = false;
 EstimationOptions.Debug = true;
 EstimationOptions.DebugMex = true;
 EstimationOptions.DynamicNu = true;
-EstimationOptions.FilterCubatureDegree = 19;
+EstimationOptions.FilterCubatureDegree = -10;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';
 EstimationOptions.NoSkewLikelihood = false;
 EstimationOptions.NoTLikelihood = false;
