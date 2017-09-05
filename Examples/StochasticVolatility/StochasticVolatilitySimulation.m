@@ -6,7 +6,8 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
     omega = exp( Parameters( 3 ) );
     rho = exp( -Parameters( 4 ) );
     rho = ( 1 - rho ) / ( 1 + rho );
-    max_sigma = exp( Parameters( 5 ) );
+    
+    max_sigma = 1;
     
     if isempty( InitialStates )
         if isstruct( PersistentState ) && isfield( PersistentState, 'FinalEndo' ) && ( ~isempty( PersistentState.FinalEndo ) )

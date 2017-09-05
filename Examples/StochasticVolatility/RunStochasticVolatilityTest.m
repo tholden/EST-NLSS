@@ -4,7 +4,6 @@ Parameters( 1 ) = -4; % logit( mu )
 Parameters( 2 ) =  3; % log( ( 1 + phi ) / ( 1 - phi ) )
 Parameters( 3 ) = -2; % log( omega )
 Parameters( 4 ) =  1; % log( ( 1 + rho ) / ( 1 - rho ) )
-Parameters( 5 ) =  0; % log( max_sigma )
 
 T = 200;
 Drop = 100;
@@ -42,8 +41,8 @@ EstimationOptions.Simulate = @StochasticVolatilitySimulation;
 
 EstimationOptions.ExoCovariance = eye( 2 );
 
-EstimationOptions.LB = -Inf( 5, 1 );
-EstimationOptions.UB = Inf( 5, 1 );
+EstimationOptions.LB = -Inf( 4, 1 );
+EstimationOptions.UB = Inf( 4, 1 );
 
 addpath ../..
 
