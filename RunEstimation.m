@@ -230,6 +230,8 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     addpath( [ CorePath 'ESTDist/' ] );
     addpath( [ CorePath 'Utils/' ] );
 
+    Options = ESTNLSSSetDefaultOptions( Options, false );
+
     if Options.Debug
         [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState, Error ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath );
     else
@@ -258,8 +260,6 @@ end
 function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentState, Error ] = RunEstimationInternal( Parameters, Options, PersistentState, CorePath )
     NumParameters = size( Parameters, 1 );
     [ NumObservables, T ] = size( Options.Data );
-
-    Options = ESTNLSSSetDefaultOptions( Options, false );
 
     EstimatedParameters = [ Parameters; bsxfun( @plus, log( Options.InitialMEStd ), zeros( NumObservables, 1 ) ) ];
 
