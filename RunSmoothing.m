@@ -22,20 +22,20 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 % ------------ 
 %  
 % Requirements (to be installed and added to your Matlab path): 
-% * MATLAB version R2013a or later, or a fully compatible clone. 
+% * MATLAB version R2016b or later, or a fully compatible clone. MATLAB version R2017a or later is 
+%   strongly recommended. 
+% * MATLAB Coder, or a fully compatible clone. 
 % * The MATLAB Statistics and Machine Learning Toolox, or a fully compatible clone. 
+% * A working compiler for MEX which is supported by MATLAB Coder is required. On Windows, a free 
+%   compiler meeting these requirements is available from: 
+%   https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx . Alternatively, on Windows, 
+%   another free compiler meeting these requirements (which uses much less disk space) is available 
+%   by clicking on "Add-Ons" in the MATLAB toolbar, then searching for MinGW. Be sure to untick the 
+%   "check for updated files" in the installer that opens. 
 % * For estimation with any of the included optimisation wrappers, the MATLAB Parallel Toolbox (or a 
 %   fully compatible clone) is required. 
 % * For estimation using the included fmincon wrapper, the MATLAB Optimization Toolbox (or a fully 
 %   compatible clone) is required. 
-% * For compilation of the likelihood, we require MATLAB version R2016b or later, with MATLAB Coder, 
-%   and MATLAB version R2017a or later is strongly recommended. 
-% * For compilation of the likelihood, a working compiler for MEX which is supported by MATLAB Coder 
-%   is required. On Windows, a free compiler meeting these requirements is available from: 
-%   https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx . Alternatively, on Windows, 
-%   with MATLAB r2015b, another free compiler meeting these requirements (which uses much less disk 
-%   space) is available by clicking on "Add-Ons" in the MATLAB toolbar, then searching for MinGW. Be 
-%   sure to untick the "check for updated files" in the installer that opens. 
 %  
 % Basic Usage 
 % ----------- 
@@ -51,6 +51,9 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 %   A column vector of initial parameters. 
 % * Options 
 %   A struct including some or all of the following fields: 
+%     * AllowTailEvaluations (default: false) 
+%       Determines whether it is safe to use a potentially more efficient integration method which 
+%       evaluates further into the tails of the distribution. 
 %     * CompileLikelihood (default: false) 
 %       Specifies whether to attempt to compile the likelihood. If true, this requires MATLAB version 
 %       R2017a or later and MATLAB Coder. 
@@ -68,8 +71,11 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 %       including additional points for integrating over the states and shocks of the model in the 
 %       filter. While this requires solving the model less far from the steady-state when the state 
 %       dimension is large, it also requires negative weights, which may cause numerical issues e.g. 
-%       with the positive definiteness of the state covariance matrix. The cubature method exactly 
-%       integrates a polynomial of degree INTEGER. Values above 51 are treated as equal to 51. 
+%       with the positive definiteness of the state covariance matrix. this cubature method exactly 
+%       integrates a polynomial of degree FilterCubatureDegree. Values above 51 are treated as equal 
+%       to 51. 
+%       If this is less than zero, then EST-NLSS takes 2.^(-FilterCubatureDegree) points from a high 
+%       order Sobol sequence. 
 %     * InitialMEStd (default: 0.0001) 
 %       Either a scalar or a vector giving the initial standard deviation of the measurement error. 
 %       If this is a scalar, the same standard deviation will be used for all measurement errors. 
@@ -141,8 +147,9 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 %           EndoSimulation a large number of draws from the distribution of the endogenous variables 
 %           at time 0 (where time 1 is the first observation), of length given by the number of 
 %           columns of ShockSequence. For stationary models, the easiest way to do this is to return 
-%           a time-series simulation, starting from some arbitrary point (ideally, a draw from the 
-%           ergodic distribution, but the steady-state will do). 
+%           a time-series simulation, starting from some arbitrary point (ideally, either a draw from 
+%           the ergodic distribution, or the final period of a previous simulation, saved to 
+%           PersistentState). 
 %         * ShockSequence is a matrix of pseudo-draws from a Gaussian distribution with covariance 
 %           given by the set ExoCovariance. Rows of ShockSequence give particular shocks, and columns 
 %           give observations. The simulation function should not use any other source of randomness. 
@@ -172,11 +179,12 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 %           length as StateSteadyState. 
 %     * SkipStandardErrors (default: false) 
 %       Makes EST-NLSS skip calculation of standard errors for the estimated parameters. 
-%     * StationaryDistPeriods (default: 1000) 
-%       The number of periods used to evaluate the stationary distribution of the model. 
-%     * StationaryDistDrop (default: 100) 
-%       The number of periods used as burn-in prior to evaluating the stationary distribution of the 
-%       model. 
+%     * StationaryDistAccuracy (default: 10) 
+%       2 ^ StationaryDistAccuracy - 1 periods will be used to evaluate the stationary distribution 
+%       of the model. 
+%     * StationaryDisDrop (default: 0) 
+%       Specifies the number of points dropped from the start of the simulation in computing the 
+%       stationary distribution of the model. 
 %     * StdDevThreshold (default: 1e-6) 
 %       Specifies the threshold below which the standard deviation of the state is set to zero, for 
 %       dimension reduction. 
@@ -204,7 +212,11 @@ function [ SmoothedOutput, PersistentState ] = RunSmoothing( EstimatedParameters
 % * for finding the nearest symmetric positive definite matrix, that is copyright D'Errico, 2013, 
 % * for adaptive coordinate descent, that is copyright Loshchilov, Schoenauer, Sebag, 2012, 
 % * for evolutionary optimisation with covariance matrix adaptation, that is copyright Hansen, 2012, 
-% * for non-linear least squares optimisation, that is copyright Balda, 2013. 
+% * for the implementation of special functions over a complex domain, that is copyright Godfrey, 
+%   Acklam, 2004, 
+% * for the implementation of the incomplete Beta function, that is copyright McElwaine, 2010, 
+% * for non-linear least squares optimisation, that is copyright Balda, 2013, 
+% * for unconstrained optimisation, that is copyright Kroon, 2009. 
 %  
 % The original portions of EST-NLSS are copyright (c) Tom Holden, 2016-2017. 
 %  
