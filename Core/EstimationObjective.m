@@ -24,16 +24,16 @@ function [ LogLikelihood, PersistentState, LogObservationLikelihoods ] = Estimat
 
     if NoTLikelihood
         Parameters = EstimatedParameters( 1 : ( end - N ) );
-        diagRootLambda = exp( 2 * EstimatedParameters( ( end - N + 1 ) : end ) );
+        diagRootLambda = exp( EstimatedParameters( ( end - N + 1 ) : end ) );
         nuoo = Inf;
     elseif DynamicNu
         Parameters = EstimatedParameters( 1 : ( end - N ) );
-        diagRootLambda = exp( 2 * EstimatedParameters( ( end - N + 1 ) : end ) );
+        diagRootLambda = exp( EstimatedParameters( ( end - N + 1 ) : end ) );
         nuoo = 0;
     else
         Parameters = EstimatedParameters( 1 : ( end - N - 1 ) );
-        diagRootLambda = exp( 2 * EstimatedParameters( ( end - N ) : ( end - 1 ) ) );
-        nuoo = exp( 3 + EstimatedParameters( end ) );
+        diagRootLambda = exp( EstimatedParameters( ( end - N ) : ( end - 1 ) ) );
+        nuoo = 5 + exp( EstimatedParameters( end ) );
     end
     
     [ PersistentState.External, StateSteadyState, StateVariableIndices ] = Solve( Parameters, PersistentState.External );

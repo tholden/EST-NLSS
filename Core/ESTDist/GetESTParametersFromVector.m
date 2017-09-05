@@ -8,7 +8,7 @@ function [ xi, CholOmega, delta, tau, nu ] = GetESTParametersFromVector( p, n, D
         tau = Inf;
     end
     if DynamicNu
-        nu = 3 + exp( p( end ) );
+        nu = 5 + exp( p( end ) );
     end
 
     if isfinite( nu )

@@ -447,7 +447,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
         if EstimatedNu
             fprintf( '\n' );
             disp( 'Final measurement degrees of freedom parameter:' );
-            fprintf( '%s:\t\t%#.17g\n', 'nu', 2 + exp( EstimatedParameters( end ) ) );
+            fprintf( '%s:\t\t%#.17g\n', 'nu', 5 + exp( EstimatedParameters( end ) ) );
         end
         EstimatedParameterCovarianceMatrix = [];
     else
@@ -490,7 +490,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
             fprintf( '\n' );
             disp( 'Final measurement degrees of freedom parameter:' );
             TmpEstimatedParameter = exp( EstimatedParameters( end ) );
-            fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', 'nu', 2 + TmpEstimatedParameter, TmpEstimatedParameter * EstimatedParameterStandardErrors( end ) ); % delta method
+            fprintf( '%s:\t\t%#.17g\t\t(%#.17g)\n', 'nu', 5 + TmpEstimatedParameter, TmpEstimatedParameter * EstimatedParameterStandardErrors( end ) ); % delta method
         end
     end
 
