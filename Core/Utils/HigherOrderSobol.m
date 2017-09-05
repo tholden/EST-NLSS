@@ -1,4 +1,4 @@
-function X = HigherOrderSobol( Size, Dimension, Smoothness, AddZeroPoint )
+function X = HigherOrderSobol( Dimension, Size, Smoothness, AddZeroPoint )
     % Higher order Sobol sequence
     % Derived from https://quasirandomideas.wordpress.com/2010/06/17/how-to-generate-higher-order-sobol-points-in-matlab-and-some-numerical-examples/
     % Create a higher order Sobol sequence.

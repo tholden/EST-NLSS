@@ -13,7 +13,7 @@ LogErrors = NaN( OrderMax, 50 );
 
 for Size = 1 : OrderMax
     for Smoothness = 1 : max( 1, min( 50, floor( 52 / Size ) ) )
-        X = HigherOrderSobol( Size, Dimension, Smoothness, true );
+        X = HigherOrderSobol( Dimension, Size, Smoothness, true );
         X = X( 1, : );
         LogErrors( Size, Smoothness ) = log( abs( mean( abs( X ) .^ Moment ) - Correct ) );
     end
