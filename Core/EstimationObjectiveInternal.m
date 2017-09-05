@@ -43,7 +43,7 @@ function PersistentStateInternal0 = EstimationObjectiveInternal( StatDistPoints,
             tauoo = max( -10, min( 10, tauoo ) );
         end
         if DynamicNu
-            nuoo = min( 1000, nuoo );
+            nuoo = max( 5 + sqrt( eps( 5 ) ), min( 1000, nuoo ) );
         end
         
         [ ~, ~, deltasoo ] = CalibrateMomentsEST( tauoo, nuoo, muStatDistPoints, StateSteadyState, CholSigmaStatDistPoints, [], [] );

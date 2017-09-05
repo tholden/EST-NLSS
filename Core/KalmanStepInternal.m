@@ -62,7 +62,7 @@ function PersistentStateInternal_t = KalmanStepInternal( wmRed, CubatureWeights,
             tauno = max( -10, min( 10, tauno ) );
         end
         if DynamicNu
-            nuno = min( 1000, nuno );
+            nuno = max( 5 + sqrt( eps( 5 ) ), min( 1000, nuno ) );
         end
         
         [ ~, ~, deltaetano ] = CalibrateMomentsEST( tauno, nuno, mu_wmRed, Median_wmRed, CholSigma_wmRed, [], [] );
