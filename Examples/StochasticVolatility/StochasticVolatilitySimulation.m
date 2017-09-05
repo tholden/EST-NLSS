@@ -33,7 +33,7 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
     end
     
     if nargout > 2
-        MeasurementSimulation = EndoSimulation( 2, : ).^ 2;
+        MeasurementSimulation = log( .40065867782212247344 + ( EndoSimulation( 2, : ) ./ max_sigma ).^ 2 ); % Maple to generate this number: f:=x->1/sqrt(2*Pi)*exp(-x^2/2); fsolve(int(log(c+x^2)*f(x),x=-infinity..infinity),c=0.5);
     end
 
 end
