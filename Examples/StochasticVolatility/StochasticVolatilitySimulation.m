@@ -32,7 +32,7 @@ function [ PersistentState, EndoSimulation, MeasurementSimulation ] = Stochastic
     end
     
     if nargout > 2
-        MeasurementSimulation = log( 0.052329478611145268641 + EndoSimulation( 2, : ).^ 2 ); % 0.052329478611145268641 is the offset at which this has zero skewness if EndoSimulation( 2, : ) is an i.i.d. standard normal
+        MeasurementSimulation = EndoSimulation( 2, : );
     end
 
 end
@@ -41,5 +41,5 @@ function Endo = SimulationStep( Endo, Shocks, log_mu, phi, omega, rho )
     L = [ 1, 0; rho, realsqrt( 1 - rho * rho ) ];
     CorrelatedShocks = L * Shocks;
     NewLogSigma = ( 1 - phi ) * log_mu + phi * Endo( 1 ) + omega * CorrelatedShocks( 1 );
-    Endo = [ NewLogSigma; exp( NewLogSigma ) * CorrelatedShocks( 2 ) ];
+    Endo = [ NewLogSigma; 2 * NewLogSigma + log( 0.052329478611145268641 * exp( -2 * NewLogSigma ) + CorrelatedShocks( 2 ) .^ 2 ) ]; % log( 0.052329478611145268641 + Z^2 ) has zero skewness if Z~N(0,1)
 end

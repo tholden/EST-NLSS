@@ -11,14 +11,10 @@ PersistentState = [];
 
 rng( 'default' );
 
-[ PersistentState, TrueEndoSimulation ] = StochasticVolatilitySimulation( Parameters, PersistentState, [], randn( 2, T + Drop ), 0 );
+[ PersistentState, TrueEndoSimulation, Data ] = StochasticVolatilitySimulation( Parameters, PersistentState, [], randn( 2, T + Drop ), 0 );
 
 TrueEndoSimulation = TrueEndoSimulation( :, ( Drop + 1 ) : end );
-SampleVar = mean( TrueEndoSimulation( 2, : ).^ 2, 2 );
-TrueEndoSimulation( 1, : ) = TrueEndoSimulation( 1, : ) - 0.5 * log( SampleVar );
-TrueEndoSimulation( 2, : ) = TrueEndoSimulation( 2, : ) ./ SampleVar;
-Parameters( 1 ) = Parameters( 1 ) - 0.5 * log( SampleVar );
-Data = log( 0.052329478611145268641 + TrueEndoSimulation( 2, : ).^ 2 );
+Data = Data( :, ( Drop + 1 ) : end );
 
 EstimationOptions = struct;
 
@@ -27,7 +23,7 @@ EstimationOptions.CompileLikelihood = false;
 EstimationOptions.Debug = true;
 EstimationOptions.DebugMex = true;
 EstimationOptions.DynamicNu = true;
-EstimationOptions.FilterCubatureDegree = -10;
+EstimationOptions.FilterCubatureDegree = 19;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';
 EstimationOptions.NoSkewLikelihood = false;
 EstimationOptions.NoTLikelihood = false;
