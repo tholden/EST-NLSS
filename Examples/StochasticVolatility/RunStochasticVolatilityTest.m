@@ -20,8 +20,8 @@ EstimationOptions = struct;
 
 EstimationOptions.AllowTailEvaluations = false;
 EstimationOptions.CompileLikelihood = false;
-EstimationOptions.Debug = false;
-EstimationOptions.DebugMex = false;
+EstimationOptions.Debug = true;
+EstimationOptions.DebugMex = true;
 EstimationOptions.DynamicNu = true;
 EstimationOptions.FilterCubatureDegree = 19;
 EstimationOptions.MaximisationFunctions = 'FMinConWrapper';
