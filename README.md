@@ -49,7 +49,8 @@ Basic Usage
     * `ExoCovariance` (default: `[]`)
       The fixed covariance matrix of the source exogenous shocks. Usually setting this to the identity matrix is fine, and the shocks can be scaled (and correlations can be introduced) within your `Simulate` functor.
     * `FilterCubatureDegree` (default: `0`)
-      If this is greater than zero, then EST-NLSS uses an alternative sparse cubature rule including additional points for integrating over the states and shocks of the model in the filter. While this requires solving the model less far from the steady-state when the state dimension is large, it also requires negative weights, which may cause numerical issues e.g. with the positive definiteness of the state covariance matrix. The cubature method exactly integrates a polynomial of degree `FilterCubatureDegree`. Values above `51` are treated as equal to `51`.
+      If this is greater than zero, then EST-NLSS uses an alternative sparse cubature rule including additional points for integrating over the states and shocks of the model in the filter. While this requires solving the model less far from the steady-state when the state dimension is large, it also requires negative weights, which may cause numerical issues e.g. with the positive definiteness of the state covariance matrix. this cubature method exactly integrates a polynomial of degree `FilterCubatureDegree`. Values above `51` are treated as equal to `51`.
+      If this is less than zero, then EST-NLSS takes `2.^(-FilterCubatureDegree)` points from a high order Sobol sequence.
     * `InitialMEStd` (default: `0.0001`)
       Either a scalar or a vector giving the initial standard deviation of the measurement error. If this is a scalar, the same standard deviation will be used for all measurement errors.
     * `InitialNu` (default: `20`)
