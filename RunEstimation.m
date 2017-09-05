@@ -388,7 +388,7 @@ function [ EstimatedParameters, EstimatedParameterCovarianceMatrix, PersistentSt
     end
 
     [ LogLikelihood, PersistentState ] = ObjectiveFunction( EstimatedParameters, PersistentState );
-    PersistentState.InitialRun = false;
+    % PersistentState.InitialRun = false;
     disp( 'Initial log-likelihood:' );
     disp( LogLikelihood );
 
