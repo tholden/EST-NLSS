@@ -10,7 +10,7 @@ function [ resid, xi, delta, CholOmega, Z3, Z4 ] = CalibrateMomentsEST( tau, nu,
         tau = max( -10, min( 10, tau ) );
     end
     if isfinite( nu )
-        nu = min( 1000, nu );
+        nu = max( 5, min( 1000, nu ) );
     end
     
     log_tcdf_tau_nu = StudentTLogCDF( tau, nu );
