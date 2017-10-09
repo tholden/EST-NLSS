@@ -78,42 +78,17 @@ function X = HigherOrderSobol( Dimension, Size, Smoothness, AddZeroPoint )
 
     for i = 1 : Dimension
 
-        Xi = X( i, : );
-
-        SortedXi = sort( Xi );
-
-        if Smoothness == 1
-            NumPossible = 1;
-        else
-            NumPossible = pow2( floor( 0.5 * Size ) );
-        end
-        Possible = 1 : NumPossible;
-
-        fprintf( '\n%d %d %d 1\n', int32( Size ), int32( Smoothness ), i );
-
-        [ BestXCandidate, BestMinPenalty, BestLocation ] = PerformSearch( Xi, SortedXi, Possible, AddZeroPoint );
-
-        if Smoothness > 1
-
-            Possible = ( BestLocation + NumPossible ) : NumPossible : N;
-
-            fprintf( '\n%d %d %d 2\n', int32( Size ), int32( Smoothness ), i );
-
-            [ NewBestXCandidate, NewBestMinPenalty ] = PerformSearch( Xi, SortedXi, Possible, AddZeroPoint );
-
-            if NewBestMinPenalty < BestMinPenalty
-                BestXCandidate = NewBestXCandidate;
-            end
-
-        end
-
-        X( i, : ) = BestXCandidate;
+        X( i, : ) = PerformSearch( X( i, : ), AddZeroPoint );
 
     end
 
     if AddZeroPoint
         X = [ zeros( Dimension, 1 ), X ];
     end
+    
+    StdX = std( X, [], 2 );
+    [ ~, IdxSortStdX ] = sort( StdX, 'descend' );
+    X = X( IdxSortStdX, : );
 
     ESTNLSSassert( all( abs( mean( X, 2 ) ) < sqrt( eps ) ), 'ESTNLSS:HigherOrderSobol:Uncentered', 'Result was not centred.' );
     
@@ -125,26 +100,31 @@ function X = HigherOrderSobol( Dimension, Size, Smoothness, AddZeroPoint )
 
 end
 
-function [ BestXCandidate, BestMinPenalty, BestLocation ] = PerformSearch( Xi, SortedXi, Possible, AddZeroPoint )
+function BestXCandidate = PerformSearch( Xi, AddZeroPoint )
 
-    BatchSize = 64;
+    BatchSize = 1;
     
-    NumPossible = numel( Possible );
-
     BestMinPenalty = Inf;
     BestXCandidate = [];
-    BestLocation = 0;
     
-    jMax = floor( ( NumPossible - 1 ) / BatchSize );
+    SortedXi = sort( Xi );
+    DSortedXi = diff( [ SortedXi( end ) - 1, SortedXi ] );
+    MinPossiblePenalties = -norminv( 0.5 * DSortedXi );
+    
+    Possible = 1 : length( Xi );
+    
+    while true
 
-    for j = 0 : jMax
-
-        fprintf( '%d / %d\n', int32( j + 1 ), int32( jMax + 1 ) );
-
-        Current = j * BatchSize + ( 1 : min( NumPossible - j * BatchSize, BatchSize ) );
+        Current = Possible( 1 : min( BatchSize, end ) );
         NumCurrent = numel( Current );
+        
+        if NumCurrent == 0
+            break
+        end
+        
+        Possible( 1:NumCurrent ) = [];
 
-        XiMat = bsxfun( @minus, Xi, SortedXi( Possible( Current ) )' );
+        XiMat = bsxfun( @minus, Xi, SortedXi( Current ).' );
         XiMat = XiMat - floor( XiMat );
 
         uiMax = 1 - max( XiMat, [], 2 );
@@ -177,20 +157,19 @@ function [ BestXCandidate, BestMinPenalty, BestLocation ] = PerformSearch( Xi, S
             TmpCandidates = NewXCandidates;
         end
 
-        AbsSkewness = abs( mean( TmpCandidates .^ 3, 2 ) );
-        AbsStdDevErr = abs( mean( TmpCandidates .^ 2, 2 ) - 1 );
-
-        Penalty = 10000 * AbsSkewness + AbsStdDevErr;
-
-        Penalty( ~isfinite( Penalty ) ) = max( Penalty( isfinite( Penalty ) ) );
+        Penalty = max( abs( TmpCandidates ), [], 2 );
 
         [ MinPenalty, IdxMinPenalty ] = min( Penalty );
 
         if MinPenalty < BestMinPenalty
             BestXCandidate = NewXCandidates( IdxMinPenalty, : );
             BestMinPenalty = MinPenalty;
-            BestLocation = Possible( Current( IdxMinPenalty ) );
+            
+            NoLongerPossible = find( BestMinPenalty <= MinPossiblePenalties );
+            Possible = setdiff( Possible, NoLongerPossible );
         end
+        
+        BatchSize = 2 * BatchSize;
 
     end
 
@@ -216,28 +195,3 @@ function [ f, dfdv, df2dv2 ] = GetResid( v, X, uMax )
     df2dv2 = sum( dX2dv2, 2 );
     
 end
-
-%         ToTest = log2( NumPossible ) - 1;
-%         AICcVec = zeros( ToTest, 1 );
-%         BICcVec = zeros( ToTest, 1 );
-%         MSEVec = zeros( ToTest, 1 );
-%         assert( all( isfinite( LogPenaltyAll ) ) );
-%         for j = 0 : ToTest
-%             k = pow2( j );
-%             TmpLogPenaltyAll = reshape( LogPenaltyAll(:), k, NumPossible / k );
-%             TmpLogPenaltyAll1 = bsxfun( @minus, TmpLogPenaltyAll, mean( TmpLogPenaltyAll, 2 ) );
-%             TmpLogPenaltyAll1 = TmpLogPenaltyAll1(:);
-%             TmpLogPenaltyAll2 = bsxfun( @minus, TmpLogPenaltyAll( :, 2:end ), TmpLogPenaltyAll( :, 1 ) );
-%             TmpLogPenaltyAll2 = TmpLogPenaltyAll2(:);
-%             TmpRSS = sum( TmpLogPenaltyAll1 .* TmpLogPenaltyAll1 );
-%             k = k + 1;
-%             AICcVec( j + 1 ) = 2 * k + NumPossible * log( TmpRSS ) + 2 * k * ( k + 1 ) / ( NumPossible - k - 1 );
-%             BICcVec( j + 1 ) = k * ( log( NumPossible ) - log( 2 * pi ) ) + NumPossible * log( TmpRSS );
-%             MSEVec( j + 1 ) = mean( TmpLogPenaltyAll2 .* TmpLogPenaltyAll2 );
-%         end
-%         [ ~, AICcMinLoc ] = min( AICcVec );
-%         [ ~, BICcMinLoc ] = min( BICcVec );
-%         [ ~, MSEMinLoc ] = min( MSEVec );
-%         fprintf( '%d %d %d %d %d %d\n', int32( Size ), int32( Smoothness ), int32( i ), int32( AICcMinLoc - 1 ), int32( BICcMinLoc - 1 ), int32( MSEMinLoc - 1 ) );
-%         
-%         figure( 3 ); plot( reshape( LogPenaltyAll(:), pow2( floor( 0.5 * log2( NumPossible ) ) ), NumPossible / pow2( floor( 0.5 * log2( NumPossible ) ) ) ) ); drawnow;
